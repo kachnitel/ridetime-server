@@ -14,7 +14,8 @@ class Users
      *
      * @return array
      */
-    public function getUsers() {
+    public function getUsers(): array
+    {
         $usersQuery = 'SELECT id, name, email, phone, profile_pic, cover_pic FROM ridetime.`user`;';
         $users = $this->connector->query($usersQuery);
 
@@ -28,7 +29,8 @@ class Users
      * @param int $id
      * @return object // TODO User object?
      */
-    public function getUser($id) {
+    public function getUser(int $id): object
+    {
         $query = 'SELECT id, name, email, phone, profile_pic, cover_pic FROM ridetime.`user` WHERE `user`.id = :id;';
         // TODO run prepared stmt
         $params = [
