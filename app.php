@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Kachnitel\RideTimeServer\Database\Connector;
 use Kachnitel\RideTimeServer\Database\Users;
 
