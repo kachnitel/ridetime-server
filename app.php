@@ -1,6 +1,7 @@
 <?php
 
 use Kachnitel\RideTimeServer\Database\Connector;
+use Kachnitel\RideTimeServer\Database\Users;
 
 require_once(__DIR__ . '/vendor/autoload.php');
 
@@ -10,5 +11,6 @@ $secrets = json_decode($secretsFile);
 $db = new Connector();
 $db->init($secrets->db);
 
+$users = new Users($db);
 
-echo json_encode($db->getUsers());
+echo json_encode($users->getUsers());

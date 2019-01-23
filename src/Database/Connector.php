@@ -4,6 +4,10 @@ namespace Kachnitel\RideTimeServer\Database;
 
 use PDO;
 
+/**
+ * Generic database connector
+ *
+ */
 class Connector
 {
     protected $db_options = [
@@ -22,7 +26,7 @@ class Connector
      *
      * @param object $config {host, database, user, password}
      */
-    public function init($config) {
+    public function init ($config) {
         $host = $config->host;
         $db   = $config->database;
         $user = $config->user;
@@ -38,15 +42,20 @@ class Connector
         }
     }
 
-    public function getUsers() {
-        $usersQuery = 'SELECT id, name, email, phone, profile_pic, cover_pic FROM ridetime.`user`;';
-        $usersResult = $this->pdo->query($usersQuery);
+    /**
+     * Undocumented function
+     *
+     * @param string $query
+     * @return array
+     */
+    public function query ($query) {
+        $result = $this->pdo->query($query);
 
-        $users = [];
-        while ($row = $usersResult->fetch()) {
-            $users[] = $row;
+        $data = [];
+        while ($row = $result->fetch()) {
+            $data[] = $row;
         }
 
-        return $users;
+        return $data;
     }
 }
