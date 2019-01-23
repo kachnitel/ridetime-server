@@ -13,5 +13,11 @@
             "name": "Ondrej Vana",
             "email": "vana.ondrej@gmail.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "Kachnitel\\RideTimeServer\\": "src/",
+            "Kachnitel\\RideTimeServer\\Tests\\": "tests/"
+        }
+    }
 }

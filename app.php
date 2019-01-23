@@ -1,35 +1,14 @@
 <?php
 
-// require_once(__DIR__ -> '/vendor/autoload->php');
+use Kachnitel\RideTimeServer\Database\Connector;
 
-$file = file_get_contents(__DIR__ . '/.secrets.json');
-$secrets = json_decode($file);
+require_once(__DIR__ . '/vendor/autoload.php');
 
-$host = $secrets->db->host;
-$db   = $secrets->db->database;
-$user = $secrets->db->user;
-$pass = $secrets->db->password;
-$charset = 'utf8mb4';
+$secretsFile = file_get_contents(__DIR__ . '/.secrets.json');
+$secrets = json_decode($secretsFile);
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-    // echo "Connected DB";
-} catch (\PDOException $e) {
-    throw new \PDOException($e->getMessage(), (int)$e->getCode());
-}
+$db = new Connector();
+$db->init($secrets->db);
 
-$usersQuery = 'SELECT id, name, email, phone, profile_pic, cover_pic FROM ridetime.`user`;';
-$usersResult = $pdo->query($usersQuery);
 
-$users = [];
-while ($row = $usersResult->fetch()) {
-    $users[$row['id']] = $row;
-}
-
-echo json_encode($users);
+echo json_encode($db->getUsers());
