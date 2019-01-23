@@ -43,13 +43,20 @@ class Connector
     }
 
     /**
-     * Undocumented function
+     * Runs a query or a prepared statement if $params are supplied
      *
      * @param string $query
+     * @param array $params
      * @return array
      */
-    public function query ($query) {
-        $result = $this->pdo->query($query);
+    public function query ($query, $params = []) {
+        if(empty($params)) {
+            $result = $this->pdo->query($query);
+        } else {
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute($params);
+            $result = $stmt->fetch();
+        }
 
         $data = [];
         while ($row = $result->fetch()) {
