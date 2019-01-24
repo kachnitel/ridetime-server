@@ -55,7 +55,7 @@ class Connector
         } else {
             $stmt = $this->pdo->prepare($query);
             $stmt->execute($params);
-            $result = $stmt->fetch();
+            $result = $stmt;
         }
 
         $data = [];

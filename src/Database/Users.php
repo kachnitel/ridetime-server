@@ -36,7 +36,9 @@ class Users
         $params = [
             'id' => $id
         ];
-        $user = $this->connector->query($query, $params);
+        $userResult = $this->connector->query($query, $params);
+
+        $user = (object) $userResult[0];
 
         return $user;
     }

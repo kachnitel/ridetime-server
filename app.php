@@ -15,4 +15,5 @@ $db->init($secrets->db);
 
 $users = new Users($db);
 
-echo json_encode($users->getUsers());
+// echo json_encode($users->getUsers());
+echo json_encode($users->getUser(1016));
