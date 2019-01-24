@@ -20,5 +20,5 @@ $users = new Users($db);
 
 echo json_encode(
     // $users->getUsers(),
-    $users->getUser(1017)
+    $users->getUser(1016)
 );
