@@ -18,7 +18,9 @@ $db->init($secrets->db);
 
 $users = new Users($db);
 
+$userId = (int) filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+
 echo json_encode(
     // $users->getUsers(),
-    $users->getUser(1016)
+    $users->getUser($userId)
 );

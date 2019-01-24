@@ -46,7 +46,7 @@ class Users
 
         // if $friends param
         $user->friends = $this->getUserDetail($id, 'friends');
-        $user->home_locations = $this->getUserDetail($id, 'home_locations');
+        $user->homeLocations = $this->getUserDetail($id, 'home_locations');
         $user->events = $this->getUserDetail($id, 'events');
 
         return $user;
