@@ -29,7 +29,7 @@ class Users
      * @param int $id
      * @return object // TODO User object?
      */
-    public function getUser(int $id): object
+    public function getUser(int $id): ?object
     {
         $query = 'SELECT id, name, email, phone, profile_pic, cover_pic FROM ridetime.`user` WHERE `user`.id = :id;';
         // TODO run prepared stmt
@@ -37,8 +37,7 @@ class Users
             'id' => $id
         ];
         $userResult = $this->connector->query($query, $params);
-
-        $user = (object) $userResult[0];
+        $user = array_key_exists(0, $userResult) ? (object) $userResult[0] : null;
 
         return $user;
     }
