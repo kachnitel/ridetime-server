@@ -47,6 +47,7 @@ class Users
         // if $friends param
         $user->friends = $this->getUserDetail($id, 'friends');
         $user->home_locations = $this->getUserDetail($id, 'home_locations');
+        $user->events = $this->getUserDetail($id, 'events');
 
         return $user;
     }
@@ -68,16 +69,25 @@ class Users
                 FROM `ridetime`.`user` AS `friend`
                     INNER JOIN `ridetime`.`friends` AS `friends`
                         ON `friend`.`id` = `friends`.`friend_id`
-                WHERE  `friends`.`user_id` = :id;',
+                WHERE `friends`.`user_id` = :id;',
             'home_locations' => 'SELECT `id`,
                     `name`,
                     `gps_lat`,
                     `gps_lon`
-                FROM   `ridetime`.`location` AS `location`
+                FROM `ridetime`.`location` AS `location`
                     INNER JOIN `ridetime`.`user_locations`
                         ON `user_locations`.`location_id` = `location`.`id`
-                WHERE  `user_locations`.`user_id` = :id;',
-            'events' => ''
+                WHERE `user_locations`.`user_id` = :id;',
+            'events' => 'SELECT `id`,
+                    `start_time`,
+                    `name`,
+                    `difficulty`,
+                    `location`,
+                    `duration`
+                FROM `ridetime`.`event` AS `events`
+                    INNER JOIN `ridetime`.`event_members` AS `members`
+                        ON `members`.`event_id` = `events`.`id`
+                WHERE `members`.`user_id` = :id;'
         ];
 
         $params = [
