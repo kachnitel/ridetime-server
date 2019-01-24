@@ -1,5 +1,4 @@
 <?php
-
 namespace Kachnitel\RideTimeServer\Database;
 
 use PDO;
@@ -26,7 +25,8 @@ class Connector
      *
      * @param object $config {host, database, user, password}
      */
-    public function init ($config) {
+    public function init($config)
+    {
         $host = $config->host;
         $db   = $config->database;
         $user = $config->user;
@@ -49,8 +49,9 @@ class Connector
      * @param array $params
      * @return array
      */
-    public function query ($query, $params = []) {
-        if(empty($params)) {
+    public function query($query, $params = []): array
+    {
+        if (empty($params)) {
             $result = $this->pdo->query($query);
         } else {
             $stmt = $this->pdo->prepare($query);
