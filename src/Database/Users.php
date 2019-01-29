@@ -3,6 +3,15 @@ namespace Kachnitel\RideTimeServer\Database;
 
 class Users
 {
+    protected $defaultColumns = [
+        'id',
+        'name',
+        'email',
+        'phone',
+        'profile_pic',
+        'cover_pic'
+    ];
+
     public function __construct(Connector $connector)
     {
         /**
@@ -16,9 +25,9 @@ class Users
      *
      * @return array
      */
-    public function getUsers(): array
+    public function getUsers(array $ids = [], array $columns = []): array
     {
-        $usersQuery = 'SELECT id, name, email, phone, profile_pic, cover_pic FROM ridetime.`user`;';
+        $usersQuery = 'SELECT ' . $this->getColumns($columns) . ' FROM ridetime.`user`;';
         $users = $this->connector->query($usersQuery);
 
         return $users;
@@ -31,9 +40,9 @@ class Users
      * @param int $id
      * @return object // TODO User object?
      */
-    public function getUser(int $id): ?object
+    public function getUser(int $id, array $columns = []): ?object
     {
-        $query = 'SELECT id, name, email, phone, profile_pic, cover_pic FROM ridetime.`user` WHERE `user`.id = :id;';
+        $query = 'SELECT ' . $this->getColumns($columns) . ' FROM ridetime.`user` WHERE `user`.id = :id;';
         $params = [
             'id' => $id
         ];
@@ -95,5 +104,10 @@ class Users
         ];
 
         return $this->connector->query($queries[$detail], $params);
+    }
+
+    protected function getColumns(array $columns = []): string
+    {
+        return join(empty($columns) ? $this->defaultColumns : $columns, ',');
     }
 }

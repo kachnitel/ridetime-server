@@ -44,6 +44,8 @@ class Rides
 
         $rides = $this->connector->query($query);
 
+        $users = new Users($this->connector);
+
         $result = [];
         foreach ($rides as $i => $ride) {
             $result[] = (object) [
@@ -51,7 +53,8 @@ class Rides
                 'difficulty' => (int) $ride['difficulty'],
                 'location' => $ride['location_name'],
                 'locationGps' => [$ride['gps_lat'], $ride['gps_lon']],
-                'members' => [1016, 1018], // TODO: separate query w/ details eventually
+                // 'members' => [1016, 1018], // TODO: separate query w/ details eventually
+                'members' => $users->getUsers([1016, 1017], ['id', 'name', 'profile_pic']),
                 'terrain' => 'trail',
                 'route' => $ride['route']
             ];
