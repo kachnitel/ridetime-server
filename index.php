@@ -15,18 +15,13 @@ $configFile = file_get_contents(__DIR__ . '/config.json');
 $config = json_decode($configFile, true);
 
 $slimConfig = $config['slim'];
-// $slimConfig['displayErrorDetails'] = true;
-// $slimConfig['addContentLengthHeader'] = false;
 
 $secretsFile = file_get_contents(__DIR__ . '/.secrets.json');
 $secrets = json_decode($secretsFile, true);
-// $config['db']['host']   = 'localhost';
-// $config['db']['user']   = 'user';
-// $config['db']['pass']   = 'password';
-// $config['db']['dbname'] = 'exampleapp';
+
 $slimConfig['db'] = $secrets['db'];
 
-$app = new \Slim\App(['settings' => $slimConfig]);
+$app = new \Slim\App([ 'settings' => $slimConfig ]);
 $container = $app->getContainer();
 
 $container['logger'] = function($c) use ($config) {
@@ -44,7 +39,7 @@ $container['db'] = function ($c) {
     return $db;
 };
 
-$app->get('/rides', function (Request $request, Response $response, array $args) {
+$app->get('/rides', function (Request $request, Response $response) {
     $this->logger->addInfo('GET rides');
 
     $rides = new Rides($this->db);
@@ -55,7 +50,7 @@ $app->get('/rides', function (Request $request, Response $response, array $args)
 $app->get('/users/{id}', function (Request $request, Response $response, array $args) {
     $this->logger->addInfo('GET users/{id}', $args);
 
-    $userId = (int) $args['id'];
+    $userId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
 
     $users = new Users($this->db);
 
