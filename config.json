@@ -1,0 +1,8 @@
+{
+  "logPath": "/var/log/ridetime/app.log",
+  "appName": "ridetime",
+  "slim": {
+    "displayErrorDetails": true,
+    "addContentLengthHeader": false
+  }
+}

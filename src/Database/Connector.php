@@ -12,7 +12,7 @@ class Connector
     protected $db_options = [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
+        PDO::ATTR_EMULATE_PREPARES   => false
     ];
 
     /**
@@ -27,13 +27,14 @@ class Connector
      */
     public function init($config)
     {
-        $host = $config->host;
-        $db   = $config->database;
-        $user = $config->user;
-        $pass = $config->password;
+        $host = $config['host'];
+        $db   = $config['database'];
+        $user = $config['user'];
+        $pass = $config['password'];
         $charset = 'utf8mb4';
 
         $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+
         try {
             $this->pdo = new PDO($dsn, $user, $pass, $this->db_options);
             // echo "Connected DB";
