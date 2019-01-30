@@ -2,12 +2,7 @@
 
 declare(strict_types=1);
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
-
 use Kachnitel\RideTimeServer\Database\Connector;
-use Kachnitel\RideTimeServer\Database\Users;
-use Kachnitel\RideTimeServer\Database\Rides;
 
 require_once(__DIR__ . '/vendor/autoload.php');
 
@@ -39,22 +34,6 @@ $container['db'] = function ($c) {
     return $db;
 };
 
-$app->get('/rides', function (Request $request, Response $response) {
-    $this->logger->addInfo('GET rides');
-
-    $rides = new Rides($this->db);
-
-    return $response->withJson($rides->getRides());
-});
-
-$app->get('/users/{id}', function (Request $request, Response $response, array $args) {
-    $this->logger->addInfo('GET users/{id}', $args);
-
-    $userId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
-
-    $users = new Users($this->db);
-
-    return $response->withJson($users->getUser($userId));
-});
+require_once('app/routes.php');
 
 $app->run();
