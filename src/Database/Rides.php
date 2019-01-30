@@ -32,15 +32,16 @@ class Rides
                           `event`.`description`,
                           `event`.`route`,
                           `event`.`difficulty`,
-                          `event`.`location` AS `location_id`,
+                          `event`.`location_id`,
                           `event`.`duration`,
                           `event`.`created_by`,
                           `location`.`gps_lat`,
                           `location`.`gps_lon`,
-                          `location`.`name` AS `location_name`
+                          `location`.`name` AS `location_name`,
+                          `location`.`id` AS `location_id`
                       FROM `ridetime`.`event`
                               INNER JOIN `ridetime`.`location`
-                                      ON `location`.`id` = `event`.`location`;';
+                                      ON `location`.`id` = `event`.`location_id`;';
 
         $rides = $this->connector->query($query);
 
@@ -49,8 +50,11 @@ class Rides
             $result[] = (object) [
                 'name' => $ride['name'],
                 'difficulty' => (int) $ride['difficulty'],
-                'location' => $ride['location_name'],
-                'locationGps' => [$ride['gps_lat'], $ride['gps_lon']],
+                'location' => (object) [
+                    'name' => $ride['location_name'],
+                    'gps' => [$ride['gps_lat'], $ride['gps_lon']],
+                    'id' => $ride['location_id']
+                ],
                 'members' => $this->getRideMembers($ride['id']),
                 'terrain' => 'trail',
                 'route' => $ride['route']

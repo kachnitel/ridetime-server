@@ -91,7 +91,7 @@ class Users
                     `start_time`,
                     `name`,
                     `difficulty`,
-                    `location`,
+                    `location_id`,
                     `duration`
                 FROM `ridetime`.`event` AS `events`
                     INNER JOIN `ridetime`.`event_members` AS `members`
