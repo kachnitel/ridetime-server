@@ -1,23 +1,22 @@
 <?php
+
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
+
 require_once "vendor/autoload.php";
 
 // Setup Doctrine
-$configuration = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(
+$configuration = Setup::createAnnotationMetadataConfiguration(
     $paths = [__DIR__ . '/entities'],
     $isDevMode = true
 );
-
-var_dump($configuration->getMetadataDriverImpl());
-$driverImpl = $configuration->newDefaultAnnotationDriver('./RideTimeServer/Entities');
-$configuration->setMetadataDriverImpl($driverImpl);
 
 $secretsFile = file_get_contents(__DIR__ . '/.secrets.json');
 $secrets = json_decode($secretsFile, true);
 
 // Setup connection parameters
 $connectionParameters = [
-    // 'dbname' => $secrets['db']['database'],
-    'dbname' => 'ridetime-doctrine',
+    'dbname' => $secrets['db']['database'],
     'user' => $secrets['db']['user'],
     'password' => $secrets['db']['password'],
     'host' => $secrets['db']['host'],
@@ -25,4 +24,4 @@ $connectionParameters = [
 ];
 
 // Get the entity manager
-$entityManager = Doctrine\ORM\EntityManager::create($connectionParameters, $configuration);
+$entityManager = EntityManager::create($connectionParameters, $configuration);

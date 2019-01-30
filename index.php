@@ -2,19 +2,26 @@
 
 declare(strict_types=1);
 
-use RideTimeServer\Database\Connector;
+// use RideTimeServer\Database\Connector;
 
-use RideTimeServer\Entities\User;
+// use RideTimeServer\Entities\User;
 
-require_once(__DIR__ . '/vendor/autoload.php');
+require_once __DIR__ . '/vendor/autoload.php';
 
-require_once(__DIR__ . '/bootstrap.php');
+require_once __DIR__ . '/bootstrap.php';
+
+// $classLoader = new \Doctrine\Common\ClassLoader('Entities','./entities');
+// $classLoader->register();
+require_once './entities/User.php';
+require_once './entities/Event.php';
 
 $user = (new User())
         ->setFirstName('Joe')
         ->setLastName('Hoe'); // no fuj!
 
 $entityManager->persist($user);
+
+$entityManager->flush();
 /////////////////////////
 die();
 
