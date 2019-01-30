@@ -5,7 +5,8 @@
     "require": {
         "ext-pdo": "*",
         "slim/slim": "^3.0",
-        "monolog/monolog": "^1.24"
+        "monolog/monolog": "^1.24",
+        "doctrine/orm": "^2.6"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.5"
@@ -18,8 +19,9 @@
     ],
     "autoload": {
         "psr-4": {
-            "Kachnitel\\RideTimeServer\\": "src/",
-            "Kachnitel\\RideTimeServer\\Tests\\": "tests/"
+            "RideTimeServer\\": "src/",
+            "RideTimeServer\\Entities\\": "RideTimeServer/Entities",
+            "RideTimeServer\\Tests\\": "tests/"
         }
     }
 }

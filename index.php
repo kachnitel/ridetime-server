@@ -2,9 +2,21 @@
 
 declare(strict_types=1);
 
-use Kachnitel\RideTimeServer\Database\Connector;
+use RideTimeServer\Database\Connector;
+
+use RideTimeServer\Entities\User;
 
 require_once(__DIR__ . '/vendor/autoload.php');
+
+require_once(__DIR__ . '/bootstrap.php');
+
+$user = (new User())
+        ->setFirstName('Joe')
+        ->setLastName('Hoe'); // no fuj!
+
+$entityManager->persist($user);
+/////////////////////////
+die();
 
 $configFile = file_get_contents(__DIR__ . '/config.json');
 $config = json_decode($configFile, true);

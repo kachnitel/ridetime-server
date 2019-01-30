@@ -1,5 +1,5 @@
 <?php
-namespace Kachnitel\RideTimeServer\Database;
+namespace RideTimeServer\Database;
 
 class Users
 {

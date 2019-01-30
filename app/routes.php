@@ -3,8 +3,8 @@
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
-use Kachnitel\RideTimeServer\Database\Users;
-use Kachnitel\RideTimeServer\Database\Rides;
+use RideTimeServer\Database\Users;
+use RideTimeServer\Database\Rides;
 
 $app->get('/rides', function (Request $request, Response $response) {
   $this->logger->addInfo('GET rides');
