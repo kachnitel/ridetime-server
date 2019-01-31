@@ -1,4 +1,5 @@
 <?php
+
 namespace RideTimeServer\Entities;
 
 /**
@@ -10,7 +11,7 @@ class Event
     /**
      * @Id
      * @GeneratedValue
-     * @Column(type="smallint")
+     * @Column(type="integer")
      */
     private $id;
 
@@ -30,12 +31,26 @@ class Event
     private $date;
 
     /**
-     * Many events for one user FIXME: many to many!
      * @ManyToOne(targetEntity="User", inversedBy="events")
      * @JoinColumn(name="created_by_id", referencedColumnName="id", nullable=false)
      * @var \RideTimeServer\Entities\User
      */
-    private $created_by;
+    private $createdBy;
+
+    /**
+     * @var \Doctrine\Common\Collections\ArrayCollection|User[]
+     *
+     * @ManyToMany(targetEntity="User", mappedBy="events")
+     */
+    protected $users;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id.
@@ -122,13 +137,13 @@ class Event
     /**
      * Set createdBy.
      *
-     * @param \User $createdBy
+     * @param \RideTimeServer\Entities\User $createdBy
      *
      * @return Event
      */
-    public function setCreatedBy(\User $createdBy)
+    public function setCreatedBy(\RideTimeServer\Entities\User $createdBy)
     {
-        $this->created_by = $createdBy;
+        $this->createdBy = $createdBy;
 
         return $this;
     }
@@ -136,10 +151,46 @@ class Event
     /**
      * Get createdBy.
      *
-     * @return \User
+     * @return \RideTimeServer\Entities\User
      */
     public function getCreatedBy()
     {
-        return $this->created_by;
+        return $this->createdBy;
+    }
+
+    /**
+     * Add user.
+     *
+     * @param \RideTimeServer\Entities\User $user
+     *
+     * @return Event
+     */
+    public function addUser(\RideTimeServer\Entities\User $user)
+    {
+        $this->users[] = $user;
+
+        return $this;
+    }
+
+    /**
+     * Remove user.
+     *
+     * @param \RideTimeServer\Entities\User $user
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeUser(\RideTimeServer\Entities\User $user)
+    {
+        return $this->users->removeElement($user);
+    }
+
+    /**
+     * Get users.
+     *
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
+    public function getUsers()
+    {
+        return $this->users;
     }
 }

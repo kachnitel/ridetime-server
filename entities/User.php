@@ -1,4 +1,5 @@
 <?php
+
 namespace RideTimeServer\Entities;
 
 /**
@@ -10,26 +11,62 @@ class User
     /**
      * @Id
      * @GeneratedValue
-     * @Column(type="smallint")
+     * @Column(type="integer")
      */
     private $id;
 
     /**
      * @Column(type="string")
      */
-    private $firstName;
+    private $name;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", unique=true, length=60)
+     * @var string
      */
-    private $lastName;
+    private $email;
 
     /**
-     * One user can join many events
-     * @OneToMany(targetEntity="Event", mappedBy="user", cascade={"all"})
-     * @var Doctrine\Common\Collection\ArrayCollection
+     * @Column(type="string", nullable=true, length=15)
+     * @var string
+     */
+    private $phone;
+
+    /**
+     * @Column(type="string", length=255)
+     * @var string
+     */
+    private $password;
+
+    /**
+     * @Column(type="string", nullable=true)
+     * @var string
+     */
+    private $profilePicUrl;
+
+    /**
+     * @Column(type="string", nullable=true)
+     * @var string
+     */
+    private $coverPicUrl;
+
+    /**
+     * One user can join many events     *
+     * @var \Doctrine\Common\Collections\ArrayCollection|Event[]
+     *
+     * @ManyToMany(targetEntity="Event", inversedBy="users")
+     * @JoinTable(
+     *  name="userEvent",
+     *  joinColumns={
+     *      @JoinColumn(name="user_id", referencedColumnName="id")
+     *  },
+     *  inverseJoinColumns={
+     *      @JoinColumn(name="event_id", referencedColumnName="id")
+     *  }
+     * )
      */
     private $events;
+
     /**
      * Constructor
      */
@@ -49,61 +86,37 @@ class User
     }
 
     /**
-     * Set firstName.
+     * Set name.
      *
-     * @param string $firstName
+     * @param string $name
      *
      * @return User
      */
-    public function setFirstName($firstName)
+    public function setName($name)
     {
-        $this->firstName = $firstName;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get firstName.
+     * Get name.
      *
      * @return string
      */
-    public function getFirstName()
+    public function getName()
     {
-        return $this->firstName;
-    }
-
-    /**
-     * Set lastName.
-     *
-     * @param string $lastName
-     *
-     * @return User
-     */
-    public function setLastName($lastName)
-    {
-        $this->lastName = $lastName;
-
-        return $this;
-    }
-
-    /**
-     * Get lastName.
-     *
-     * @return string
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
+        return $this->name;
     }
 
     /**
      * Add event.
      *
-     * @param \Event $event
+     * @param \RideTimeServer\Entities\Event $event
      *
      * @return User
      */
-    public function addEvent(\Event $event)
+    public function addEvent(\RideTimeServer\Entities\Event $event)
     {
         $this->events[] = $event;
 
@@ -113,11 +126,11 @@ class User
     /**
      * Remove event.
      *
-     * @param \Event $event
+     * @param \RideTimeServer\Entities\Event $event
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeEvent(\Event $event)
+    public function removeEvent(\RideTimeServer\Entities\Event $event)
     {
         return $this->events->removeElement($event);
     }
@@ -125,10 +138,130 @@ class User
     /**
      * Get events.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\ArrayCollection
      */
     public function getEvents()
     {
         return $this->events;
+    }
+
+    /**
+     * Get the value of email
+     *
+     * @return  string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set the value of email
+     *
+     * @param  string  $email
+     *
+     * @return  self
+     */
+    public function setEmail(string $email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of profilePicUrl
+     *
+     * @return  string
+     */
+    public function getProfilePicUrl()
+    {
+        return $this->profilePicUrl;
+    }
+
+    /**
+     * Set the value of profilePicUrl
+     *
+     * @param  string  $profilePicUrl
+     *
+     * @return  self
+     */
+    public function setProfilePicUrl(string $profilePicUrl)
+    {
+        $this->profilePicUrl = $profilePicUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of coverPicUrl
+     *
+     * @return  string
+     */
+    public function getCoverPicUrl()
+    {
+        return $this->coverPicUrl;
+    }
+
+    /**
+     * Set the value of coverPicUrl
+     *
+     * @param  string  $coverPicUrl
+     *
+     * @return  self
+     */
+    public function setCoverPicUrl(string $coverPicUrl)
+    {
+        $this->coverPicUrl = $coverPicUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of phone
+     *
+     * @return  string
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * Set the value of phone
+     *
+     * @param  string  $phone
+     *
+     * @return  self
+     */
+    public function setPhone(string $phone)
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of password
+     *
+     * @return  string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * Set the value of password
+     *
+     * @param  string  $password
+     *
+     * @return  self
+     */
+    public function setPassword(string $password)
+    {
+        $this->password = $password;
+
+        return $this;
     }
 }
