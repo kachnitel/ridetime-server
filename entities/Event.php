@@ -1,5 +1,5 @@
 <?php
-// namespace RideTimeServer\Entities;
+namespace RideTimeServer\Entities;
 
 /**
  * @Entity

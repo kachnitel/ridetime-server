@@ -20,7 +20,7 @@
     "autoload": {
         "psr-4": {
             "RideTimeServer\\": "src/",
-            "RideTimeServer\\Entities\\": "entities/RideTimeServer/Entities",
+            "RideTimeServer\\Entities\\": "entities/",
             "RideTimeServer\\Tests\\": "tests/"
         }
     }
