@@ -21,11 +21,11 @@ class UserEndpoint
         return (object) [
             'id' => $this->user->getId(),
             'name' => $this->user->getName(),
-            'events' => $this->getEvents($this->user)
+            'events' => $this->getUserEvents($this->user)
         ];
     }
 
-    protected function getEvents(User $user): array
+    protected function getUserEvents(User $user): array
     {
         $events = [];
         /** @var Event $event */
