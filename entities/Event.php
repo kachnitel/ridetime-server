@@ -31,9 +31,10 @@ class Event
     private $date;
 
     /**
+     * @var \RideTimeServer\Entities\User
+     *
      * @ManyToOne(targetEntity="User", inversedBy="events")
      * @JoinColumn(name="created_by_id", referencedColumnName="id", nullable=false)
-     * @var \RideTimeServer\Entities\User
      */
     private $createdBy;
 
@@ -42,7 +43,7 @@ class Event
      *
      * @ManyToMany(targetEntity="User", mappedBy="events")
      */
-    protected $users;
+    private $users;
 
     /**
      * Constructor
@@ -167,6 +168,7 @@ class Event
      */
     public function addUser(\RideTimeServer\Entities\User $user)
     {
+        $user->addEvent($this);
         $this->users[] = $user;
 
         return $this;

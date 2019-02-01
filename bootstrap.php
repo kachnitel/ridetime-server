@@ -3,7 +3,7 @@
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
-require_once "vendor/autoload.php";
+require_once 'vendor/autoload.php';
 
 // Setup Doctrine
 $configuration = Setup::createAnnotationMetadataConfiguration(
@@ -23,5 +23,7 @@ $connectionParameters = [
     'driver' => 'pdo_mysql'
 ];
 
-// Get the entity manager
+/** Get the entity manager
+ * @var \Doctrine\ORM\EntityManager $entityManager
+ */
 $entityManager = EntityManager::create($connectionParameters, $configuration);

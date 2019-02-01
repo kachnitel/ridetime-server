@@ -51,19 +51,11 @@ class User
     private $coverPicUrl;
 
     /**
-     * One user can join many events     *
+     * Many users can join many events
      * @var \Doctrine\Common\Collections\ArrayCollection|Event[]
      *
      * @ManyToMany(targetEntity="Event", inversedBy="users")
-     * @JoinTable(
-     *  name="userEvent",
-     *  joinColumns={
-     *      @JoinColumn(name="user_id", referencedColumnName="id")
-     *  },
-     *  inverseJoinColumns={
-     *      @JoinColumn(name="event_id", referencedColumnName="id")
-     *  }
-     * )
+     * @JoinTable(name="users_events")
      */
     private $events;
 
