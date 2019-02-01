@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
-use RideTimeServer\Entities\User;
-use RideTimeServer\Entities\Event;
+// use RideTimeServer\Entities\User;
+// use RideTimeServer\Entities\Event;
+
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 
 /**
+ * Bootstrapped in
  * @var \Doctrine\ORM\EntityManager $entityManager
  */
 $entityManager;
@@ -86,6 +90,7 @@ $slimConfig['db'] = $secrets['db'];
  * @var \Slim\App $app
  */
 $app = new \Slim\App([ 'settings' => $slimConfig ]);
+
 $container = $app->getContainer();
 
 $container['logger'] = function($c) use ($config) {
@@ -100,6 +105,23 @@ $container['entityManager'] = function ($c) use ($entityManager) {
     return $entityManager;
 };
 
-require_once('app/routes.php');
+require_once 'app/routes.php';
+
+/**
+ * Request logger middleware
+ *
+ * @param  \Psr\Http\Message\ServerRequestInterface $request  PSR7 request
+ * @param  \Psr\Http\Message\ResponseInterface      $response PSR7 response
+ * @param  callable                                 $next     Next middleware
+ *
+ * @return \Psr\Http\Message\ResponseInterface
+ */
+$app->add(function (Request $request, Response $response, callable $next) use ($container) {
+    $container['logger']->addInfo($request->getMethod() . ' ' . $request->getUri()->getPath());
+
+    $response = $next($request, $response);
+
+    return $response;
+});
 
 $app->run();

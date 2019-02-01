@@ -10,8 +10,6 @@ use RideTimeServer\Entities\Event;
  * @var Slim\App $app
  */
 $app->post('/users', function (Request $request, Response $response) {
-    $this->logger->addInfo('POST users');
-
     $data = $request->getParsedBody();
 
     /**
@@ -50,8 +48,6 @@ $app->post('/users', function (Request $request, Response $response) {
 });
 
 $app->get('/users/{id}', function (Request $request, Response $response, array $args) {
-    $this->logger->addInfo('GET users/{id}', $args);
-
     $userId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
 
     /**

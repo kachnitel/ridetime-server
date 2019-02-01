@@ -14,8 +14,6 @@ use RideTimeServer\Entities\Event;
   * Create event
   */
 $app->post('/events', function (Request $request, Response $response) {
-    $this->logger->addInfo('POST events');
-
     $data = $request->getParsedBody();
 
     /**
@@ -49,8 +47,6 @@ $app->post('/events', function (Request $request, Response $response) {
  * Get event
  */
 $app->get('/events/{id}', function (Request $request, Response $response, array $args) {
-    $this->logger->addInfo('GET events/{id}', $args);
-
     $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
 
     /**
@@ -89,8 +85,6 @@ $app->get('/events/{id}', function (Request $request, Response $response, array 
  */
 
 $app->post('/events/{id}/members', function (Request $request, Response $response, array $args) {
-    $this->logger->addInfo('POST events/{id}/members');
-
     $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
     $event = $this->entityManager->find('RideTimeServer\Entities\Event', $eventId);
 
