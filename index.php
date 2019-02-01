@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use RideTimeServer\API\RouterLoader;
 
 /**
  * Bootstrapped in
@@ -105,7 +106,10 @@ $container['entityManager'] = function ($c) use ($entityManager) {
     return $entityManager;
 };
 
-require_once 'app/routes.php';
+// require_once 'app/routes.php';
+$router = new RouterLoader($app);
+
+$router->initRoutes();
 
 /**
  * Request logger middleware
