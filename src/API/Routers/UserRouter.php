@@ -5,13 +5,18 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 use RideTimeServer\Entities\User;
-use RideTimeServer\Entities\Event;
+// use RideTimeServer\Entities\Event;
 use RideTimeServer\API\UserEndpoint;
 
 use Slim\App;
 
 class UserRouter implements RouterInterface
 {
+    /**
+     * @var App
+     */
+    protected $app;
+
     /**
      * @param App $app
      */
@@ -22,9 +27,6 @@ class UserRouter implements RouterInterface
 
     public function initRoutes()
     {
-        /**
-         * @var Slim\App $app
-         */
         $this->app->post('/users', function (Request $request, Response $response) {
           $data = $request->getParsedBody();
 
