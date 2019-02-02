@@ -4,5 +4,9 @@
   "slim": {
     "displayErrorDetails": true,
     "addContentLengthHeader": false
+  },
+  "doctrine": {
+    "entitiesPath": "/entities",
+    "devMode": true
   }
 }

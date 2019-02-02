@@ -1,39 +1,14 @@
 <?php
 
 declare(strict_types=1);
+error_reporting(E_STRICT);
+define('ROOT_DIR', __DIR__);
 
-use Kachnitel\RideTimeServer\Database\Connector;
+use RideTimeServer\AppLoader;
 
-require_once(__DIR__ . '/vendor/autoload.php');
+require_once 'vendor/autoload.php';
 
-$configFile = file_get_contents(__DIR__ . '/config.json');
-$config = json_decode($configFile, true);
+$app = new AppLoader();
 
-$slimConfig = $config['slim'];
-
-$secretsFile = file_get_contents(__DIR__ . '/.secrets.json');
-$secrets = json_decode($secretsFile, true);
-
-$slimConfig['db'] = $secrets['db'];
-
-$app = new \Slim\App([ 'settings' => $slimConfig ]);
-$container = $app->getContainer();
-
-$container['logger'] = function($c) use ($config) {
-    $logger = new \Monolog\Logger($config['appName']);
-
-    $file_handler = new \Monolog\Handler\StreamHandler($config['logPath']);
-    $logger->pushHandler($file_handler);
-    return $logger;
-};
-
-$container['db'] = function ($c) {
-    $db = new Connector();
-    $db->init($c['settings']['db']);
-
-    return $db;
-};
-
-require_once('app/routes.php');
-
-$app->run();
+$app->initApp();
+$app->runApp();
