@@ -25,6 +25,11 @@ class UserRouter implements RouterInterface
         $this->app = $app;
     }
 
+    /**
+     * Initialize user routes
+     *
+     * @return void
+     */
     public function initRoutes()
     {
         $this->app->post('/users', function (Request $request, Response $response) {

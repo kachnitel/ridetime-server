@@ -6,7 +6,7 @@ use RideTimeServer\Entities\Event;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 
-class UserEndpoint
+class UserEndpoint implements EndpointInterface
 {
     /**
      * Doctrine entity manager
@@ -104,6 +104,12 @@ class UserEndpoint
         ];
     }
 
+    /**
+     * Find events for user
+     *
+     * @param User $user
+     * @return array
+     */
     protected function getUserEvents(User $user): array
     {
         $events = [];
