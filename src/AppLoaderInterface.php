@@ -1,5 +1,5 @@
 <?php
-namespace RideTimeServer\API;
+namespace RideTimeServer;
 
 use Slim\App;
 

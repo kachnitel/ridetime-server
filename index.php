@@ -4,7 +4,7 @@ declare(strict_types=1);
 error_reporting(E_STRICT);
 define('ROOT_DIR', __DIR__);
 
-use RideTimeServer\API\AppLoader;
+use RideTimeServer\AppLoader;
 
 require_once 'vendor/autoload.php';
 
