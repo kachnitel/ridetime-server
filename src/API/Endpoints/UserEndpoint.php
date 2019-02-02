@@ -5,6 +5,7 @@ use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Event;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
+use RideTimeServer\Entities\EntityInterface;
 
 class UserEndpoint extends Endpoint implements EndpointInterface
 {
@@ -32,11 +33,11 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             /**
              * TODO: determine the conflicting column
              */
-            throw new \Exception('Error creating user: user already exists', 409);
+            throw new \Exception('Error creating user: User already exists', 409);
         }
 
         // Return full user detail to load in app after creation
-        return $this->getDetail($user->getId());
+        return $this->getDetail($user);
     }
 
     /**
@@ -62,10 +63,8 @@ class UserEndpoint extends Endpoint implements EndpointInterface
      * @param integer $userId
      * @return object
      */
-    public function getDetail(int $userId): object
+    public function getDetail(EntityInterface $user): object
     {
-        $user = $this->getUser($userId);
-
         return (object) [
             'id' => $user->getId(),
             'name' => $user->getName(),
@@ -79,7 +78,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
      * @param integer $userId
      * @return User
      */
-    protected function getUser(int $userId): User
+    public function get(int $userId): EntityInterface
     {
         /** @var User $user */
         $user = $this->entityManager->find('RideTimeServer\Entities\User', $userId);

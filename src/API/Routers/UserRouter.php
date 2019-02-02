@@ -45,7 +45,7 @@ class UserRouter implements RouterInterface
 
             $userEndpoint = new UserEndpoint($this->entityManager);
 
-            return $response->withJson($userEndpoint->getDetail($userId));
+            return $response->withJson($userEndpoint->getDetail($userEndpoint->get($userId)));
         });
     }
 }

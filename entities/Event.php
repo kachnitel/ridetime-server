@@ -6,7 +6,7 @@ namespace RideTimeServer\Entities;
  * @Entity
  * @Table(name="event")
  */
-class Event
+class Event implements EntityInterface
 {
     /**
      * @Id

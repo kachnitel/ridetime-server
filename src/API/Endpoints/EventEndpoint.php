@@ -5,6 +5,7 @@ use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 
 use RideTimeServer\Entities\Event;
+use RideTimeServer\Entities\EntityInterface;
 
 class EventEndpoint extends Endpoint implements EndpointInterface
 {
@@ -15,7 +16,30 @@ class EventEndpoint extends Endpoint implements EndpointInterface
      */
     public function add(array $data, Logger $logger): object
     {
-        throw new \Exception('event add not implemented');
+        $event = $this->createEvent($data);
+        $this->entityManager->persist($event);
+
+        $this->entityManager->flush();
+
+        return $this->getDetail($event);
+    }
+
+    protected function createEvent(array $data): Event
+    {
+        // Ride must be created by existing user
+        $user = (new UserEndpoint($this->entityManager))
+            ->get($data['created_by']);
+
+        /** @var Event $event */
+        $event = new Event();
+        $event->setTitle($data['title']);
+        $event->setDescription($data['description']);
+        $event->setDate(new \DateTime($data['datetime']));
+        $event->setCreatedBy($user);
+        // Creating user automatically joins
+        $event->addUser($user);
+
+        return $event;
     }
 
     /**
@@ -24,14 +48,12 @@ class EventEndpoint extends Endpoint implements EndpointInterface
      * @param integer $userId
      * @return object
      */
-    public function getDetail(int $userId): object
+    public function getDetail(EntityInterface $event): object
     {
-        $event = $this->getEvent($userId);
-
         return (object) [
             'id' => $event->getId(),
             'name' => $event->getTitle(),
-            'members' => $members
+            'members' => $this->getEventMembers($event)
         ];
     }
 
@@ -41,7 +63,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
      * @param integer $eventId
      * @return Event
      */
-    protected function getEvent(int $eventId): Event
+    public function get(int $eventId): EntityInterface
     {
         /** @var Event $event */
         $event = $this->entityManager->find('RideTimeServer\Entities\Event', $eventId);
@@ -69,5 +91,28 @@ class EventEndpoint extends Endpoint implements EndpointInterface
                 'profilePic' => $user->getProfilePicUrl()
             ];
         }
+
+        return $members;
+    }
+
+    /**
+     * Returns updated members list
+     *
+     * @param Event $event
+     * @param integer $memberID
+     * @return array
+     */
+    public function addEventMember(Event $event, int $memberID): object
+    {
+        $user = $user = (new UserEndpoint($this->entityManager))
+            ->get($memberID);
+
+        $event->addUser($user);
+
+        $this->entityManager->persist($event);
+
+        $this->entityManager->flush();
+
+        return $this->getDetail($event);
     }
 }

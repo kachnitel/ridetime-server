@@ -31,33 +31,13 @@ class EventRouter implements RouterInterface
          * Create event
         */
         $this->app->post('/events', function (Request $request, Response $response) {
+            // TODO: Validate input!
             $data = $request->getParsedBody();
 
-            /**
-             * @var Event $event
-             * TODO: Validate input!
-             */
-            // Ride must be created by existing user
-            $user = $this->entityManager->find('RideTimeServer\Entities\User', $data['created_by']);
+            $eventEndpoint = new EventEndpoint($this->entityManager);
+            $event = $eventEndpoint->add($data, $this->logger);
 
-            $event = new Event();
-            $event->setTitle($data['title']);
-            $event->setDescription($data['description']);
-            $event->setDate(new DateTime($data['datetime']));
-            $event->setCreatedBy($user);
-            // Creating user automatically joins
-            $event->addUser($user);
-
-            $this->entityManager->persist($event);
-            $this->entityManager->flush();
-
-            $result = (object) [
-                'id' => $event->getId(),
-                'title' => $event->getTitle(),
-                // 'members' => $event->getUsers()
-            ];
-
-            return $response->withJson($result)->withStatus(201);
+            return $response->withJson($event)->withStatus(201);
         });
 
         /**
@@ -68,36 +48,22 @@ class EventRouter implements RouterInterface
 
             $eventEndpoint = new EventEndpoint($this->entityManager);
 
-            return $response->withJson($eventEndpoint->getDetail($eventId));
+            return $response->withJson($eventEndpoint->getDetail($eventEndpoint->get($eventId)));
         });
 
         /**
          * Add event member
          */
-
         $this->app->post('/events/{id}/members', function (Request $request, Response $response, array $args) {
             $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
-            $event = $this->entityManager->find('RideTimeServer\Entities\Event', $eventId);
 
             $data = $request->getParsedBody();
+            $userId = (int) filter_var($data['userId'], FILTER_SANITIZE_NUMBER_INT);
 
-            /**
-             * @var Event $event
-             * TODO: Validate input!
-             */
-            $user = $this->entityManager->find('RideTimeServer\Entities\User', $data['userId']);
+            $eventEndpoint = new EventEndpoint($this->entityManager);
+            $event = $eventEndpoint->get($eventId);
 
-            $event->addUser($user);
-
-            $this->entityManager->persist($event);
-
-            $this->entityManager->flush();
-
-            $result = (object) [
-                'id' => $event->getId(),
-                'title' => $event->getTitle(),
-                // 'members' => $event->getUsers()
-            ];
+            $result = $eventEndpoint->addEventMember($event, $userId);
 
             return $response->withJson($result)->withStatus(201);
         });
