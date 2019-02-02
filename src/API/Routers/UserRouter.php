@@ -5,7 +5,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 use RideTimeServer\Entities\User;
-// use RideTimeServer\Entities\Event;
 use RideTimeServer\API\Endpoints\UserEndpoint;
 
 use Slim\App;

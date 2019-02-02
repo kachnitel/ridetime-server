@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Event;
-use RideTimeServer\API\UserEndpoint;
+use RideTimeServer\API\Endpoints\EventEndpoint;
 
 use Slim\App;
 
@@ -66,35 +66,9 @@ class EventRouter implements RouterInterface
         $this->app->get('/events/{id}', function (Request $request, Response $response, array $args) {
             $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
 
-            /**
-             * @var Event $event
-             */
-            $event = $this->entityManager->find('RideTimeServer\Entities\Event', $eventId);
+            $eventEndpoint = new EventEndpoint($this->entityManager);
 
-            if (empty($event)) {
-                // TODO: Throw UserNotFoundException
-                return $response->withStatus(404)->withJson([
-                    'error' => 'Event ID:' . $eventId . ' not found'
-                ]);
-            }
-
-            $members = [];
-            /** @var User $user */
-            foreach ($event->getUsers() as $user) {
-                $members[] = (object) [
-                    'id' => $user->getId(),
-                    'name' => $user->getName(),
-                    'profilePic' => $user->getProfilePicUrl()
-                ];
-            }
-
-            $result = (object) [
-                'id' => $event->getId(),
-                'name' => $event->getTitle(),
-                'members' => $members
-            ];
-
-            return $response->withJson($result);
+            return $response->withJson($eventEndpoint->getDetail($eventId));
         });
 
         /**

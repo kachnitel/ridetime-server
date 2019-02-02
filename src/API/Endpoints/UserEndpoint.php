@@ -6,20 +6,8 @@ use RideTimeServer\Entities\Event;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 
-class UserEndpoint implements EndpointInterface
+class UserEndpoint extends Endpoint implements EndpointInterface
 {
-    /**
-     * Doctrine entity manager
-     *
-     * @var EntityManager
-     */
-    protected $entityManager;
-
-    public function __construct(EntityManager $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
     /**
      * @param array $data
      * @param Logger $logger
@@ -69,6 +57,23 @@ class UserEndpoint implements EndpointInterface
     }
 
     /**
+     * Get user detail
+     *
+     * @param integer $userId
+     * @return object
+     */
+    public function getDetail(int $userId): object
+    {
+        $user = $this->getUser($userId);
+
+        return (object) [
+            'id' => $user->getId(),
+            'name' => $user->getName(),
+            'events' => $this->getUserEvents($user)
+        ];
+    }
+
+    /**
      * Load user from database
      *
      * @param integer $userId
@@ -85,23 +90,6 @@ class UserEndpoint implements EndpointInterface
         }
 
         return $user;
-    }
-
-    /**
-     * Get user detail
-     *
-     * @param integer $userId
-     * @return object
-     */
-    public function getDetail(int $userId): object
-    {
-        $user = $this->getUser($userId);
-
-        return (object) [
-            'id' => $user->getId(),
-            'name' => $user->getName(),
-            'events' => $this->getUserEvents($user)
-        ];
     }
 
     /**
