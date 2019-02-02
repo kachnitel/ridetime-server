@@ -2,13 +2,12 @@
 namespace RideTimeServer\API;
 
 use Slim\App;
-use RideTimeServer\API\Routers\UserRouter;
-
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
-
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+
+use RideTimeServer\API\Routers\UserRouter;
 use RideTimeServer\API\Routers\EventRouter;
 
 class AppLoader implements AppLoaderInterface

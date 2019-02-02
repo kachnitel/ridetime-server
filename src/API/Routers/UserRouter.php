@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 use RideTimeServer\Entities\User;
 // use RideTimeServer\Entities\Event;
-use RideTimeServer\API\UserEndpoint;
+use RideTimeServer\API\Endpoints\UserEndpoint;
 
 use Slim\App;
 
@@ -28,61 +28,20 @@ class UserRouter implements RouterInterface
     public function initRoutes()
     {
         $this->app->post('/users', function (Request $request, Response $response) {
-          $data = $request->getParsedBody();
+            $data = $request->getParsedBody();
 
-          /**
-           * @var User $user
-           * TODO: Validate input!
-           */
-          $user = new User();
-          $user->setName($data['name']);
-          $user->setEmail($data['email']);
-          $user->setPassword(password_hash($data['password'], PASSWORD_BCRYPT));
-          $this->entityManager->persist($user);
-          try {
-              $this->entityManager->flush();
-          } catch (Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
-              $errorId = uniqid();
+            $userEndpoint = new UserEndpoint($this->entityManager);
+            $user = $userEndpoint->add($data, $this->logger);
 
-              $this->logger->addWarning('User creation failed', [
-                  'message' => $e->getMessage(),
-                  'code' => $e->getErrorCode(),
-                  'errorId' => $errorId
-              ]);
-
-              return $response->withStatus(409)->withJson([
-                  'error' => 'Error creating user',
-                  'errorId' => $errorId
-                  // TODO: determine the conflicting column
-              ]);
-          }
-
-          $result = (object) [
-              'id' => $user->getId(),
-              'name' => $user->getName(),
-          ];
-
-          return $response->withJson($result)->withStatus(201);
+            return $response->withJson($user)->withStatus(201);
         });
 
         $this->app->get('/users/{id}', function (Request $request, Response $response, array $args) {
-          $userId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
+            $userId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
 
-          /**
-           * @var User $user
-           */
-          $user = $this->entityManager->find('RideTimeServer\Entities\User', $userId);
+            $userEndpoint = new UserEndpoint($this->entityManager);
 
-          if (empty($user)) {
-              // TODO: Throw UserNotFoundException
-              return $response->withStatus(404)->withJson([
-                  'error' => 'User ID:' . $userId . ' not found'
-              ]);
-          }
-
-          $userEndpoint = new UserEndpoint($user);
-
-          return $response->withJson($userEndpoint->getUserDetail());
+            return $response->withJson($userEndpoint->getDetail($userId));
         });
     }
 }
