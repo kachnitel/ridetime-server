@@ -17,9 +17,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
     public function add(array $data, Logger $logger): object
     {
         $event = $this->createEvent($data);
-        $this->entityManager->persist($event);
-
-        $this->entityManager->flush();
+        $this->saveEntity($event);
 
         return $this->getDetail($event);
     }

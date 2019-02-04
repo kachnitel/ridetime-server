@@ -17,26 +17,8 @@ class UserEndpoint extends Endpoint implements EndpointInterface
     public function add(array $data, Logger $logger): object
     {
         $user = $this->createUser($data);
-        $this->entityManager->persist($user);
+        $this->saveEntity($user);
 
-        try {
-            $this->entityManager->flush();
-        } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
-            $errorId = uniqid();
-
-            $logger->addWarning('User creation failed', [
-                'message' => $e->getMessage(),
-                'code' => $e->getErrorCode(),
-                'errorId' => $errorId
-            ]);
-
-            /**
-             * TODO: determine the conflicting column
-             */
-            throw new \Exception('Error creating user: User already exists', 409);
-        }
-
-        // Return full user detail to load in app after creation
         return $this->getDetail($user);
     }
 

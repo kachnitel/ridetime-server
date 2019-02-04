@@ -45,10 +45,16 @@ class DefaultController
     {
         switch ($type) {
             case 'events':
-                $endpoint = new EventEndpoint($this->container->entityManager);
+                $endpoint = new EventEndpoint(
+                    $this->container->entityManager,
+                    $this->container->logger
+                );
                 break;
             case 'users':
-                $endpoint = new UserEndpoint($this->container->entityManager);
+                $endpoint = new UserEndpoint(
+                    $this->container->entityManager,
+                    $this->container->logger
+                );
                 break;
         }
 
