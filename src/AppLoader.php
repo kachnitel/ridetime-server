@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use RideTimeServer\API\Routers\UserRouter;
 use RideTimeServer\API\Routers\EventRouter;
 use RideTimeServer\API\Controllers\UserController;
+use RideTimeServer\API\Routers\DefaultRouter;
 
 class AppLoader implements AppLoaderInterface
 {
@@ -48,6 +49,7 @@ class AppLoader implements AppLoaderInterface
     protected function initRoutes()
     {
         $routers = [
+            new DefaultRouter($this->app),
             new UserRouter($this->app),
             new EventRouter($this->app)
         ];
