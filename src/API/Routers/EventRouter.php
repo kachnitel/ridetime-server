@@ -25,45 +25,13 @@ class EventRouter implements RouterInterface
 
     public function initRoutes()
     {
-        /**
-         * Create event
-        */
-        $this->app->post('/events', function (Request $request, Response $response) {
-            // TODO: Validate input!
-            $data = $request->getParsedBody();
+        /** Create event */
+        $this->app->post('/events', 'RideTimeServer\API\Controllers\EventController:add');
 
-            $eventEndpoint = new EventEndpoint($this->entityManager);
-            $event = $eventEndpoint->add($data, $this->logger);
+        /** Get event */
+        $this->app->get('/events/{id}', 'RideTimeServer\API\Controllers\EventController:get');
 
-            return $response->withJson($event)->withStatus(201);
-        });
-
-        /**
-         * Get event
-         */
-        $this->app->get('/events/{id}', function (Request $request, Response $response, array $args) {
-            $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
-
-            $eventEndpoint = new EventEndpoint($this->entityManager);
-
-            return $response->withJson($eventEndpoint->getDetail($eventEndpoint->get($eventId)));
-        });
-
-        /**
-         * Add event member
-         */
-        $this->app->post('/events/{id}/members', function (Request $request, Response $response, array $args) {
-            $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
-
-            $data = $request->getParsedBody();
-            $userId = (int) filter_var($data['userId'], FILTER_SANITIZE_NUMBER_INT);
-
-            $eventEndpoint = new EventEndpoint($this->entityManager);
-            $event = $eventEndpoint->get($eventId);
-
-            $result = $eventEndpoint->addEventMember($event, $userId);
-
-            return $response->withJson($result)->withStatus(201);
-        });
+        /** Add event member */
+        $this->app->post('/events/{id}/members', 'RideTimeServer\API\Controllers\EventController:addMember');
     }
 }

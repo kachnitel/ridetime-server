@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 use RideTimeServer\API\Routers\UserRouter;
 use RideTimeServer\API\Routers\EventRouter;
+use RideTimeServer\API\Controllers\UserController;
 
 class AppLoader implements AppLoaderInterface
 {

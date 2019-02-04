@@ -30,21 +30,7 @@ class UserRouter implements RouterInterface
      */
     public function initRoutes()
     {
-        $this->app->post('/users', function (Request $request, Response $response) {
-            $data = $request->getParsedBody();
-
-            $userEndpoint = new UserEndpoint($this->entityManager);
-            $user = $userEndpoint->add($data, $this->logger);
-
-            return $response->withJson($user)->withStatus(201);
-        });
-
-        $this->app->get('/users/{id}', function (Request $request, Response $response, array $args) {
-            $userId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
-
-            $userEndpoint = new UserEndpoint($this->entityManager);
-
-            return $response->withJson($userEndpoint->getDetail($userEndpoint->get($userId)));
-        });
+        $this->app->post('/users', 'RideTimeServer\API\Controllers\UserController:add');
+        $this->app->get('/users/{id}', 'RideTimeServer\API\Controllers\UserController:get');
     }
 }
