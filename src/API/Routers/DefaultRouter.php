@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 use Slim\App;
+use RideTimeServer\API\Controllers\DefaultController;
 
 class DefaultRouter implements RouterInterface
 {
@@ -30,7 +31,10 @@ class DefaultRouter implements RouterInterface
      */
     public function initRoutes()
     {
-        $this->app->post('/{entityType:users|events}', 'RideTimeServer\API\Controllers\DefaultController:add');
-        $this->app->get('/{entityType:users|events}/{id}', 'RideTimeServer\API\Controllers\DefaultController:get');
+        $controllerSupportedRoutes = array_keys(DefaultController::SUPPORTED_ENTITY_ENDPOINTS);
+        $routeMatch = '/{entityType:' . implode('|', $controllerSupportedRoutes) . '}';
+
+        $this->app->post($routeMatch, 'RideTimeServer\API\Controllers\DefaultController:add');
+        $this->app->get($routeMatch . '/{id}', 'RideTimeServer\API\Controllers\DefaultController:get');
     }
 }
