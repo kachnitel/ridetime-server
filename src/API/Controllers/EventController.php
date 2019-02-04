@@ -26,11 +26,26 @@ class EventController
         $data = $request->getParsedBody();
         $userId = (int) filter_var($data['userId'], FILTER_SANITIZE_NUMBER_INT);
 
-        $eventEndpoint = new EventEndpoint($this->container->entityManager);
+        $eventEndpoint = new EventEndpoint(
+            $this->container->entityManager,
+            $this->container->logger
+        );
         $event = $eventEndpoint->get($eventId);
 
         $result = $eventEndpoint->addEventMember($event, $userId);
 
         return $response->withJson($result)->withStatus(201);
+    }
+
+    public function list(Request $request, Response $response, array $args): Response
+    {
+        $eventEndpoint = new EventEndpoint(
+            $this->container->entityManager,
+            $this->container->logger
+        );
+
+        $result = $eventEndpoint->list();
+
+        return $response->withJson($result);
     }
 }

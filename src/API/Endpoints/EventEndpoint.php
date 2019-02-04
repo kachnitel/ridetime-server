@@ -25,7 +25,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
     protected function createEvent(array $data): Event
     {
         // Ride must be created by existing user
-        $user = (new UserEndpoint($this->entityManager))
+        $user = (new UserEndpoint($this->entityManager, $this->logger))
             ->get($data['created_by']);
 
         /** @var Event $event */
@@ -102,7 +102,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
      */
     public function addEventMember(Event $event, int $memberID): object
     {
-        $user = $user = (new UserEndpoint($this->entityManager))
+        $user = $user = (new UserEndpoint($this->entityManager, $this->logger))
             ->get($memberID);
 
         $event->addUser($user);
@@ -112,5 +112,17 @@ class EventEndpoint extends Endpoint implements EndpointInterface
         $this->entityManager->flush();
 
         return $this->getDetail($event);
+    }
+
+    public function list(): array
+    {
+        $events = $this->entityManager->getRepository('RideTimeServer\Entities\Event')->findAll();
+
+        $result = [];
+        foreach ($events as $event) {
+            $result[] = $this->getDetail($event);
+        }
+
+        return $result;
     }
 }

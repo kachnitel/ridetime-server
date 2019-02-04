@@ -5,7 +5,7 @@ use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 use RideTimeServer\Entities\EntityInterface;
 
-class Endpoint
+abstract class Endpoint
 {
     /**
      * Doctrine entity manager
