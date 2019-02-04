@@ -64,7 +64,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
     public function get(int $eventId): EntityInterface
     {
         /** @var Event $event */
-        $event = $this->entityManager->find('RideTimeServer\Entities\Event', $eventId);
+        $event = $this->entityManager->find(Event::class, $eventId);
 
         if (empty($event)) {
             // TODO: Throw EventNotFoundException
@@ -116,7 +116,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
 
     public function list(): array
     {
-        $events = $this->entityManager->getRepository('RideTimeServer\Entities\Event')->findAll();
+        $events = $this->entityManager->getRepository(Event::class)->findAll();
 
         $result = [];
         foreach ($events as $event) {
