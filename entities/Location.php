@@ -28,14 +28,14 @@ class Location implements EntityInterface
     /**
      * @Column(type="decimal", precision=9, scale=6)
      *
-     * @var double
+     * @var float
      */
     private $gpsLat;
 
     /**
      * @Column(type="decimal", precision=9, scale=6)
      *
-     * @var double
+     * @var float
      */
     private $gpsLon;
 
@@ -111,9 +111,9 @@ class Location implements EntityInterface
     /**
      * Get the value of gpsLat
      *
-     * @return  double
+     * @return  float
      */
-    public function getGpsLat(): double
+    public function getGpsLat(): float
     {
         return $this->gpsLat;
     }
@@ -121,11 +121,11 @@ class Location implements EntityInterface
     /**
      * Set the value of gpsLat
      *
-     * @param  double  $gpsLat
+     * @param  float  $gpsLat
      *
      * @return  self
      */
-    public function setGpsLat(double $gpsLat)
+    public function setGpsLat(float $gpsLat)
     {
         $this->gpsLat = $gpsLat;
 
@@ -135,9 +135,9 @@ class Location implements EntityInterface
     /**
      * Get the value of gpsLon
      *
-     * @return  double
+     * @return  float
      */
-    public function getGpsLon(): double
+    public function getGpsLon(): float
     {
         return $this->gpsLon;
     }
@@ -145,11 +145,11 @@ class Location implements EntityInterface
     /**
      * Set the value of gpsLon
      *
-     * @param  double  $gpsLon
+     * @param  float  $gpsLon
      *
      * @return  self
      */
-    public function setGpsLon(double $gpsLon)
+    public function setGpsLon(float $gpsLon)
     {
         $this->gpsLon = $gpsLon;
 

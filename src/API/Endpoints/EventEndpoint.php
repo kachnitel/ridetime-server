@@ -43,15 +43,26 @@ class EventEndpoint extends Endpoint implements EndpointInterface
     /**
      * Get event detail
      *
-     * @param integer $userId
+     * @param Event $event
      * @return object
      */
-    public function getDetail(EntityInterface $event): object
+    public function getDetail(Event $event): object
     {
         return (object) [
             'id' => $event->getId(),
             'name' => $event->getTitle(),
-            'members' => $this->getEventMembers($event)
+            'members' => $this->getEventMembers($event),
+            'difficulty' => $event->getDifficulty(),
+            'location' => (object) [
+                'id' => $event->getLocation()->getId(),
+                'name' => $event->getLocation()->getName(),
+                'gps' => [
+                    $event->getLocation()->getGpsLat(),
+                    $event->getLocation()->getGpsLon()
+                ]
+            ],
+            'terrain' => $event->getTerrain(),
+            'route' => $event->getRoute()
         ];
     }
 
@@ -61,7 +72,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
      * @param integer $eventId
      * @return Event
      */
-    public function get(int $eventId): EntityInterface
+    public function get(int $eventId): Event
     {
         /** @var Event $event */
         $event = $this->entityManager->find(Event::class, $eventId);

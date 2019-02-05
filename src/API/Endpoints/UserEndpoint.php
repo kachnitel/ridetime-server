@@ -42,10 +42,10 @@ class UserEndpoint extends Endpoint implements EndpointInterface
     /**
      * Get user detail
      *
-     * @param integer $userId
+     * @param User $user
      * @return object
      */
-    public function getDetail(EntityInterface $user): object
+    public function getDetail(User $user): object
     {
         return (object) [
             'id' => $user->getId(),
@@ -60,7 +60,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
      * @param integer $userId
      * @return User
      */
-    public function get(int $userId): EntityInterface
+    public function get(int $userId): User
     {
         /** @var User $user */
         $user = $this->entityManager->find(User::class, $userId);
