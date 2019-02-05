@@ -1,6 +1,7 @@
 <?php
-
 namespace RideTimeServer\Entities;
+
+use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
@@ -52,7 +53,7 @@ class User implements EntityInterface
 
     /**
      * Many users can join many events
-     * @var \Doctrine\Common\Collections\ArrayCollection|Event[]
+     * @var ArrayCollection|Event[]
      *
      * @ManyToMany(targetEntity="Event", inversedBy="users")
      * @JoinTable(name="users_events")
@@ -64,7 +65,7 @@ class User implements EntityInterface
      */
     public function __construct()
     {
-        $this->events = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->events = new ArrayCollection();
     }
 
     /**
@@ -130,7 +131,7 @@ class User implements EntityInterface
     /**
      * Get events.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @return ArrayCollection
      */
     public function getEvents()
     {

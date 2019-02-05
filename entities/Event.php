@@ -1,6 +1,7 @@
 <?php
-
 namespace RideTimeServer\Entities;
+
+use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
@@ -31,7 +32,7 @@ class Event implements EntityInterface
     private $date;
 
     /**
-     * @var \RideTimeServer\Entities\User
+     * @var User
      *
      * @ManyToOne(targetEntity="User", inversedBy="events")
      * @JoinColumn(name="created_by_id", referencedColumnName="id", nullable=false)
@@ -39,18 +40,40 @@ class Event implements EntityInterface
     private $createdBy;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection|User[]
+     * @var ArrayCollection|User[]
      *
      * @ManyToMany(targetEntity="User", mappedBy="events")
      */
     private $users;
 
     /**
+     * @Column(type="smallint")
+     */
+    private $difficulty;
+
+    /**
+     * @Column(type="smallint")
+     */
+    private $terrain;
+
+    /**
+     * @Column(type="string")
+     */
+    private $route;
+
+    /**
+     * @ManyToOne(targetEntity="Location", inversedBy="events")
+     *
+     * @var Location
+     */
+    private $location;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     /**
@@ -60,7 +83,7 @@ class Event implements EntityInterface
      */
     public function getId()
     {
-        return $this->id;
+        return (int) $this->id;
     }
 
     /**
@@ -138,11 +161,11 @@ class Event implements EntityInterface
     /**
      * Set createdBy.
      *
-     * @param \RideTimeServer\Entities\User $createdBy
+     * @param User $createdBy
      *
      * @return Event
      */
-    public function setCreatedBy(\RideTimeServer\Entities\User $createdBy)
+    public function setCreatedBy(User $createdBy)
     {
         $this->createdBy = $createdBy;
 
@@ -152,21 +175,21 @@ class Event implements EntityInterface
     /**
      * Get createdBy.
      *
-     * @return \RideTimeServer\Entities\User
+     * @return User
      */
     public function getCreatedBy()
     {
-        return $this->createdBy;
+        return (int) $this->createdBy;
     }
 
     /**
      * Add user.
      *
-     * @param \RideTimeServer\Entities\User $user
+     * @param User $user
      *
      * @return Event
      */
-    public function addUser(\RideTimeServer\Entities\User $user)
+    public function addUser(User $user)
     {
         $user->addEvent($this);
         $this->users[] = $user;
@@ -177,11 +200,11 @@ class Event implements EntityInterface
     /**
      * Remove user.
      *
-     * @param \RideTimeServer\Entities\User $user
+     * @param User $user
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeUser(\RideTimeServer\Entities\User $user)
+    public function removeUser(User $user)
     {
         return $this->users->removeElement($user);
     }
@@ -189,10 +212,94 @@ class Event implements EntityInterface
     /**
      * Get users.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @return ArrayCollection
      */
     public function getUsers()
     {
         return $this->users;
+    }
+
+    /**
+     * Get the value of difficulty
+     */
+    public function getDifficulty()
+    {
+        return (int) $this->difficulty;
+    }
+
+    /**
+     * Set the value of difficulty
+     *
+     * @return  self
+     */
+    public function setDifficulty($difficulty)
+    {
+        $this->difficulty = $difficulty;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of terrain
+     */
+    public function getTerrain()
+    {
+        return (int) $this->terrain;
+    }
+
+    /**
+     * Set the value of terrain
+     *
+     * @return  self
+     */
+    public function setTerrain($terrain)
+    {
+        $this->terrain = $terrain;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of route
+     */
+    public function getRoute()
+    {
+        return $this->route;
+    }
+
+    /**
+     * Set the value of route
+     *
+     * @return  self
+     */
+    public function setRoute($route)
+    {
+        $this->route = $route;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of location
+     *
+     * @return  Location
+     */
+    public function getLocation(): Location
+    {
+        return $this->location;
+    }
+
+    /**
+     * Set the value of location
+     *
+     * @param  Location  $location
+     *
+     * @return  self
+     */
+    public function setLocation(Location $location)
+    {
+        $this->location = $location;
+
+        return $this;
     }
 }
