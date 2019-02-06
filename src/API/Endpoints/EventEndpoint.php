@@ -22,6 +22,10 @@ class EventEndpoint extends Endpoint implements EndpointInterface
         return $this->getDetail($event);
     }
 
+    /**
+     * @param array $data
+     * @return Event
+     */
     protected function createEvent(array $data): Event
     {
         // Ride must be created by existing user
@@ -86,8 +90,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
         foreach ($event->getUsers() as $user) {
             $members[] = (object) [
                 'id' => $user->getId(),
-                'name' => $user->getName(),
-                'profilePic' => $user->getProfilePicUrl()
+                'name' => $user->getName()
             ];
         }
 

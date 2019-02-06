@@ -40,18 +40,6 @@ class User implements EntityInterface
     private $password;
 
     /**
-     * @Column(type="string", nullable=true)
-     * @var string
-     */
-    private $profilePicUrl;
-
-    /**
-     * @Column(type="string", nullable=true)
-     * @var string
-     */
-    private $coverPicUrl;
-
-    /**
      * Many users can join many events
      * @var ArrayCollection|Event[]
      *
@@ -59,6 +47,40 @@ class User implements EntityInterface
      * @JoinTable(name="users_events")
      */
     private $events;
+
+    /**
+     * @Column(type="string", length=100)
+     * @var string
+     */
+    private $hometown;
+
+    /**
+     * @Column(type="smallint")
+     * @var int
+     */
+    private $level;
+
+    /**
+     * User's favourite "style"
+     * FIXME:
+     * A little odd setting
+     * Could be better to list user's bike types
+     *
+     * @Column(type="smallint")
+     * @var int
+     */
+    private $favStyle;
+
+    /**
+     * Favourite trails
+     * TODO:
+     *   - If we have a list of trails,
+     *     make it a reference
+     *
+     * @Column(type="string")
+     * @var string
+     */
+    private $favourites;
 
     /**
      * Constructor
@@ -163,54 +185,6 @@ class User implements EntityInterface
     }
 
     /**
-     * Get the value of profilePicUrl
-     *
-     * @return  string
-     */
-    public function getProfilePicUrl()
-    {
-        return $this->profilePicUrl;
-    }
-
-    /**
-     * Set the value of profilePicUrl
-     *
-     * @param  string  $profilePicUrl
-     *
-     * @return  self
-     */
-    public function setProfilePicUrl(string $profilePicUrl)
-    {
-        $this->profilePicUrl = $profilePicUrl;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of coverPicUrl
-     *
-     * @return  string
-     */
-    public function getCoverPicUrl()
-    {
-        return $this->coverPicUrl;
-    }
-
-    /**
-     * Set the value of coverPicUrl
-     *
-     * @param  string  $coverPicUrl
-     *
-     * @return  self
-     */
-    public function setCoverPicUrl(string $coverPicUrl)
-    {
-        $this->coverPicUrl = $coverPicUrl;
-
-        return $this;
-    }
-
-    /**
      * Get the value of phone
      *
      * @return  string
@@ -254,6 +228,94 @@ class User implements EntityInterface
     public function setPassword(string $password)
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of hometown
+     *
+     * @return  string
+     */
+    public function getHometown(): string
+    {
+        return $this->hometown;
+    }
+
+    /**
+     * Set the value of hometown
+     *
+     * @param  string  $hometown
+     *
+     * @return  self
+     */
+    public function setHometown(string $hometown)
+    {
+        $this->hometown = $hometown;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of level
+     *
+     * @return  int
+     */
+    public function getLevel(): int
+    {
+        return $this->level;
+    }
+
+    /**
+     * Set the value of level
+     *
+     * @param  int  $level
+     *
+     * @return  self
+     */
+    public function setLevel(int $level)
+    {
+        $this->level = $level;
+
+        return $this;
+    }
+
+    /**
+     * @return  int
+     */
+    public function getFavStyle(): int
+    {
+        return $this->favStyle;
+    }
+
+    /**
+     * @param  int  $favStyle
+     *
+     * @return  self
+     */
+    public function setFavStyle(int $favStyle)
+    {
+        $this->favStyle = $favStyle;
+
+        return $this;
+    }
+
+    /**
+     * @return  string
+     */
+    public function getFavourites(): string
+    {
+        return $this->favourites;
+    }
+
+    /**
+     * @param  string  $favourites
+     *
+     * @return  self
+     */
+    public function setFavourites(string $favourites)
+    {
+        $this->favourites = $favourites;
 
         return $this;
     }

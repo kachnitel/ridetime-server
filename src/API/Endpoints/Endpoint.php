@@ -67,6 +67,14 @@ abstract class Endpoint
         return $entity;
     }
 
+    /**
+     * Second argument should accept EntityInterface as a parameter
+     * and return an object to return in the Response
+     *
+     * @param string $entityClass
+     * @param callable $entityExtractor
+     * @return array
+     */
     protected function listEntities(string $entityClass, callable $entityExtractor): array
     {
         $entities = $this->entityManager->getRepository($entityClass)->findAll();

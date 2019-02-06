@@ -50,7 +50,11 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         return (object) [
             'id' => $user->getId(),
             'name' => $user->getName(),
-            'events' => $this->getUserEvents($user)
+            'city' => $user->getHometown(),
+            'events' => $this->getUserEvents($user),
+            'level' => $user->getLevel(),
+            'preferred' => $user->getFavStyle(),
+            'favourites' => $user->getFavourites()
         ];
     }
 
