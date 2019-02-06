@@ -26,7 +26,8 @@ abstract class Endpoint
     }
 
     /**
-     *
+     * @param EntityInterface $entity
+     * @return void
      */
     protected function saveEntity(EntityInterface $entity)
     {
@@ -48,5 +49,33 @@ abstract class Endpoint
              */
             throw new \Exception('Error: ' . $entityClassName . ' already exists', 409);
         }
+    }
+
+    /**
+     * @param string $entityClass
+     * @param integer $id
+     * @return EntityInterface
+     */
+    protected function getEntity(string $entityClass, int $id): EntityInterface
+    {
+        $entity = $this->entityManager->find($entityClass, $id);
+
+        if (empty($entity)) {
+            throw new \Exception($entityClass . ' ID:' . $id . ' not found', 404);
+        }
+
+        return $entity;
+    }
+
+    protected function listEntities(string $entityClass, callable $entityExtractor): array
+    {
+        $entities = $this->entityManager->getRepository($entityClass)->findAll();
+
+        $result = [];
+        foreach ($entities as $entity) {
+            $result[] = $entityExtractor($entity);
+        }
+
+        return $result;
     }
 }

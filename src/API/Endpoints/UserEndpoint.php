@@ -62,15 +62,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
      */
     public function get(int $userId): User
     {
-        /** @var User $user */
-        $user = $this->entityManager->find(User::class, $userId);
-
-        if (empty($user)) {
-            // TODO: Throw UserNotFoundException
-            throw new \Exception('User ID:' . $userId . ' not found', 404);
-        }
-
-        return $user;
+        return $this->getEntity(User::class, $userId);
     }
 
     /**

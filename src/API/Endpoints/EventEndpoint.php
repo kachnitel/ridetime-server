@@ -67,22 +67,12 @@ class EventEndpoint extends Endpoint implements EndpointInterface
     }
 
     /**
-     * FIXME: WET as it gets.
-     *
      * @param integer $eventId
      * @return Event
      */
     public function get(int $eventId): Event
     {
-        /** @var Event $event */
-        $event = $this->entityManager->find(Event::class, $eventId);
-
-        if (empty($event)) {
-            // TODO: Throw EventNotFoundException
-            throw new \Exception('Event ID:' . $userId . ' not found', 404);
-        }
-
-        return $event;
+        return $this->getEntity(Event::class, $eventId);
     }
 
     /**
@@ -125,15 +115,11 @@ class EventEndpoint extends Endpoint implements EndpointInterface
         return $this->getDetail($event);
     }
 
+    /**
+     * @return array[Event]
+     */
     public function list(): array
     {
-        $events = $this->entityManager->getRepository(Event::class)->findAll();
-
-        $result = [];
-        foreach ($events as $event) {
-            $result[] = $this->getDetail($event);
-        }
-
-        return $result;
+        return $this->listEntities(Event::class, [$this, 'getDetail']);
     }
 }
