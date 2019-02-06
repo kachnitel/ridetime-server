@@ -49,6 +49,20 @@ class User implements EntityInterface
     private $events;
 
     /**
+     * The people who I think are my friends.
+     *
+     * @OneToMany(targetEntity="Friendship", mappedBy="user")
+     */
+    private $friends;
+
+    /**
+     * The people who think that I’m their friend.
+     *
+     * @OneToMany(targetEntity="Friendship", mappedBy="friend")
+     */
+    private $friendsWithMe;
+
+    /**
      * @Column(type="string", length=100)
      * @var string
      */
@@ -61,7 +75,7 @@ class User implements EntityInterface
     private $level;
 
     /**
-     * User's favourite "style"
+     * User's favourite terrain
      * FIXME:
      * A little odd setting
      * Could be better to list user's bike types
@@ -69,7 +83,7 @@ class User implements EntityInterface
      * @Column(type="smallint")
      * @var int
      */
-    private $favStyle;
+    private $favTerrain;
 
     /**
      * Favourite trails
@@ -88,6 +102,8 @@ class User implements EntityInterface
     public function __construct()
     {
         $this->events = new ArrayCollection();
+        $this->friends = new ArrayCollection();
+        $this->friendsWithMe = new ArrayCollection();
     }
 
     /**
@@ -158,6 +174,48 @@ class User implements EntityInterface
     public function getEvents()
     {
         return $this->events;
+    }
+
+    /**
+     * @param Friendship $friendship
+     * @return void
+     */
+    public function addFriendship(Friendship $friendship)
+    {
+        $this->friends->add($friendship);
+        $friendship->friend->addFriendshipWithMe($friendship);
+    }
+
+    /**
+     * @param Friendship $friendship
+     * @return void
+     */
+    public function addFriendshipWithMe(Friendship $friendship)
+    {
+        $this->friendsWithMe->add($friendship);
+    }
+
+    /**
+     * @param User $friend
+     * @return void
+     */
+    public function addFriend(User $friend)
+    {
+        $fs = new Friendship();
+        $fs->setUser($this);
+        $fs->setFriend($friend);
+        // set defaults
+        $fs->setStatus(0);
+
+        $this->addFriendship($fs);
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getFriendships()
+    {
+        return $this->friends;
     }
 
     /**
@@ -283,19 +341,19 @@ class User implements EntityInterface
     /**
      * @return  int
      */
-    public function getFavStyle(): int
+    public function getFavTerrain(): int
     {
-        return $this->favStyle;
+        return $this->favTerrain;
     }
 
     /**
-     * @param  int  $favStyle
+     * @param  int  $favTerrain
      *
      * @return  self
      */
-    public function setFavStyle(int $favStyle)
+    public function setFavTerrain(int $favTerrain)
     {
-        $this->favStyle = $favStyle;
+        $this->favTerrain = $favTerrain;
 
         return $this;
     }

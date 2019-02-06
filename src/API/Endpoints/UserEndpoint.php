@@ -3,6 +3,7 @@ namespace RideTimeServer\API\Endpoints;
 
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Event;
+use RideTimeServer\Entities\Friendship;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 use RideTimeServer\Entities\EntityInterface;
@@ -52,8 +53,9 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             'name' => $user->getName(),
             'city' => $user->getHometown(),
             'events' => $this->getUserEvents($user),
+            'friends' => $this->getFriends($user),
             'level' => $user->getLevel(),
-            'preferred' => $user->getFavStyle(),
+            'preferred' => $user->getFavTerrain(),
             'favourites' => $user->getFavourites()
         ];
     }
@@ -88,5 +90,20 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         }
 
         return $events;
+    }
+
+    protected function getFriends(User $user): array
+    {
+        $friends = [];
+        /** @var Friendship $friendship */
+        foreach ($user->getFriendships() as $friendship) {
+            $friend = $friendship->getFriend();
+            $friends[] = (object) [
+                'id' => $friend->getId(),
+                'name' => $friend->getName()
+            ];
+        }
+
+        return $friends;
     }
 }
