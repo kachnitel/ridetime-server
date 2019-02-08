@@ -61,7 +61,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
     {
         return (object) [
             'id' => $event->getId(),
-            'name' => $event->getTitle(),
+            'title' => $event->getTitle(),
             'description' => $event->getDescription(),
             'members' => $this->getEventMembers($event),
             'difficulty' => $event->getDifficulty(),
