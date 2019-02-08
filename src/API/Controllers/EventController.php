@@ -36,16 +36,4 @@ class EventController
 
         return $response->withJson($result)->withStatus(201);
     }
-
-    public function list(Request $request, Response $response, array $args): Response
-    {
-        $eventEndpoint = new EventEndpoint(
-            $this->container->entityManager,
-            $this->container->logger
-        );
-
-        $result = $eventEndpoint->list();
-
-        return $response->withJson($result);
-    }
 }

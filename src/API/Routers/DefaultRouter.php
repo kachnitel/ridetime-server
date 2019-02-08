@@ -25,7 +25,7 @@ class DefaultRouter implements RouterInterface
 
     /**
      * Initialize user routes
-     * entityType:users|events
+     * entityType:users|events|locations
      *
      * @return void
      */
@@ -34,7 +34,11 @@ class DefaultRouter implements RouterInterface
         $controllerSupportedRoutes = array_keys(DefaultController::SUPPORTED_ENTITY_ENDPOINTS);
         $routeMatch = '/{entityType:' . implode('|', $controllerSupportedRoutes) . '}';
 
+        /** Post a new entity */
         $this->app->post($routeMatch, 'RideTimeServer\API\Controllers\DefaultController:add');
+        /** Get entity by ID */
         $this->app->get($routeMatch . '/{id}', 'RideTimeServer\API\Controllers\DefaultController:get');
+        /** get a list of entities */
+        $this->app->get($routeMatch, 'RideTimeServer\API\Controllers\DefaultController:list');
     }
 }

@@ -30,7 +30,10 @@ class EventEndpoint extends Endpoint implements EndpointInterface
     {
         // Ride must be created by existing user
         $user = (new UserEndpoint($this->entityManager, $this->logger))
-            ->get($data['created_by']);
+            ->get($data['createdBy']);
+
+        $location = (new LocationEndpoint($this->entityManager, $this->logger))
+            ->get($data['locationId']);
 
         /** @var Event $event */
         $event = new Event();
@@ -38,6 +41,10 @@ class EventEndpoint extends Endpoint implements EndpointInterface
         $event->setDescription($data['description']);
         $event->setDate(new \DateTime($data['datetime']));
         $event->setCreatedBy($user);
+        $event->setDifficulty($data['difficulty']);
+        $event->setRoute($data['route']);
+        $event->setTerrain($data['terrain']);
+        $event->setLocation($location);
         // Creating user automatically joins
         $event->addUser($user);
 
@@ -55,6 +62,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
         return (object) [
             'id' => $event->getId(),
             'name' => $event->getTitle(),
+            'description' => $event->getDescription(),
             'members' => $this->getEventMembers($event),
             'difficulty' => $event->getDifficulty(),
             'location' => (object) [
@@ -66,7 +74,8 @@ class EventEndpoint extends Endpoint implements EndpointInterface
                 ]
             ],
             'terrain' => $event->getTerrain(),
-            'route' => $event->getRoute()
+            'route' => $event->getRoute(),
+            'datetime' => $event->getDate()->getTimestamp()
         ];
     }
 

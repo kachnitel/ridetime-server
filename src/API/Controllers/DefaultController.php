@@ -19,7 +19,8 @@ class DefaultController
      */
     const SUPPORTED_ENTITY_ENDPOINTS = [
         'events' => 'EventEndpoint',
-        'users' => 'UserEndpoint'
+        'users' => 'UserEndpoint',
+        'locations' => 'LocationEndpoint'
     ];
 
     public function __construct(ContainerInterface $container)
@@ -59,11 +60,20 @@ class DefaultController
         return $response->withJson($event)->withStatus(201);
     }
 
+    public function list(Request $request, Response $response, array $args): Response
+    {
+        $endpoint = $this->getEndpointForEntity($args['entityType']);
+
+        $result = $endpoint->list();
+
+        return $response->withJson($result);
+    }
+
     /**
      * Returns an EndpointInterface derived class
      * based on the $type
      *
-     * @param string $type oneOf[events|users]
+     * @param string $type oneOf[events|users|locations]
      * @return EndpointInterface
      */
     protected function getEndpointForEntity(string $type): EndpointInterface

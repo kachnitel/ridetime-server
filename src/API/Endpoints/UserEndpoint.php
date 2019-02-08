@@ -35,6 +35,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
 
         $user->setName($data['name']);
         $user->setEmail($data['email']);
+        $user->setHometown($data['hometown']);
         $user->setPassword(password_hash($data['password'], PASSWORD_BCRYPT));
 
         return $user;
@@ -51,7 +52,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         return (object) [
             'id' => $user->getId(),
             'name' => $user->getName(),
-            'city' => $user->getHometown(),
+            'hometown' => $user->getHometown(),
             'events' => $this->getUserEvents($user),
             'friends' => $this->getFriends($user),
             'level' => $user->getLevel(),
