@@ -52,7 +52,7 @@ class Event implements EntityInterface
     private $difficulty;
 
     /**
-     * @Column(type="smallint")
+     * @Column(type="string")
      */
     private $terrain;
 
