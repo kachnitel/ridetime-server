@@ -25,5 +25,9 @@ class EventRouter implements RouterInterface
     {
         /** Add event member */
         $this->app->post('/events/{id}/members', 'RideTimeServer\API\Controllers\EventController:addMember');
+        /** List events */
+        $this->app->get('/events', 'RideTimeServer\API\Controllers\EventController:list');
+        $this->app->get('/events/{id}', 'RideTimeServer\API\Controllers\EventController:get');
+        $this->app->post('/events', 'RideTimeServer\API\Controllers\EventController:add');
     }
 }

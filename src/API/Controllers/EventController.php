@@ -3,22 +3,11 @@ namespace RideTimeServer\API\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Container\ContainerInterface;
-use Doctrine\ORM\EntityManager;
 use RideTimeServer\API\Endpoints\EventEndpoint;
+use RideTimeServer\API\Endpoints\EndpointInterface;
 
-class EventController
+class EventController extends BaseController
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
-
     public function addMember(Request $request, Response $response, array $args): Response
     {
         $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
@@ -26,14 +15,19 @@ class EventController
         $data = $request->getParsedBody();
         $userId = (int) filter_var($data['userId'], FILTER_SANITIZE_NUMBER_INT);
 
-        $eventEndpoint = new EventEndpoint(
-            $this->container->entityManager,
-            $this->container->logger
-        );
+        $eventEndpoint = $this->getEndpoint();
         $event = $eventEndpoint->get($eventId);
 
         $result = $eventEndpoint->addEventMember($event, $userId);
 
         return $response->withJson($result)->withStatus(201);
+    }
+
+    protected function getEndpoint(): EndpointInterface
+    {
+        return new EventEndpoint(
+            $this->container->entityManager,
+            $this->container->logger
+        );
     }
 }

@@ -28,5 +28,9 @@ class UserRouter implements RouterInterface
      */
     public function initRoutes()
     {
+        /** List users */
+        // $this->app->get('/users', 'RideTimeServer\API\Controllers\UserController:list');
+        $this->app->get('/users/{id}', 'RideTimeServer\API\Controllers\UserController:get');
+        $this->app->post('/users', 'RideTimeServer\API\Controllers\UserController:add');
     }
 }

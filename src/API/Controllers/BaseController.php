@@ -7,21 +7,12 @@ use Psr\Container\ContainerInterface;
 use Doctrine\ORM\EntityManager;
 use RideTimeServer\API\Endpoints\EndpointInterface;
 
-class DefaultController
+abstract class BaseController
 {
     /**
      * @var ContainerInterface
      */
     protected $container;
-
-    /**
-     * Classes have to be within RideTimeServer\API\Endpoints
-     */
-    const SUPPORTED_ENTITY_ENDPOINTS = [
-        'events' => 'EventEndpoint',
-        'users' => 'UserEndpoint',
-        'locations' => 'LocationEndpoint'
-    ];
 
     public function __construct(ContainerInterface $container)
     {
@@ -38,7 +29,7 @@ class DefaultController
     {
         $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
 
-        $endpoint = $this->getEndpointForEntity($args['entityType']);
+        $endpoint = $this->getEndpoint();
 
         return $response->withJson($endpoint->getDetail($endpoint->get($eventId)));
     }
@@ -54,7 +45,7 @@ class DefaultController
         // TODO: Validate input!
         $data = $request->getParsedBody();
 
-        $endpoint = $this->getEndpointForEntity($args['entityType']);
+        $endpoint = $this->getEndpoint();
         $event = $endpoint->add($data, $this->container->logger);
 
         return $response->withJson($event)->withStatus(201);
@@ -62,7 +53,7 @@ class DefaultController
 
     public function list(Request $request, Response $response, array $args): Response
     {
-        $endpoint = $this->getEndpointForEntity($args['entityType']);
+        $endpoint = $this->getEndpoint();
 
         $result = $endpoint->list();
 
@@ -71,23 +62,8 @@ class DefaultController
 
     /**
      * Returns an EndpointInterface derived class
-     * based on the $type
      *
-     * @param string $type oneOf[events|users|locations]
      * @return EndpointInterface
      */
-    protected function getEndpointForEntity(string $type): EndpointInterface
-    {
-        if (!array_key_exists($type, self::SUPPORTED_ENTITY_ENDPOINTS)) {
-            throw new \Exception('Endpoint for type ' . $type . ' is not defined');
-        }
-
-        $class = '\\RideTimeServer\\API\\Endpoints\\' . self::SUPPORTED_ENTITY_ENDPOINTS[$type];
-        $endpoint = new $class(
-            $this->container->entityManager,
-            $this->container->logger
-        );
-
-        return $endpoint;
-    }
+    abstract protected function getEndpoint(): EndpointInterface;
 }

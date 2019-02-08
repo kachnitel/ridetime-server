@@ -28,14 +28,14 @@ class LocationEndpoint extends Endpoint implements EndpointInterface
         ];
     }
 
-    /**
-     * @param integer $locationId
-     * @return Location
-     */
-    public function get(int $locationId): Location
-    {
-        return $this->getEntity(Location::class, $locationId);
-    }
+    // /**
+    //  * @param integer $locationId
+    //  * @return Location
+    //  */
+    // public function get(int $locationId): Location
+    // {
+    //     return $this->getEntity(Location::class, $locationId);
+    // }
 
     /**
      * @return array[Location]
