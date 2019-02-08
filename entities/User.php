@@ -69,7 +69,7 @@ class User implements EntityInterface
     private $hometown;
 
     /**
-     * @Column(type="smallint")
+     * @Column(type="smallint", nullable=true)
      * @var int
      */
     private $level;
@@ -80,7 +80,7 @@ class User implements EntityInterface
      * A little odd setting
      * Could be better to list user's bike types
      *
-     * @Column(type="smallint")
+     * @Column(type="smallint", nullable=true)
      * @var int
      */
     private $favTerrain;
@@ -91,7 +91,7 @@ class User implements EntityInterface
      *   - If we have a list of trails,
      *     make it a reference
      *
-     * @Column(type="string")
+     * @Column(type="string", nullable=true)
      * @var string
      */
     private $favourites;
@@ -319,7 +319,7 @@ class User implements EntityInterface
      *
      * @return  int
      */
-    public function getLevel(): int
+    public function getLevel(): ?int
     {
         return $this->level;
     }
@@ -341,7 +341,7 @@ class User implements EntityInterface
     /**
      * @return  int
      */
-    public function getFavTerrain(): int
+    public function getFavTerrain(): ?int
     {
         return $this->favTerrain;
     }
@@ -361,7 +361,7 @@ class User implements EntityInterface
     /**
      * @return  string
      */
-    public function getFavourites(): string
+    public function getFavourites(): ?string
     {
         return $this->favourites;
     }
