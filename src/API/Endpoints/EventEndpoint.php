@@ -2,6 +2,7 @@
 namespace RideTimeServer\API\Endpoints;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Collections\Criteria;
 use Monolog\Logger;
 
 use RideTimeServer\Entities\Event;
@@ -132,6 +133,13 @@ class EventEndpoint extends Endpoint implements EndpointInterface
      */
     public function list(): array
     {
-        return $this->listEntities(Event::class, [$this, 'getDetail']);
+
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->gt('date', new \DateTime()))
+            ->orderBy(array('date' => Criteria::ASC))
+            ->setFirstResult(0)
+            ->setMaxResults(20);
+
+        return $this->listEntities(Event::class, [$this, 'getDetail'], $criteria);
     }
 }

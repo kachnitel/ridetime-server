@@ -2,6 +2,8 @@
 namespace RideTimeServer\API\Endpoints;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\ArrayCollection;
 use Monolog\Logger;
 use RideTimeServer\Entities\EntityInterface;
 
@@ -75,9 +77,13 @@ abstract class Endpoint
      * @param callable $entityExtractor
      * @return array
      */
-    protected function listEntities(string $entityClass, callable $entityExtractor): array
+    protected function listEntities(string $entityClass, callable $entityExtractor, Criteria $searchCriteria = null): array
     {
         $entities = $this->entityManager->getRepository($entityClass)->findAll();
+
+        if ($searchCriteria) {
+            $entities = (new ArrayCollection($entities))->matching($searchCriteria);
+        }
 
         $result = [];
         foreach ($entities as $entity) {
