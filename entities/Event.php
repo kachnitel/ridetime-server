@@ -242,7 +242,7 @@ class Event implements EntityInterface
     /**
      * Get the value of terrain
      */
-    public function getTerrain()
+    public function getTerrain(): string
     {
         return $this->terrain;
     }
