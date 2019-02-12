@@ -32,7 +32,7 @@ class AppLoader implements AppLoaderInterface
 
         $this->initRoutes();
         $this->initContainer($config, $secrets);
-        $this->initLoggerMiddleware();
+        $this->initMiddleware($secrets);
     }
 
     public function runApp()
@@ -40,29 +40,36 @@ class AppLoader implements AppLoaderInterface
         $this->app->run();
     }
 
+    /**
+     * @return void
+     */
     protected function initRoutes()
     {
-        $this->initApiRoutes();
-        // $this->initAuthRoutes();
+        (new Routers\AuthRouter($this->app))->initRoutes();
+
+        // FIXME:
+        $appLoader = $this;
+        $this->app->group('/api', function () use ($appLoader) {
+            $appLoader->initApiRoutes();
+        });
     }
 
     /**
+     * Add routes with Auth Middleware
+     *
      * @return void
      */
     protected function initApiRoutes()
     {
-        $app = $this->app;
-        $this->app->group('/api', function () use ($app) {
-            $routers = [
-                new Routers\UserRouter($app),
-                new Routers\EventRouter($app),
-                new Routers\LocationRouter($app)
-            ];
+        $routers = [
+            new Routers\UserRouter($this->app),
+            new Routers\EventRouter($this->app),
+            new Routers\LocationRouter($this->app)
+        ];
 
-            foreach ($routers as $router) {
-                $router->initRoutes();
-            }
-        });
+        foreach ($routers as $router) {
+            $router->initRoutes();
+        }
     }
 
     /**
@@ -128,7 +135,7 @@ class AppLoader implements AppLoaderInterface
         };
     }
 
-    protected function initLoggerMiddleware()
+    protected function initMiddleware($secrets)
     {
         $container = $this->app->getContainer();
 
@@ -148,6 +155,13 @@ class AppLoader implements AppLoaderInterface
 
             return $response;
         });
+
+        $this->app->add(new \Tuupola\Middleware\JwtAuthentication([
+            'secret' => $secrets['jwt']['secretToken'],
+            // 'path' => '/api',
+            'algorithm' => ['HS256'],
+            'logger' => $container['logger']
+        ]));
     }
 
     /**

@@ -6,7 +6,8 @@
         "ext-pdo": "*",
         "slim/slim": "^3.0",
         "monolog/monolog": "^1.24",
-        "doctrine/orm": "^2.6"
+        "doctrine/orm": "^2.6",
+        "tuupola/slim-jwt-auth": "^3.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0"

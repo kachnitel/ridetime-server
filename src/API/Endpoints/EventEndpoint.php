@@ -116,7 +116,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
      */
     public function addEventMember(Event $event, int $memberID): object
     {
-        $user = $user = (new UserEndpoint($this->entityManager, $this->logger))
+        $user = (new UserEndpoint($this->entityManager, $this->logger))
             ->get($memberID);
 
         $event->addUser($user);

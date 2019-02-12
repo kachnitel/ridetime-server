@@ -93,6 +93,12 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         return $events;
     }
 
+    /**
+     * Get friends list for an user
+     *
+     * @param User $user
+     * @return array
+     */
     protected function getFriends(User $user): array
     {
         $friends = [];
@@ -106,5 +112,15 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         }
 
         return $friends;
+    }
+
+    public function findBy(string $attribute, string $value): User
+    {
+        if ($attribute === 'email') {
+            // TODO: check it exists!
+            return $this->entityManager->getRepository(User::class)->findByEmail($value)[0];
+        } else {
+            throw new \Exception('User search by ' . $attribute . ' not supported');
+        }
     }
 }
