@@ -133,7 +133,6 @@ class EventEndpoint extends Endpoint implements EndpointInterface
      */
     public function list(): array
     {
-
         $criteria = Criteria::create()
             ->where(Criteria::expr()->gt('date', new \DateTime()))
             ->orderBy(array('date' => Criteria::ASC))

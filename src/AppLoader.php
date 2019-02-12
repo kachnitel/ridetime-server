@@ -32,7 +32,7 @@ class AppLoader implements AppLoaderInterface
 
         $this->initRoutes();
         $this->initContainer($config, $secrets);
-        $this->initMiddleware();
+        $this->initLoggerMiddleware();
     }
 
     public function runApp()
@@ -40,20 +40,29 @@ class AppLoader implements AppLoaderInterface
         $this->app->run();
     }
 
+    protected function initRoutes()
+    {
+        $this->initApiRoutes();
+        // $this->initAuthRoutes();
+    }
+
     /**
      * @return void
      */
-    protected function initRoutes()
+    protected function initApiRoutes()
     {
-        $routers = [
-            new Routers\UserRouter($this->app),
-            new Routers\EventRouter($this->app),
-            new Routers\LocationRouter($this->app)
-        ];
+        $app = $this->app;
+        $this->app->group('/api', function () use ($app) {
+            $routers = [
+                new Routers\UserRouter($app),
+                new Routers\EventRouter($app),
+                new Routers\LocationRouter($app)
+            ];
 
-        foreach ($routers as $router) {
-            $router->initRoutes();
-        }
+            foreach ($routers as $router) {
+                $router->initRoutes();
+            }
+        });
     }
 
     /**
@@ -119,7 +128,7 @@ class AppLoader implements AppLoaderInterface
         };
     }
 
-    protected function initMiddleware()
+    protected function initLoggerMiddleware()
     {
         $container = $this->app->getContainer();
 
