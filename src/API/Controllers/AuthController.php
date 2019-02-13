@@ -12,9 +12,10 @@ class AuthController extends BaseController
     {
         $token = $request->getAttribute('token');
         $userEmail = filter_var($token['email'], FILTER_SANITIZE_EMAIL);
-        $user = $this->getEndpoint()->findBy('email', $userEmail); // TODO:
-        $userDetail = $this->getEndpoint()->getDetail($user);
-        return $response->withJson($userDetail);
+
+        $user = $this->getEndpoint()->findBy('email', $userEmail);
+
+        return $response->withJson($this->getEndpoint()->getDetail($user));
     }
 
     protected function getEndpoint(): EndpointInterface

@@ -8,5 +8,8 @@
   "doctrine": {
     "entitiesPath": "/entities",
     "devMode": true
+  },
+  "auth": {
+    "publicKeyUrl": "https://ridetime.auth0.com/.well-known/jwks.json"
   }
 }

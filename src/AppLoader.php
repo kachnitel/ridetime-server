@@ -8,6 +8,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 use RideTimeServer\API\Routers;
+use RideTimeServer\API\Middleware\AuthMiddleware;
 
 class AppLoader implements AppLoaderInterface
 {
@@ -32,7 +33,7 @@ class AppLoader implements AppLoaderInterface
 
         $this->initRoutes();
         $this->initContainer($config, $secrets);
-        $this->initMiddleware($secrets);
+        $this->initMiddleware($config);
     }
 
     public function runApp()
@@ -135,7 +136,7 @@ class AppLoader implements AppLoaderInterface
         };
     }
 
-    protected function initMiddleware($secrets)
+    protected function initMiddleware(array $config)
     {
         $container = $this->app->getContainer();
 
@@ -156,12 +157,8 @@ class AppLoader implements AppLoaderInterface
             return $response;
         });
 
-        $this->app->add(new \Tuupola\Middleware\JwtAuthentication([
-            'secret' => $secrets['jwt']['secretToken'],
-            // 'path' => '/api',
-            'algorithm' => ['HS256'],
-            'logger' => $container['logger']
-        ]));
+        $authMiddleware = new AuthMiddleware($container, $config);
+        $this->app->add($authMiddleware->getMiddleware());
     }
 
     /**
