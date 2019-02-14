@@ -15,7 +15,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
      * @param Logger $logger
      * @return object
      */
-    public function add(array $data, Logger $logger): object
+    public function add(array $data): object
     {
         $event = $this->createEvent($data);
         $this->saveEntity($event);
@@ -43,9 +43,12 @@ class EventEndpoint extends Endpoint implements EndpointInterface
         $event->setDate(new \DateTime($data['datetime']));
         $event->setCreatedBy($user);
         $event->setDifficulty($data['difficulty']);
-        $event->setRoute($data['route']);
         $event->setTerrain($data['terrain']);
         $event->setLocation($location);
+        if (isset($data['route'])) {
+            $event->setRoute($data['route']);
+        }
+
         // Creating user automatically joins
         $event->addUser($user);
 

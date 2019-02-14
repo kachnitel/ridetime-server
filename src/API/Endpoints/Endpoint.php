@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\ArrayCollection;
 use Monolog\Logger;
 use RideTimeServer\Entities\EntityInterface;
+use RideTimeServer\Exception\EntityNotFoundException;
 
 abstract class Endpoint
 {
@@ -63,7 +64,7 @@ abstract class Endpoint
         $entity = $this->entityManager->find($entityClass, $id);
 
         if (empty($entity)) {
-            throw new \Exception($entityClass . ' ID:' . $id . ' not found', 404);
+            throw new EntityNotFoundException($entityClass . ' ID:' . $id . ' not found', 404);
         }
 
         return $entity;

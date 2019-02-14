@@ -57,7 +57,7 @@ class Event implements EntityInterface
     private $terrain;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", nullable=true)
      */
     private $route;
 
