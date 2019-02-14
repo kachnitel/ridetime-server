@@ -7,15 +7,17 @@ use RideTimeServer\Entities\Friendship;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 use RideTimeServer\Entities\EntityInterface;
+use Doctrine\ORM\EntityNotFoundException;
 
 class UserEndpoint extends Endpoint implements EndpointInterface
 {
     /**
+     * FIXME: should return User rather than detail
      * @param array $data
      * @param Logger $logger
      * @return object
      */
-    public function add(array $data, Logger $logger): object
+    public function add(array $data): object
     {
         $user = $this->createUser($data);
         $this->saveEntity($user);
@@ -35,8 +37,22 @@ class UserEndpoint extends Endpoint implements EndpointInterface
 
         $user->setName($data['name']);
         $user->setEmail($data['email']);
-        $user->setHometown($data['hometown']);
-        $user->setPassword(password_hash($data['password'], PASSWORD_BCRYPT));
+        if (!empty($data['hometown'])) {
+            $user->setHometown($data['hometown']);
+        }
+        if (!empty($data['picture'])) {
+            $user->setPicture($data['picture']);
+        }
+        if (!empty($data['sub'])) {
+            if (!in_array($data['sub'], $user->getAuthIds())) {
+                $user->addAuthId($data['sub']);
+            }
+        }
+        if (!empty($data['authId'])) {
+            if (!in_array($data['authId'], $user->getAuthIds())) {
+                $user->addAuthId($data['authId']);
+            }
+        }
 
         return $user;
     }
@@ -57,7 +73,9 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             'friends' => $this->getFriends($user),
             'level' => $user->getLevel(),
             'preferred' => $user->getFavTerrain(),
-            'favourites' => $user->getFavourites()
+            'favourites' => $user->getFavourites(),
+            'picture' => $user->getPicture(),
+            'email' => $user->getEmail()
         ];
     }
 
@@ -117,8 +135,11 @@ class UserEndpoint extends Endpoint implements EndpointInterface
     public function findBy(string $attribute, string $value): User
     {
         if ($attribute === 'email') {
-            // TODO: check it exists!
-            return $this->entityManager->getRepository(User::class)->findByEmail($value)[0];
+            $results = $this->entityManager->getRepository(User::class)->findByEmail($value);
+            if (empty($results)) {
+                throw new EntityNotFoundException('User with e-mail ' . $value . ' doesn\'t exist');
+            }
+            return $results[0];
         } else {
             throw new \Exception('User search by ' . $attribute . ' not supported');
         }

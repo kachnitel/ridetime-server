@@ -5,6 +5,12 @@ use PSR\Container\ContainerInterface;
 use CoderCat\JWKToPEM\JWKConverter;
 use Tuupola\Middleware\JwtAuthentication;
 
+/**
+ * TODO: verify 'iss' and 'aud'
+ *
+ * @uses JwtAuthentication
+ * @see https://github.com/tuupola/slim-jwt-auth
+ */
 class AuthMiddleware
 {
     /**

@@ -26,6 +26,6 @@ class AuthRouter implements RouterInterface
     public function initRoutes()
     {
         /** Return user detail */
-        $this->app->get('/signin', 'RideTimeServer\API\Controllers\AuthController:signIn');
+        $this->app->post('/signin', 'RideTimeServer\API\Controllers\AuthController:signIn');
     }
 }

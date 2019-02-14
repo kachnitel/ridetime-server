@@ -46,7 +46,7 @@ abstract class BaseController
         $data = $request->getParsedBody();
 
         $endpoint = $this->getEndpoint();
-        $event = $endpoint->add($data, $this->container->logger);
+        $event = $endpoint->add($data);
 
         return $response->withJson($event)->withStatus(201);
     }

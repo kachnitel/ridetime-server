@@ -28,16 +28,26 @@ class User implements EntityInterface
     private $email;
 
     /**
+     * TODO: May need to be redesigned to prevent duplication
+     * @Column(type="simple_array", nullable=true)
+     *
+     * @var array
+     */
+    private $authIds = [];
+
+    /**
      * @Column(type="string", nullable=true, length=15)
      * @var string
      */
     private $phone;
 
     /**
-     * @Column(type="string", length=255)
+     * Profile picture
+     *
+     * @Column(type="string", length=255, nullable=true)
      * @var string
      */
-    private $password;
+    private $picture;
 
     /**
      * Many users can join many events
@@ -63,7 +73,7 @@ class User implements EntityInterface
     private $friendsWithMe;
 
     /**
-     * @Column(type="string", length=100)
+     * @Column(type="string", length=100, nullable=true)
      * @var string
      */
     private $hometown;
@@ -231,9 +241,9 @@ class User implements EntityInterface
     /**
      * Set the value of email
      *
-     * @param  string  $email
+     * @param string $email
      *
-     * @return  self
+     * @return self
      */
     public function setEmail(string $email)
     {
@@ -245,7 +255,7 @@ class User implements EntityInterface
     /**
      * Get the value of phone
      *
-     * @return  string
+     * @return string
      */
     public function getPhone()
     {
@@ -255,9 +265,9 @@ class User implements EntityInterface
     /**
      * Set the value of phone
      *
-     * @param  string  $phone
+     * @param string $phone
      *
-     * @return  self
+     * @return self
      */
     public function setPhone(string $phone)
     {
@@ -267,35 +277,11 @@ class User implements EntityInterface
     }
 
     /**
-     * Get the value of password
-     *
-     * @return  string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * Set the value of password
-     *
-     * @param  string  $password
-     *
-     * @return  self
-     */
-    public function setPassword(string $password)
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
      * Get the value of hometown
      *
      * @return  string
      */
-    public function getHometown(): string
+    public function getHometown(): ?string
     {
         return $this->hometown;
     }
@@ -303,9 +289,9 @@ class User implements EntityInterface
     /**
      * Set the value of hometown
      *
-     * @param  string  $hometown
+     * @param string $hometown
      *
-     * @return  self
+     * @return self
      */
     public function setHometown(string $hometown)
     {
@@ -327,9 +313,9 @@ class User implements EntityInterface
     /**
      * Set the value of level
      *
-     * @param  int  $level
+     * @param int $level
      *
-     * @return  self
+     * @return self
      */
     public function setLevel(int $level)
     {
@@ -374,6 +360,61 @@ class User implements EntityInterface
     public function setFavourites(string $favourites)
     {
         $this->favourites = $favourites;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of authId
+     *
+     * @return string
+     */
+    public function getAuthIds(): ?array
+    {
+        return $this->authIds;
+    }
+
+    /**
+     * Add a value of authId
+     *
+     * @param string $authId
+     *
+     * @return self
+     */
+    public function addAuthId(string $authId)
+    {
+        if (strstr($authId, ',') !== false) {
+            throw new \Exception('Auth ID cannot contain a comma');
+        }
+
+        $this->authIds[] = $authId;
+
+        return $this;
+    }
+
+    public function deleteAuthId(string $authId)
+    {
+        $this->authIds = array_diff($this->authIds, [$authId]);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+    /**
+     * @param string $picture
+     *
+     * @return self
+     */
+    public function setPicture(string $picture)
+    {
+        $this->picture = $picture;
 
         return $this;
     }
