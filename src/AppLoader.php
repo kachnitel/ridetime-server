@@ -4,11 +4,10 @@ namespace RideTimeServer;
 use Slim\App;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
 
 use RideTimeServer\API\Routers;
 use RideTimeServer\API\Middleware\AuthMiddleware;
+use RideTimeServer\API\Middleware\LoggerMiddleware;
 
 class AppLoader implements AppLoaderInterface
 {
@@ -140,22 +139,8 @@ class AppLoader implements AppLoaderInterface
     {
         $container = $this->app->getContainer();
 
-        /**
-         * Request logger middleware
-         *
-         * @param  \Psr\Http\Message\ServerRequestInterface $request  PSR7 request
-         * @param  \Psr\Http\Message\ResponseInterface      $response PSR7 response
-         * @param  callable                                 $next     Next middleware
-         *
-         * @return \Psr\Http\Message\ResponseInterface
-         */
-        $this->app->add(function (Request $request, Response $response, callable $next) use ($container) {
-            $container['logger']->addInfo($request->getMethod() . ' ' . $request->getUri()->getPath());
-
-            $response = $next($request, $response);
-
-            return $response;
-        });
+        $loggerMiddleware = new LoggerMiddleware($container);
+        $this->app->add($loggerMiddleware->getMiddleware());
 
         $authMiddleware = new AuthMiddleware($container, $config);
         $this->app->add($authMiddleware->getMiddleware());
