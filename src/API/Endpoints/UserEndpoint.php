@@ -43,15 +43,12 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         if (!empty($data['picture'])) {
             $user->setPicture($data['picture']);
         }
-        if (!empty($data['sub'])) {
-            if (!in_array($data['sub'], $user->getAuthIds())) {
-                $user->addAuthId($data['sub']);
-            }
+        // Add sub and authId to known user IDs if they're new
+        if (!empty($data['sub']) && !in_array($data['sub'], $user->getAuthIds())) {
+            $user->addAuthId($data['sub']);
         }
-        if (!empty($data['authId'])) {
-            if (!in_array($data['authId'], $user->getAuthIds())) {
-                $user->addAuthId($data['authId']);
-            }
+        if (!empty($data['authId'] && !in_array($data['authId'], $user->getAuthIds()))) {
+            $user->addAuthId($data['authId']);
         }
 
         return $user;
