@@ -44,7 +44,7 @@ class AuthController extends BaseController
             $status = 200;
         } catch (EntityNotFoundException $e) {
             $data['authId'] = $authUserId;
-            $user = $this->getEndpoint()->add($data, $this->container['logger']);
+            $result = $this->getEndpoint()->add($data, $this->container['logger']);
             $status = 201;
         }
 

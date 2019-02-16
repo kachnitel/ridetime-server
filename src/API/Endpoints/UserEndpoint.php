@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityNotFoundException;
 class UserEndpoint extends Endpoint implements EndpointInterface
 {
     /**
-     * FIXME: should return User rather than detail
+     * FIXME: should return User(/Event/...) rather than detail
      * @param array $data
      * @param Logger $logger
      * @return object
