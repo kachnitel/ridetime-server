@@ -41,12 +41,14 @@ class AuthController extends BaseController
         try {
             $user = $this->getEndpoint()->findBy('email', $userEmail);
             $result = $this->getEndpoint()->getDetail($user);
+            $status = 200;
         } catch (EntityNotFoundException $e) {
             $data['authId'] = $authUserId;
             $user = $this->getEndpoint()->add($data, $this->container['logger']);
+            $status = 201;
         }
 
-        return $response->withJson($result);
+        return $response->withJson($result)->withStatus($status);
     }
 
     protected function getEndpoint(): EndpointInterface
