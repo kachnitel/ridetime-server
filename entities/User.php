@@ -90,8 +90,8 @@ class User implements EntityInterface
      * A little odd setting
      * Could be better to list user's bike types
      *
-     * @Column(type="smallint", nullable=true)
-     * @var int
+     * @Column(type="string", nullable=true, length=15)
+     * @var string
      */
     private $favTerrain;
 
@@ -325,19 +325,19 @@ class User implements EntityInterface
     }
 
     /**
-     * @return  int
+     * @return  string
      */
-    public function getFavTerrain(): ?int
+    public function getFavTerrain(): ?string
     {
         return $this->favTerrain;
     }
 
     /**
-     * @param  int  $favTerrain
+     * @param string $favTerrain
      *
-     * @return  self
+     * @return self
      */
-    public function setFavTerrain(int $favTerrain)
+    public function setFavTerrain(string $favTerrain)
     {
         $this->favTerrain = $favTerrain;
 

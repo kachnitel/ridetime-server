@@ -12,16 +12,16 @@ class AuthController extends BaseController
     /**
      * Request data:
      * {
-     *   "email": "kachnitel@gmail.com",
+     *   "email": "ohooh@gmail.com",
      *   "email_verified": true,
      *   "family_name": "Na",
      *   "gender": "male",
      *   "given_name": "Kach",
      *   "locale": "en-GB",
      *   "name": "Kach Na",
-     *   "nickname": "kachnitel",
+     *   "nickname": "hah",
      *   "picture": "https://lh6.googleusercontent.com/-PsRsqMn9aHU/AAAAAAAAAAI/AAAAAAAAAAA/ACevoQNHk9xwM4StGhT42-2lCejGsz7AdA/mo/photo.jpg",
-     *   "sub": "google-oauth2|112817355155212920336",
+     *   "sub": "google-oauth2|666",
      *   "updated_at": "2019-02-14T06:24:15.673Z",
      * }
      *
