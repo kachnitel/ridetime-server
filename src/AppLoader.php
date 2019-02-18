@@ -25,10 +25,7 @@ class AppLoader implements AppLoaderInterface
 
         $slimConfig = $config['slim'];
         $slimConfig['db'] = $secrets['db'];
-        /**
-         * @var App $app
-         */
-        $this->app = new App([ 'settings' => $slimConfig ]);
+        $this->app = new App(['settings' => $slimConfig]);
 
         $router = new Router($this->app);
         $router->initRoutes();
