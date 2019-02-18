@@ -48,22 +48,4 @@ class Router
             $app->post('/users', 'RideTimeServer\API\Controllers\UserController:add');
         });
     }
-
-    /**
-     * Add routes with Auth Middleware
-     *
-     * @return void
-     */
-    protected function initApiRoutes()
-    {
-        $routers = [
-            new Routers\UserRouter($this->app),
-            new Routers\EventRouter($this->app),
-            new Routers\LocationRouter($this->app)
-        ];
-
-        foreach ($routers as $router) {
-            $router->initRoutes();
-        }
-    }
 }
