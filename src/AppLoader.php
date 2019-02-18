@@ -2,12 +2,12 @@
 namespace RideTimeServer;
 
 use Slim\App;
-use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
-use RideTimeServer\API\Routers;
 use RideTimeServer\API\Middleware\AuthMiddleware;
 use RideTimeServer\API\Middleware\LoggerMiddleware;
+use RideTimeServer\API\Database;
+use RideTimeServer\API\Router;
 
 class AppLoader implements AppLoaderInterface
 {
@@ -30,7 +30,8 @@ class AppLoader implements AppLoaderInterface
          */
         $this->app = new App([ 'settings' => $slimConfig ]);
 
-        $this->initRoutes();
+        $router = new Router($this->app);
+        $router->initRoutes();
         $this->initContainer($config, $secrets);
         $this->initMiddleware($config);
     }
@@ -43,45 +44,14 @@ class AppLoader implements AppLoaderInterface
     /**
      * @return void
      */
-    protected function initRoutes()
-    {
-        (new Routers\AuthRouter($this->app))->initRoutes();
-
-        // FIXME:
-        $appLoader = $this;
-        $this->app->group('/api', function () use ($appLoader) {
-            $appLoader->initApiRoutes();
-        });
-    }
-
-    /**
-     * Add routes with Auth Middleware
-     *
-     * @return void
-     */
-    protected function initApiRoutes()
-    {
-        $routers = [
-            new Routers\UserRouter($this->app),
-            new Routers\EventRouter($this->app),
-            new Routers\LocationRouter($this->app)
-        ];
-
-        foreach ($routers as $router) {
-            $router->initRoutes();
-        }
-    }
-
-    /**
-     * @return void
-     */
     protected function initContainer(array $config, array $secrets)
     {
         $container = $this->app->getContainer();
 
         $container['logger'] = $this->initLogger($config);
 
-        $container['entityManager'] = $this->initDB($config['doctrine'], $secrets['db']);
+        $db = new Database();
+        $container['entityManager'] = $db->getEntityManager($config['doctrine'], $secrets['db']);
     }
 
     /**
@@ -102,39 +72,9 @@ class AppLoader implements AppLoaderInterface
     }
 
     /**
-     * Initialize Doctrine
-     *
-     * @param array $doctrineConfig
-     * @param array $dbSecrets
-     * @return callable
+     * @param array $config
+     * @return void
      */
-    protected function initDB(array $doctrineConfig, array $dbSecrets): callable
-    {
-        // Setup Doctrine
-        $configuration = Setup::createAnnotationMetadataConfiguration(
-            $paths = [__DIR__ . $doctrineConfig['entitiesPath']],
-            $isDevMode = $doctrineConfig['devMode']
-        );
-
-        // Setup connection parameters
-        $connectionParameters = [
-            'dbname' => $dbSecrets['database'],
-            'user' => $dbSecrets['user'],
-            'password' => $dbSecrets['password'],
-            'host' => $dbSecrets['host'],
-            'driver' => 'pdo_mysql'
-        ];
-
-        /** Get the entity manager
-         * @var \Doctrine\ORM\EntityManager $entityManager
-         */
-        $entityManager = EntityManager::create($connectionParameters, $configuration);
-
-        return function ($c) use ($entityManager) {
-            return $entityManager;
-        };
-    }
-
     protected function initMiddleware(array $config)
     {
         $container = $this->app->getContainer();
