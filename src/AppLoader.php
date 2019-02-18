@@ -23,9 +23,7 @@ class AppLoader implements AppLoaderInterface
         $config = $this->loadJsonCfg('/config.json');
         $secrets = $this->loadJsonCfg('/.secrets.json');
 
-        $slimConfig = $config['slim'];
-        $slimConfig['db'] = $secrets['db'];
-        $this->app = new App(['settings' => $slimConfig]);
+        $this->app = new App(['settings' => $config['slim']]);
 
         $router = new Router($this->app);
         $router->initRoutes();
