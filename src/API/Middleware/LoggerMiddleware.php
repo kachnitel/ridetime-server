@@ -35,7 +35,5 @@ class LoggerMiddleware
 
             return $response;
         };
-
-        return $callback;
     }
 }

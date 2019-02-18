@@ -2,8 +2,12 @@
 namespace RideTimeServer\API\Middleware;
 
 use PSR\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+
 use CoderCat\JWKToPEM\JWKConverter;
 use Tuupola\Middleware\JwtAuthentication;
+
+use RideTimeServer\Exception\AuthException;
 
 /**
  * TODO: verify 'iss' and 'aud'
@@ -39,8 +43,18 @@ class AuthMiddleware
             // 'path' => '/api',
             'algorithm' => ['RS256'],
             'logger' => $this->container['logger'],
-            'secure' => false
+            'secure' => false,
+            'error' => $this->getErrorHandlerCallback()
         ]);
+    }
+
+    protected function getErrorHandlerCallback() {
+        return function (ResponseInterface $response, $arguments) {
+            $data['status'] = 'error';
+            $data['message'] = $arguments['message'];
+
+            throw new AuthException($arguments['message'], $response->getStatusCode() ?? 401);
+        };
     }
 
     /**
