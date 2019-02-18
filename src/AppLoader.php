@@ -43,12 +43,16 @@ class AppLoader implements AppLoaderInterface
     {
         $container = $this->app->getContainer();
 
-        $container['logger'] = function($c) use ($config) {
+        $container['logger'] = function($container) use ($config) {
             return (new Logger())->getLogger($config);
         };
 
-        $container['entityManager'] = function($c) use ($config, $secrets) {
+        $container['entityManager'] = function($container) use ($config, $secrets) {
             return (new Database())->getEntityManager($config['doctrine'], $secrets['db']);
+        };
+
+        $container['errorHandler'] = function($container) {
+            return new ErrorHandler();
         };
     }
 

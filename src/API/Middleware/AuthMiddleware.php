@@ -53,7 +53,10 @@ class AuthMiddleware
             $data['status'] = 'error';
             $data['message'] = $arguments['message'];
 
-            throw new AuthException($arguments['message'], $response->getStatusCode() ?? 401);
+            throw new AuthException(
+                'Authentication failed: ' . $arguments['message']
+                , $response->getStatusCode() ?? 401
+            );
         };
     }
 
