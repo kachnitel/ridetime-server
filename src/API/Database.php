@@ -8,8 +8,8 @@ class Database {
     /**
      * Initialize Doctrine
      *
-     * @param array $doctrineConfig
-     * @param array $dbSecrets
+     * @param array $doctrineConfig ['entitiesPath', 'devMode']
+     * @param array $dbSecrets ['database', 'user', 'password', 'host']
      * @return callable
      */
     public function getEntityManager(array $doctrineConfig, array $dbSecrets): EntityManager

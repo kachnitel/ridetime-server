@@ -48,26 +48,12 @@ class AppLoader implements AppLoaderInterface
     {
         $container = $this->app->getContainer();
 
-        $container['logger'] = $this->initLogger($config);
+        $container['logger'] = function($c) use ($config) {
+            return (new Logger())->getLogger($config);
+        };
 
-        $db = new Database();
-        $container['entityManager'] = $db->getEntityManager($config['doctrine'], $secrets['db']);
-    }
-
-    /**
-     * Initialize monolog
-     *
-     * @param array $config
-     * @return callable
-     */
-    protected function initLogger(array $config): callable
-    {
-        return function($c) use ($config) {
-            $logger = new \Monolog\Logger($config['appName']);
-
-            $file_handler = new \Monolog\Handler\StreamHandler($config['logPath']);
-            $logger->pushHandler($file_handler);
-            return $logger;
+        $container['entityManager'] = function($c) use ($config, $secrets) {
+            return (new Database())->getEntityManager($config['doctrine'], $secrets['db']);
         };
     }
 
