@@ -52,7 +52,7 @@ class AppLoader implements AppLoaderInterface
         };
 
         $container['errorHandler'] = function($container) {
-            return new ErrorHandler();
+            return new ErrorHandler($container['logger']);
         };
     }
 
