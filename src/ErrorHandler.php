@@ -17,21 +17,35 @@ class ErrorHandler {
     }
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \Exception $exception) {
+        $errorData = [
+            'status' => 'error'
+        ];
+
         if ($this->isUserError($exception->getCode())) {
-            $logLevel = Logger::INFO;
             $httpResponseCode = $exception->getCode();
+            $errorData['message'] = $exception->getMessage();
+            $this->logger->log(Logger::INFO, $exception->getMessage());
         } else {
-            $logLevel = Logger::ERROR;
             $httpResponseCode = 500;
+
+            $errorData['errorId'] = uniqid('err-');
+            $errorData['timestamp'] = time();
+
+            $errorDetail = [
+                'trace' => $exception->getTrace(),
+                'code' => $exception->getCode()
+            ];
+
+            $this->logger->log(
+                Logger::ERROR,
+                $exception->getMessage(),
+                array_merge($errorData, $errorDetail)
+            );
         }
-        $this->logger->log($logLevel, $exception->getMessage());
 
         return $response
             ->withStatus($httpResponseCode)
-            ->withJson([
-                'status' => 'error',
-                'message' => $exception->getMessage()
-            ]);
+            ->withJson($errorData);
     }
 
     /**

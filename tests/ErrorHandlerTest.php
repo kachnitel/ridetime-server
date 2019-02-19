@@ -1,17 +1,12 @@
 <?php
 namespace RideTimeServer\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use RideTimeServer\ErrorHandler;
-use Slim\Http\Request;
 use Slim\Http\Response;
-use Slim\Http\Headers;
-use Slim\Http\Uri;
-use Slim\Http\Stream;
 
-class ErrorHandlerTest extends TestCase
+class ErrorHandlerTest extends ErrorHandlerTestCase
 {
     public function testUserErrorLogged()
     {
@@ -30,6 +25,25 @@ class ErrorHandlerTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
+    public function testUserErrorResponseHasCorrectParams()
+    {
+        $logHandler = new TestHandler();
+        $logger = new Logger('errorHandlerTest', [$logHandler]);
+        $errorHandler = new ErrorHandler($logger);
+
+        /** @var Response $response */
+        $response = $errorHandler(
+            $this->getRequest(),
+            new Response(),
+            new \Exception('User Error message', 400)
+        );
+
+        $responseData = json_decode($response->getBody());
+
+        $this->assertEquals('User Error message', $responseData->message);
+        $this->assertEquals('error', $responseData->status);
+    }
+
     public function testServerErrorLogged()
     {
         $logHandler = new TestHandler();
@@ -45,21 +59,26 @@ class ErrorHandlerTest extends TestCase
 
         $this->assertTrue($logHandler->hasRecord('Test server error message', Logger::ERROR));
         $this->assertEquals(500, $response->getStatusCode());
-
     }
 
     /**
-     * @return Request
+     * @group time-sensitive
      */
-    protected function getRequest(): Request
+    public function testServerErrorResponseHasCorrectParams()
     {
-        return new Request(
-            'GET',
-            new Uri('http', 'localhost'),
-            new Headers([]),
-            [],
-            [],
-            new Stream(fopen(__FILE__, 'r'))
+        $logHandler = new TestHandler();
+        $logger = new Logger('errorHandlerTest', [$logHandler]);
+        $errorHandler = new ErrorHandler($logger);
+
+        /** @var Response $response */
+        $response = $errorHandler(
+            $this->getRequest(),
+            new Response(),
+            new \Exception('Test server error message', 500)
         );
+
+        $responseData = json_decode($response->getBody());
+
+        $this->assertServerErrorResponseParams($responseData);
     }
 }
