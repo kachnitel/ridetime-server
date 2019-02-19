@@ -54,6 +54,33 @@ class AppLoader implements AppLoaderInterface
         $container['errorHandler'] = function($container) {
             return new ErrorHandler($container['logger']);
         };
+
+        $container['phpErrorHandler'] = function($container) {
+            return new PHPErrorHandler($container['logger']);
+        };
+
+        $container['notFoundHandler'] = function ($container) {
+            return function ($request, $response) use ($container) {
+                return $response->withStatus(404)
+                    ->withHeader('Content-Type', 'text/html')
+                    ->withJson([
+                        'status' => 'error',
+                        'message' => 'Not found'
+                    ]);
+            };
+        };
+
+        $container['notAllowedHandler'] = function ($container) {
+            return function ($request, $response, $methods) use ($container) {
+                return $response->withStatus(405)
+                    ->withHeader('Allow', implode(', ', $methods))
+                    ->withHeader('Content-type', 'text/html')
+                    ->withJson([
+                        'status' => 'error',
+                        'message' => 'Method must be one of: ' . implode(', ', $methods)
+                    ]);
+            };
+        };
     }
 
     /**

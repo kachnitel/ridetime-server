@@ -64,7 +64,9 @@ abstract class Endpoint
         $entity = $this->entityManager->find($entityClass, $id);
 
         if (empty($entity)) {
-            throw new EntityNotFoundException($entityClass . ' ID:' . $id . ' not found', 404);
+            $path = explode('\\', $entityClass);
+            $entityName = array_pop($path);
+            throw new EntityNotFoundException($entityName . ' ID:' . $id . ' not found', 404);
         }
 
         return $entity;
