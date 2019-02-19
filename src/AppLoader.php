@@ -64,8 +64,10 @@ class AppLoader implements AppLoaderInterface
     {
         $container = $this->app->getContainer();
 
-        $loggerMiddleware = new LoggerMiddleware($container);
-        $this->app->add($loggerMiddleware->getMiddleware());
+        if (!empty($config['logRequests'])) {
+            $loggerMiddleware = new LoggerMiddleware($container);
+            $this->app->add($loggerMiddleware->getMiddleware());
+        }
 
         $authMiddleware = new AuthMiddleware($container, $config);
         $this->app->add($authMiddleware->getMiddleware());

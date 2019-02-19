@@ -11,5 +11,6 @@
   },
   "auth": {
     "publicKeyUrl": "https://ridetime.auth0.com/.well-known/jwks.json"
-  }
+  },
+  "logRequests": false
 }
