@@ -66,6 +66,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             }
         }
 
+        $this->saveEntity($user);
         return $user;
     }
 
