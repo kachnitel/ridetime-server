@@ -40,6 +40,10 @@ class AuthController extends BaseController
 
         try {
             $user = $this->getEndpoint()->findBy('email', $userEmail);
+            // If user has new ID from auth, save it
+            if (!in_array($authUserId, $user->getAuthIds())) {
+                $this->getEndpoint()->addAuthId($user, $authUserId);
+            }
             $result = $this->getEndpoint()->getDetail($user);
             $status = 200;
         } catch (EntityNotFoundException $e) {

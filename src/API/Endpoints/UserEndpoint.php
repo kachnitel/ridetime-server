@@ -2,19 +2,24 @@
 namespace RideTimeServer\API\Endpoints;
 
 use RideTimeServer\Entities\User;
-use RideTimeServer\Entities\Event;
-use RideTimeServer\Entities\Friendship;
-use Doctrine\ORM\EntityManager;
-use Monolog\Logger;
-use RideTimeServer\Entities\EntityInterface;
 use Doctrine\ORM\EntityNotFoundException;
 
 class UserEndpoint extends Endpoint implements EndpointInterface
 {
     /**
+     * Load user from database
+     *
+     * @param integer $userId
+     * @return User
+     */
+    public function get(int $userId): User
+    {
+        return $this->getEntity(User::class, $userId);
+    }
+
+    /**
      * FIXME: should return User(/Event/...) rather than detail
      * @param array $data
-     * @param Logger $logger
      * @return object
      */
     public function add(array $data): object
@@ -23,6 +28,53 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         $this->saveEntity($user);
 
         return $this->getDetail($user);
+    }
+
+    /**
+     * @param integer $userId
+     * @param array $data
+     * @return User
+     */
+    public function update(int $userId, array $data, string $authId): User
+    {
+        $user = $this->get($userId);
+
+        if (!in_array($authId, $user->getAuthIds())) {
+            throw new \Exception('Trying to update other user than self.', 403);
+        }
+
+        $userEditableProperties = [
+            'name',
+            'email',
+            'phone',
+            'picture',
+            'hometown',
+            'level',
+            'favTerrain',
+            'favourites'
+        ];
+
+        foreach ($userEditableProperties as $property) {
+            $method = ucfirst('set' . $property);
+            if (!method_exists($user, $method)) {
+                throw new \RuntimeException('Trying to update User with non-existing method ' . $method);
+            }
+
+            if (!empty($data[$property])) {
+                // TODO: validate
+                $user->{$method}((string) $data[$property]);
+            }
+        }
+
+        return $user;
+    }
+
+    public function addAuthId(User $user, string $authId)
+    {
+        $user->addAuthId($authId);
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
     }
 
     /**
@@ -74,17 +126,6 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             'picture' => $user->getPicture(),
             'email' => $user->getEmail()
         ];
-    }
-
-    /**
-     * Load user from database
-     *
-     * @param integer $userId
-     * @return User
-     */
-    public function get(int $userId): User
-    {
-        return $this->getEntity(User::class, $userId);
     }
 
     /**

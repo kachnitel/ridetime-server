@@ -20,6 +20,21 @@ class UserController extends BaseController
         $this->container = $container;
     }
 
+    public function update(Request $request, Response $response, array $args): Response
+    {
+        $data = $request->getParsedBody();
+
+        $endpoint = $this->getEndpoint();
+        $user = $endpoint->update(
+            $args['id'],
+            $data,
+            $request->getAttribute('token')['sub']
+        );
+
+        // 200, there's no updated HTTP code
+        return $response->withJson($endpoint->getDetail($user));
+    }
+
     protected function getEndpoint(): EndpointInterface
     {
         return new UserEndpoint(
