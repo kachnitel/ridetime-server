@@ -375,6 +375,17 @@ class User implements EntityInterface
     }
 
     /**
+     * @param string $authIds Comma separated list of IDs
+     * @return void
+     */
+    public function setAuthIds(string $authIds)
+    {
+        $this->authIds = explode(',', $authIds);
+
+        return $this;
+    }
+
+    /**
      * Add a value of authId
      *
      * @param string $authId

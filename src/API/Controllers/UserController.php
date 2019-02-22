@@ -25,14 +25,16 @@ class UserController extends BaseController
         $data = $request->getParsedBody();
 
         $endpoint = $this->getEndpoint();
-        $user = $endpoint->update(
-            $args['id'],
+        $user = $endpoint->get($args['id']);
+
+        $result = $endpoint->update(
+            $user,
             $data,
             $request->getAttribute('token')['sub']
         );
 
         // 200, there's no updated HTTP code
-        return $response->withJson($endpoint->getDetail($user));
+        return $response->withJson($endpoint->getDetail($result));
     }
 
     protected function getEndpoint(): EndpointInterface

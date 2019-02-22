@@ -38,19 +38,26 @@ class AuthController extends BaseController
         $data = $request->getParsedBody();
         $userEmail = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
 
-        try {
-            $user = $this->getEndpoint()->findBy('email', $userEmail);
-            // If user has new ID from auth, save it
-            if (!in_array($authUserId, $user->getAuthIds())) {
-                $this->getEndpoint()->addAuthId($user, $authUserId);
-            }
-            $result = $this->getEndpoint()->getDetail($user);
-            $status = 200;
-        } catch (EntityNotFoundException $e) {
-            $data['authId'] = $authUserId;
-            $result = $this->getEndpoint()->add($data, $this->container['logger']);
-            $status = 201;
+        $user = $this->getEndpoint()->findBy('email', $userEmail);
+        // If user has new ID from auth, save it
+        if (!in_array($authUserId, $user->getAuthIds())) {
+            $this->getEndpoint()->addAuthId($user, $authUserId);
         }
+        $result = $this->getEndpoint()->getDetail($user);
+
+        return $response->withJson($result);
+    }
+
+    public function signUp(Request $request, Response $response, array $args): Response
+    {
+        $token = $request->getAttribute('token');
+        $authUserId = $token['sub'];
+
+        $data = $request->getParsedBody();
+
+        $data['authIds'] = $authUserId;
+        $result = $this->getEndpoint()->add($data, $this->container['logger']);
+        $status = 201;
 
         return $response->withJson($result)->withStatus($status);
     }

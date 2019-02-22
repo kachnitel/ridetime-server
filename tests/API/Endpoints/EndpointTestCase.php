@@ -31,4 +31,11 @@ class EndpointTestCase extends TestCase
 
         $this->entityManager = EntityManager::create($connectionParameters, $configuration);
     }
+
+    public function callMethod($obj, string $name, array $args) {
+        $class = new \ReflectionClass($obj);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+        return $method->invokeArgs($obj, $args);
+    }
 }

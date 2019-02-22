@@ -22,6 +22,7 @@ class Router
     {
         /** Return user detail */
         $this->app->post('/signin', 'RideTimeServer\API\Controllers\AuthController:signIn');
+        $this->app->post('/signup', 'RideTimeServer\API\Controllers\AuthController:signUp');
 
         $app = $this->app;
         $this->app->group('/api', function () use ($app) {

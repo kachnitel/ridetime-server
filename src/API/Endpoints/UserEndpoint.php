@@ -30,15 +30,21 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         return $this->getDetail($user);
     }
 
+    public function update(User $user, array $data, string $authId): User
+    {
+        $result = $this->performUpdate($user, $data, $authId);
+
+        $this->saveEntity($result);
+        return $result;
+    }
+
     /**
-     * @param integer $userId
+     * @param User $user
      * @param array $data
      * @return User
      */
-    public function update(int $userId, array $data, string $authId): User
+    public function performUpdate(User $user, array $data, string $authId): User
     {
-        $user = $this->get($userId);
-
         if (!in_array($authId, $user->getAuthIds())) {
             throw new \Exception('Trying to update other user than self.', 403);
         }
@@ -55,10 +61,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         ];
 
         foreach ($userEditableProperties as $property) {
-            $method = ucfirst('set' . $property);
-            if (!method_exists($user, $method)) {
-                throw new \RuntimeException('Trying to update User with non-existing method ' . $method);
-            }
+            $method = $this->getSetterMethod($user, $property);
 
             if (!empty($data[$property])) {
                 // TODO: validate
@@ -66,7 +69,6 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             }
         }
 
-        $this->saveEntity($user);
         return $user;
     }
 
@@ -88,20 +90,29 @@ class UserEndpoint extends Endpoint implements EndpointInterface
     {
         $user = new User();
 
-        $user->setName($data['name']);
-        $user->setEmail($data['email']);
-        if (!empty($data['hometown'])) {
-            $user->setHometown($data['hometown']);
-        }
-        if (!empty($data['picture'])) {
-            $user->setPicture($data['picture']);
-        }
-        // Add sub and authId to known user IDs if they're new
-        if (!empty($data['sub']) && !in_array($data['sub'], $user->getAuthIds())) {
-            $user->addAuthId($data['sub']);
-        }
-        if (!empty($data['authId'] && !in_array($data['authId'], $user->getAuthIds()))) {
-            $user->addAuthId($data['authId']);
+        // Array, value is whether field is mandatory
+        $properties = [
+            'name' => true,
+            'email' => true,
+            'phone' => false,
+            'hometown' => false,
+            'picture' => false,
+            'authIds' => false,
+            'level' => false,
+            'favTerrain' => false,
+            'favourites' => false
+        ];
+
+        foreach ($properties as $property => $req) {
+            $method = $this->getSetterMethod($user, $property);
+
+            if (empty($data[$property])) {
+                if ($req) {
+                    throw new \Exception('User creation failed: property ' . $property . ' is required.', 400);
+                }
+                continue;
+            }
+            $user->{$method}((string) $data[$property]);
         }
 
         return $user;
@@ -127,6 +138,16 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             'picture' => $user->getPicture(),
             'email' => $user->getEmail()
         ];
+    }
+
+    protected function getSetterMethod(User $user, string $property): string
+    {
+        $method = 'set' . ucfirst($property);
+        if (!method_exists($user, $method)) {
+            throw new \RuntimeException('Trying to update User with non-existing method ' . $method);
+        }
+
+        return $method;
     }
 
     /**
@@ -176,7 +197,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         if ($attribute === 'email') {
             $results = $this->entityManager->getRepository(User::class)->findByEmail($value);
             if (empty($results)) {
-                throw new EntityNotFoundException('User with e-mail ' . $value . ' doesn\'t exist');
+                throw new EntityNotFoundException('User with e-mail ' . $value . ' doesn\'t exist', 404);
             }
             return $results[0];
         } else {

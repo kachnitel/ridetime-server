@@ -27,11 +27,11 @@ abstract class BaseController
      */
     public function get(Request $request, Response $response, array $args): Response
     {
-        $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
+        $entityId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
 
         $endpoint = $this->getEndpoint();
 
-        return $response->withJson($endpoint->getDetail($endpoint->get($eventId)));
+        return $response->withJson($endpoint->getDetail($endpoint->get($entityId)));
     }
 
     /**
@@ -46,9 +46,9 @@ abstract class BaseController
         $data = $request->getParsedBody();
 
         $endpoint = $this->getEndpoint();
-        $event = $endpoint->add($data);
+        $entity = $endpoint->add($data);
 
-        return $response->withJson($event)->withStatus(201);
+        return $response->withJson($entity)->withStatus(201);
     }
 
     public function list(Request $request, Response $response, array $args): Response
