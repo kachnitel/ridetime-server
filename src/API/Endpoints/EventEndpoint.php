@@ -103,7 +103,8 @@ class EventEndpoint extends Endpoint implements EndpointInterface
         foreach ($event->getUsers() as $user) {
             $members[] = (object) [
                 'id' => $user->getId(),
-                'name' => $user->getName()
+                'name' => $user->getName(),
+                'picture' => $user->getPicture()
             ];
         }
 
