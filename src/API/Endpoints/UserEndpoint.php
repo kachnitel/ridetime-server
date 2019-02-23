@@ -182,10 +182,12 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         $friends = [];
         /** @var Friendship $friendship */
         foreach ($user->getFriendships() as $friendship) {
+            /** @var User $friend */
             $friend = $friendship->getFriend();
             $friends[] = (object) [
                 'id' => $friend->getId(),
-                'name' => $friend->getName()
+                'name' => $friend->getName(),
+                'picture' => $friend->getPicture()
             ];
         }
 
