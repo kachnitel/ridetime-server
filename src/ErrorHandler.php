@@ -24,6 +24,7 @@ class ErrorHandler {
         if ($this->isUserError($exception->getCode())) {
             $httpResponseCode = $exception->getCode();
             $errorData['message'] = $exception->getMessage();
+            $errorData['code'] = $httpResponseCode;
             $this->logger->log(Logger::INFO, $exception->getMessage());
         } else {
             $httpResponseCode = 500;
