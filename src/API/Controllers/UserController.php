@@ -65,7 +65,7 @@ class UserController extends BaseController
         // First look for an uploaded picture
         // http://www.slimframework.com/docs/v3/cookbook/uploading-files.html
         if (empty($request->getUploadedFiles()['picture'])) {
-            throw new UserException('Picture not found in request');
+            throw new UserException('Picture not found in request', 400);
         }
 
         $handler = new PictureHandler(
