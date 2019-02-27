@@ -5,6 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use RideTimeServer\API\Endpoints\UserEndpoint;
 use RideTimeServer\API\Endpoints\EndpointInterface;
+use RideTimeServer\API\PictureHandler;
 
 class AuthController extends BaseController
 {
@@ -53,6 +54,15 @@ class AuthController extends BaseController
         $authUserId = $token['sub'];
 
         $data = $request->getParsedBody();
+
+        if (!empty($data['picture'])) {
+            $handler = new PictureHandler(
+                $this->container['s3']['client'],
+                $this->container['s3']['bucket']
+            );
+            // TODO: upload with id or do not use the id at all
+            $data['picture'] = $handler->processPictureUrl($data['picture'], 0);
+        }
 
         $data['authIds'] = $authUserId;
         $result = $this->getEndpoint()->add($data, $this->container['logger']);
