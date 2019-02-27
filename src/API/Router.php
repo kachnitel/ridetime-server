@@ -48,6 +48,7 @@ class Router
             $app->get('/users/{id}', 'RideTimeServer\API\Controllers\UserController:get');
             $app->post('/users', 'RideTimeServer\API\Controllers\UserController:add');
             $app->put('/users/{id}', 'RideTimeServer\API\Controllers\UserController:update');
+            $app->post('/users/{id}/picture', 'RideTimeServer\API\Controllers\UserController:uploadPicture');
         });
     }
 }

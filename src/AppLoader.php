@@ -8,6 +8,7 @@ use RideTimeServer\API\Middleware\AuthMiddleware;
 use RideTimeServer\API\Middleware\LoggerMiddleware;
 use RideTimeServer\API\Database;
 use RideTimeServer\API\Router;
+use Aws\S3\S3Client;
 
 class AppLoader implements AppLoaderInterface
 {
@@ -80,6 +81,24 @@ class AppLoader implements AppLoaderInterface
                         'message' => 'Method must be one of: ' . implode(', ', $methods)
                     ]);
             };
+        };
+
+        $container['s3'] = function ($container) use ($secrets) {
+            $credentials = $secrets['aws'];
+
+            $client = new S3Client([
+                'region'  => $credentials['region'],
+                'version' => 'latest',
+                'credentials' => [
+                    'key'    => $credentials['key'],
+                    'secret' => $credentials['secret']
+                ]
+            ]);
+
+            return [
+                'client' => $client,
+                'bucket' => $credentials['s3bucket']
+            ];
         };
     }
 
