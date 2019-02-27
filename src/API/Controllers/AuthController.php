@@ -5,7 +5,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use RideTimeServer\API\Endpoints\UserEndpoint;
 use RideTimeServer\API\Endpoints\EndpointInterface;
-use Doctrine\ORM\EntityNotFoundException;
 
 class AuthController extends BaseController
 {
