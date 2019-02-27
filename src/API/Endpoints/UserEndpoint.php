@@ -30,6 +30,16 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         return $this->getDetail($user);
     }
 
+    /**
+     * Update $user with $data
+     * Uses $authId to verify identity
+     *
+     * @param User $user
+     * @param array $data
+     * @param string $authId
+     *
+     * @return User
+     */
     public function update(User $user, array $data, string $authId): User
     {
         $result = $this->performUpdate($user, $data, $authId);
@@ -41,6 +51,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
     /**
      * @param User $user
      * @param array $data
+     * @param string $authId
      * @return User
      */
     public function performUpdate(User $user, array $data, string $authId): User

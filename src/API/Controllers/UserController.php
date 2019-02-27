@@ -22,7 +22,7 @@ class UserController extends BaseController
 
     public function update(Request $request, Response $response, array $args): Response
     {
-        $data = $request->getParsedBody();
+        $data = $this->processUserData($request);
 
         $endpoint = $this->getEndpoint();
         $user = $endpoint->get($args['id']);
@@ -35,6 +35,41 @@ class UserController extends BaseController
 
         // 200, there's no updated HTTP code
         return $response->withJson($endpoint->getDetail($result));
+    }
+
+    protected function processUserData(Request $request): array
+    {
+        $data = $request->getParsedBody();
+        $data['picture'] = $this->processPicture($request);
+
+        return $data;
+    }
+
+    protected function processPicture(Request $request): string
+    {
+        // First look for an uploaded picture
+        if (!empty($request->getUploadedFiles()['picture'])) {
+            // http://www.slimframework.com/docs/v3/cookbook/uploading-files.html
+            $uploadedFile = $request->getUploadedFiles()['picture'];
+            /**
+             * { file, name, type }
+             */
+            var_dump($uploadedFile);
+        // Then check URL
+        } elseif (!empty($request->getParsedBody()['picture'])) {
+            $url = $request->getParsedBody()['picture'];
+            if (!filter_var($url, FILTER_VALIDATE_URL)) {
+                throw new UserException('Invalid picture URL', 400);
+            }
+            var_dump($url);
+        } else {
+            // $this->container['logger']->addInfo('Submitted user with no picture');
+            var_dump('Submitted user with no picture');
+            var_dump($request->getUploadedFiles());
+            var_dump($request->getParsedBody());
+        }
+die();
+        return '';
     }
 
     protected function getEndpoint(): EndpointInterface
