@@ -68,11 +68,23 @@ class UserController extends BaseController
             throw new UserException('Picture not found in request', 400);
         }
 
+        /** @var \Slim\Http\UploadedFile $uploadedFile */
+        $uploadedFile = $request->getUploadedFiles()['picture'];
+        if ($uploadedFile->getError() === 1) {
+            $this->container['logger']->error('Error uploading file', [
+                'filename' => $uploadedFile->getClientFilename(),
+                'size' => $uploadedFile->getSize(),
+                'type' => $uploadedFile->getClientMediaType(),
+                'file' => $uploadedFile->file
+            ]);
+            throw new \Exception('Uploaded file error');
+        }
+
         $handler = new PictureHandler(
             $this->container['s3']['client'],
             $this->container['s3']['bucket']
         );
-        $picture = $handler->processPicture($request->getUploadedFiles()['picture'], $args['id']);
+        $picture = $handler->processPicture($uploadedFile, $args['id']);
 
         $result = $endpoint->update(
             $user,
