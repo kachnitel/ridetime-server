@@ -144,7 +144,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             'events' => $this->getUserEvents($user),
             'friends' => $this->getFriends($user),
             'level' => $user->getLevel(),
-            'preferred' => $user->getFavTerrain(),
+            'favTerrain' => $user->getFavTerrain(),
             'favourites' => $user->getFavourites(),
             'picture' => $user->getPicture(),
             'email' => $user->getEmail()
