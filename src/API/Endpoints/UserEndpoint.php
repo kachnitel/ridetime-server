@@ -80,6 +80,10 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             }
         }
 
+        if (isset($data['locations'])) {
+            $this->setHomeLocations($user, $data['locations']);
+        }
+
         return $user;
     }
 
@@ -101,6 +105,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
     {
         $user = new User();
 
+        // Basic (scalar) properties
         // Array, value is whether field is mandatory
         $properties = [
             'name' => true,
@@ -126,6 +131,10 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             $user->{$method}((string) $data[$property]);
         }
 
+        if (!empty($data['locations'])) {
+            $this->setHomeLocations($user, $data['locations']);
+        }
+
         return $user;
     }
 
@@ -147,7 +156,8 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             'favTerrain' => $user->getFavTerrain(),
             'favourites' => $user->getFavourites(),
             'picture' => $user->getPicture(),
-            'email' => $user->getEmail()
+            'email' => $user->getEmail(),
+            'locations' => $this->getHomeLocations($user)
         ];
     }
 
@@ -205,6 +215,25 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         return $friends;
     }
 
+    protected function getHomeLocations(User $user): array
+    {
+        $locations = [];
+        /** @var \RideTimeServer\Entities\Location $location */
+        foreach ($user->getHomeLocations() as $location) {
+            $locations[] = $location->getId();
+        }
+
+        return $locations;
+    }
+
+    /**
+     * Find an user by $attribute
+     * currently only email is supported
+     *
+     * @param string $attribute
+     * @param string $value
+     * @return User
+     */
     public function findBy(string $attribute, string $value): User
     {
         if ($attribute === 'email') {
@@ -215,6 +244,21 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             return $results[0];
         } else {
             throw new \Exception('User search by ' . $attribute . ' not supported');
+        }
+    }
+
+    /**
+     * @param User $user
+     * @param array $locationIds
+     * @return void
+     */
+    protected function setHomeLocations(User $user, array $locationIds)
+    {
+        !empty($user->getHomeLocations()) && $user->getHomeLocations()->clear();
+
+        $locationEndpoint = new LocationEndpoint($this->entityManager, $this->logger);
+        foreach ($locationIds as $locationId) {
+            $user->addHomeLocation($locationEndpoint->get($locationId));
         }
     }
 }

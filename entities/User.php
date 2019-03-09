@@ -107,6 +107,14 @@ class User implements EntityInterface
     private $favourites;
 
     /**
+     * Home locations
+     *
+     * @var ArrayCollection|Location[]
+     * @ManyToMany(targetEntity="Location")
+     */
+    private $homeLocations;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -428,5 +436,41 @@ class User implements EntityInterface
         $this->picture = $picture;
 
         return $this;
+    }
+
+    /**
+     * Add location.
+     *
+     * @param \RideTimeServer\Entities\Location $location
+     *
+     * @return User
+     */
+    public function addHomeLocation(\RideTimeServer\Entities\Location $location)
+    {
+        $this->homeLocations[] = $location;
+
+        return $this;
+    }
+
+    /**
+     * Remove event.
+     *
+     * @param \RideTimeServer\Entities\Location $location
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeHomeLocation(\RideTimeServer\Entities\Location $location)
+    {
+        return $this->homeLocations->removeElement($location);
+    }
+
+    /**
+     * Get events.
+     *
+     * @return ArrayCollection
+     */
+    public function getHomeLocations()
+    {
+        return $this->homeLocations;
     }
 }
