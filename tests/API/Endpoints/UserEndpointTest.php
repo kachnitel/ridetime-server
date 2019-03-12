@@ -4,6 +4,8 @@ namespace RideTimeServer\Tests\API\Endpoints;
 use RideTimeServer\API\Endpoints\UserEndpoint;
 use Monolog\Logger;
 use RideTimeServer\Entities\User;
+use RideTimeServer\Entities\Location;
+use RideTimeServer\API\Endpoints\LocationEndpoint;
 
 class UserEndpointTest extends EndpointTestCase
 {
@@ -41,7 +43,6 @@ class UserEndpointTest extends EndpointTestCase
 
     public function testUpdate()
     {
-
         $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));
 
         $user = $this->callMethod($endpoint, 'createUser', [[
@@ -60,7 +61,6 @@ class UserEndpointTest extends EndpointTestCase
 
     public function testUpdateWrongAuthId()
     {
-
         $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));
 
         $user = $this->callMethod($endpoint, 'createUser', [[
@@ -74,4 +74,30 @@ class UserEndpointTest extends EndpointTestCase
         $this->expectExceptionMessage('Trying to update other user than self.');
         $endpoint->performUpdate($user, ['name' => 'Joseph'], '12');
     }
+
+    public function testGetLocations()
+    {
+        $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));
+
+        /** @var User $user */
+        $user = $this->callMethod($endpoint, 'createUser', [[
+            'name' => 'Joe',
+            'email' => 'e@mail.ca',
+        ]]);
+
+        $this->assertEquals([], $endpoint->getDetail($user)->locations);
+
+        $location = new Location();
+        $location->setId(1);
+        $user->addHomeLocation($location);
+        $this->assertEquals([1], $endpoint->getDetail($user)->locations);
+    }
+
+    // TODO:
+    // Need to test against actual DB
+    // as per Doctrine recommendations
+    // public function testSetLocations()
+    // {
+
+    // }
 }

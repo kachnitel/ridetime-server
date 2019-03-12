@@ -215,12 +215,19 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         return $friends;
     }
 
+    /**
+     * @param User $user
+     * @return int[]
+     */
     protected function getHomeLocations(User $user): array
     {
         $locations = [];
-        /** @var \RideTimeServer\Entities\Location $location */
-        foreach ($user->getHomeLocations() as $location) {
-            $locations[] = $location->getId();
+
+        if (!empty($user->getHomeLocations())) {
+            /** @var \RideTimeServer\Entities\Location $location */
+            foreach ($user->getHomeLocations() as $location) {
+                $locations[] = $location->getId();
+            }
         }
 
         return $locations;
