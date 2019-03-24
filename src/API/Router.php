@@ -31,7 +31,9 @@ class Router
              */
             /** List events */
             $app->get('/events', 'RideTimeServer\API\Controllers\EventController:list');
+            /** Get event detail */
             $app->get('/events/{id}', 'RideTimeServer\API\Controllers\EventController:get');
+            /** Create event */
             $app->post('/events', 'RideTimeServer\API\Controllers\EventController:add');
             /** Add event member */
             $app->post('/events/{id}/members', 'RideTimeServer\API\Controllers\EventController:addMember');
@@ -45,9 +47,11 @@ class Router
             /**
              * Users
              */
+            /** Get user detail */
             $app->get('/users/{id}', 'RideTimeServer\API\Controllers\UserController:get');
-            $app->post('/users', 'RideTimeServer\API\Controllers\UserController:add');
+            /** Update user */
             $app->put('/users/{id}', 'RideTimeServer\API\Controllers\UserController:update');
+            /** Update user's picture */
             $app->post('/users/{id}/picture', 'RideTimeServer\API\Controllers\UserController:uploadPicture');
         });
     }
