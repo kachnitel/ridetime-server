@@ -182,11 +182,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         $events = [];
         /** @var Event $event */
         foreach ($user->getEvents() as $event) {
-            $events[] = (object) [
-                'id' => $event->getId(),
-                'datetime' => $event->getDate()->format(\DateTime::ATOM),
-                'title' => $event->getTitle()
-            ];
+            $events[] = $event->getId();
         }
 
         return $events;
