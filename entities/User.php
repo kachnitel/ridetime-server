@@ -93,7 +93,7 @@ class User implements EntityInterface
      * @Column(type="string", nullable=true, length=15)
      * @var string
      */
-    private $favTerrain;
+    private $bike;
 
     /**
      * Favourite trails
@@ -335,19 +335,19 @@ class User implements EntityInterface
     /**
      * @return  string
      */
-    public function getFavTerrain(): ?string
+    public function getBike(): ?string
     {
-        return $this->favTerrain;
+        return $this->bike;
     }
 
     /**
-     * @param string $favTerrain
+     * @param string $bike
      *
      * @return self
      */
-    public function setFavTerrain(string $favTerrain)
+    public function setbike(string $bike)
     {
-        $this->favTerrain = $favTerrain;
+        $this->bike = $bike;
 
         return $this;
     }

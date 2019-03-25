@@ -67,7 +67,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             'picture',
             'hometown',
             'level',
-            'favTerrain',
+            'bike',
             'favourites'
         ];
 
@@ -115,7 +115,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             'picture' => false,
             'authIds' => false,
             'level' => false,
-            'favTerrain' => false,
+            'bike' => false,
             'favourites' => false
         ];
 
@@ -153,7 +153,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             'events' => $this->getUserEvents($user),
             'friends' => $this->getFriends($user),
             'level' => $user->getLevel(),
-            'favTerrain' => $user->getFavTerrain(),
+            'bike' => $user->getBike(),
             'favourites' => $user->getFavourites(),
             'picture' => $user->getPicture(),
             'email' => $user->getEmail(),

@@ -34,7 +34,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
             ->get($data['createdBy']);
 
         $location = (new LocationEndpoint($this->entityManager, $this->logger))
-            ->get($data['locationId']);
+            ->get($data['location']);
 
         /** @var Event $event */
         $event = new Event();

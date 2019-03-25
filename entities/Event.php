@@ -22,7 +22,7 @@ class Event implements EntityInterface
     private $title;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", nullable=true)
      */
     private $description;
 
