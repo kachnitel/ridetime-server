@@ -87,7 +87,7 @@ class EventEndpoint extends Endpoint implements EndpointInterface
      * @param integer $eventId
      * @return Event
      */
-    public function get(int $eventId): Event
+    public function get(int $eventId)
     {
         return $this->getEntity(Event::class, $eventId);
     }

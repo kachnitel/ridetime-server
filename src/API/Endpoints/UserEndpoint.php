@@ -12,7 +12,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
      * @param integer $userId
      * @return User
      */
-    public function get(int $userId): User
+    public function get(int $userId)
     {
         return $this->getEntity(User::class, $userId);
     }

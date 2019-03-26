@@ -106,7 +106,7 @@ class UserEndpointTest extends EndpointTestCase
 
         $this->assertEquals([], $endpoint->getDetail($user)->friends);
 
-        // TODO: acceptFriendship / delete?
+        // TODO: acceptFriendship
         $friend1->getFriendshipsWithMe()[0]->setStatus(1);
         $user->getFriendshipsWithMe()[0]->setStatus(1);
 
