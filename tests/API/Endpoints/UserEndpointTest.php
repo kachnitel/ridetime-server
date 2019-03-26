@@ -93,6 +93,42 @@ class UserEndpointTest extends EndpointTestCase
         $this->assertEquals([1], $endpoint->getDetail($user)->locations);
     }
 
+    public function testUserReturnsConfirmedFriends()
+    {
+        $user = new User();
+        $friend1 = $this->generateUser();
+        $friend2 = $this->generateUser();
+
+        $user->addFriend($friend1);
+        $friend2->addFriend($user);
+
+        $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));
+
+        $this->assertEquals([], $endpoint->getDetail($user)->friends);
+
+        // TODO: acceptFriendship / delete?
+        $friend1->getFriendshipsWithMe()[0]->setStatus(1);
+        $user->getFriendshipsWithMe()[0]->setStatus(1);
+
+        $this->assertEqualsCanonicalizing(
+            [$friend1->getId(), $friend2->getId()],
+            $endpoint->getDetail($user)->friends
+        );
+
+    }
+
+    protected function generateUser(): User
+    {
+        $userClass = new \ReflectionClass(User::class);
+        $user = $userClass->newInstance();
+
+        $property = $userClass->getProperty('id');
+        $property->setAccessible(true);
+        $property->setValue($user, uniqid());
+
+        return $user;
+    }
+
     // TODO:
     // Need to test against actual DB
     // as per Doctrine recommendations

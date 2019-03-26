@@ -1,8 +1,6 @@
 <?php
 namespace RideTimeServer\Entities;
 
-use \Doctrine\Common\Collections\ArrayCollection;
-
 /**
  * @Entity
  * @Table(name="friendship")
@@ -10,18 +8,27 @@ use \Doctrine\Common\Collections\ArrayCollection;
 class Friendship implements EntityInterface
 {
     /**
+     * Requesting user
+     *
+     * @var User
      * @ManyToOne(targetEntity="User", inversedBy="friends")
      * @Id
      */
     private $user;
 
     /**
+     * Receiving user
+     *
+     * @var User
      * @ManyToOne(targetEntity="User", inversedBy="friendsWithMe")
      * @Id
      */
     private $friend;
 
     /**
+     * 0: pending
+     * 1: accepted
+     *
      * @Column(type="smallint")
      */
     private $status;
@@ -37,9 +44,9 @@ class Friendship implements EntityInterface
     /**
      * Set the value of friend
      *
-     * @return  self
+     * @return self
      */
-    public function setFriend($friend)
+    public function setFriend(User $friend)
     {
         $this->friend = $friend;
 
@@ -49,7 +56,7 @@ class Friendship implements EntityInterface
     /**
      * Get the value of user
      */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
@@ -57,9 +64,9 @@ class Friendship implements EntityInterface
     /**
      * Set the value of user
      *
-     * @return  self
+     * @return self
      */
-    public function setUser($user)
+    public function setUser(User $user)
     {
         $this->user = $user;
 
@@ -77,11 +84,23 @@ class Friendship implements EntityInterface
     /**
      * Set the value of status
      *
-     * @return  self
+     * @return self
      */
-    public function setStatus($status)
+    public function setStatus(int $status)
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Accept friendship
+     *
+     * @return self
+     */
+    public function accept()
+    {
+        $this->setStatus(1);
 
         return $this;
     }

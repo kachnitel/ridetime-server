@@ -359,7 +359,7 @@ class User implements EntityInterface
      *
      * @return self
      */
-    public function setbike(string $bike)
+    public function setBike(string $bike)
     {
         $this->bike = $bike;
 
