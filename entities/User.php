@@ -2,6 +2,8 @@
 namespace RideTimeServer\Entities;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use RideTimeServer\Exception\UserException;
 
 /**
  * @Entity
@@ -234,6 +236,24 @@ class User implements EntityInterface
         $fs->setStatus(0);
 
         $this->addFriendship($fs);
+    }
+
+    /**
+     * @param User $user User which initiated the friend request
+     * @return void
+     */
+    public function acceptFriend(User $user)
+    {
+        /** @var Friendship $friendship */
+        $friendship = $this->friendsWithMe->filter(function ($fs) use ($user) {
+            /** @var Friendship $fs */
+            return $fs->getUser() === $user;
+        })->first();
+
+        if ($friendship === false) {
+            throw new UserException('Cannot accept friendship from ' . $user->getId() . ' - Not found', 404);
+        }
+        $friendship->accept();
     }
 
     /**

@@ -112,6 +112,24 @@ class UserEndpoint extends Endpoint implements EndpointInterface
     }
 
     /**
+     * @param integer $userId
+     * @param integer $friendId
+     * @return User
+     */
+    public function acceptFriend(int $userId, int $friendId): User
+    {
+        // To keep consistent, $user is requesting while $friend is logged in
+        $user = $this->get($userId);
+        $friend = $this->get($friendId);
+
+        $friend->acceptFriend($user);
+
+        $this->saveEntity($friend);
+
+        return $friend;
+    }
+
+    /**
      * TODO: Validate input!
      *
      * @param array $data

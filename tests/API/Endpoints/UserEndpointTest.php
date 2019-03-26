@@ -5,7 +5,6 @@ use RideTimeServer\API\Endpoints\UserEndpoint;
 use Monolog\Logger;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Location;
-use RideTimeServer\API\Endpoints\LocationEndpoint;
 
 class UserEndpointTest extends EndpointTestCase
 {
@@ -93,6 +92,9 @@ class UserEndpointTest extends EndpointTestCase
         $this->assertEquals([1], $endpoint->getDetail($user)->locations);
     }
 
+    /**
+     * Test we get IDs of users both `friendships` and `friendshipsWithMe`
+     */
     public function testUserReturnsConfirmedFriends()
     {
         $user = new User();
@@ -114,7 +116,6 @@ class UserEndpointTest extends EndpointTestCase
             [$friend1->getId(), $friend2->getId()],
             $endpoint->getDetail($user)->friends
         );
-
     }
 
     protected function generateUser(): User

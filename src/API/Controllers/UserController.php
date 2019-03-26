@@ -95,10 +95,34 @@ class UserController extends BaseController
         return $response->withJson($endpoint->getDetail($result));
     }
 
+    /**
+     * TODO: Verify signed in is $args['id']
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function addFriend(Request $request, Response $response, array $args): Response
     {
         $endpoint = $this->getEndpoint();
         $result = $endpoint->addFriend($args['id'], $args['friendId']);
+
+        return $response->withJson($endpoint->getDetail($result));
+    }
+
+    /**
+     * TODO: Verify signed in is $args['friendId']
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function acceptFriend(Request $request, Response $response, array $args): Response
+    {
+        $endpoint = $this->getEndpoint();
+        $result = $endpoint->acceptFriend($args['id'], $args['friendId']);
 
         return $response->withJson($endpoint->getDetail($result));
     }
