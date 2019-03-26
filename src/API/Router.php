@@ -53,6 +53,8 @@ class Router
             $app->put('/users/{id}', 'RideTimeServer\API\Controllers\UserController:update');
             /** Update user's picture */
             $app->post('/users/{id}/picture', 'RideTimeServer\API\Controllers\UserController:uploadPicture');
+            /** Request friendship */
+            $app->post('/users/{id}/friends/{friendId}', 'RideTimeServer\API\Controllers\UserController:addFriend');
         });
     }
 }

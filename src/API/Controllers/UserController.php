@@ -5,7 +5,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Container\ContainerInterface;
 use RideTimeServer\API\Endpoints\UserEndpoint;
-use RideTimeServer\API\Endpoints\EndpointInterface;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
 
@@ -25,6 +24,7 @@ class UserController extends BaseController
     {
         /** @var UserEndpoint $endpoint */
         $endpoint = $this->getEndpoint();
+        // FIXME: unnecessary, call update w/ ID and use User internally in Endpoint
         /** @var \RideTimeServer\Entities\User $user */
         $user = $endpoint->get($args['id']);
 
@@ -95,7 +95,18 @@ class UserController extends BaseController
         return $response->withJson($endpoint->getDetail($result));
     }
 
-    protected function getEndpoint(): EndpointInterface
+    public function addFriend(Request $request, Response $response, array $args): Response
+    {
+        $endpoint = $this->getEndpoint();
+        $result = $endpoint->addFriend($args['id'], $args['friendId']);
+
+        return $response->withJson($endpoint->getDetail($result));
+    }
+
+    /**
+     * @return UserEndpoint
+     */
+    protected function getEndpoint()
     {
         return new UserEndpoint(
             $this->container->entityManager,

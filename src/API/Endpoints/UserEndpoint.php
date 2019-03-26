@@ -91,8 +91,24 @@ class UserEndpoint extends Endpoint implements EndpointInterface
     {
         $user->addAuthId($authId);
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->saveEntity($user);
+    }
+
+    /**
+     * @param integer $userId
+     * @param integer $friendId
+     * @return User
+     */
+    public function addFriend(int $userId, int $friendId): User
+    {
+        $user = $this->get($userId);
+        $friend = $this->get($friendId);
+
+        $user->addFriend($friend);
+
+        $this->saveEntity($user);
+
+        return $user;
     }
 
     /**

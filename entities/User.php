@@ -62,7 +62,7 @@ class User implements EntityInterface
      * The people who I think are my friends.
      * @var ArrayCollection|User[]
      *
-     * @OneToMany(targetEntity="Friendship", mappedBy="user")
+     * @OneToMany(targetEntity="Friendship", mappedBy="user", cascade={"persist", "remove"})
      */
     private $friends;
 
@@ -70,7 +70,7 @@ class User implements EntityInterface
      * The people who think that I’m their friend.
      * @var ArrayCollection|User[]
      *
-     * @OneToMany(targetEntity="Friendship", mappedBy="friend")
+     * @OneToMany(targetEntity="Friendship", mappedBy="friend", cascade={"persist", "remove"})
      */
     private $friendsWithMe;
 
