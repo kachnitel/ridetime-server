@@ -60,6 +60,7 @@ class User implements EntityInterface
 
     /**
      * The people who I think are my friends.
+     * @var ArrayCollection|Event[]
      *
      * @OneToMany(targetEntity="Friendship", mappedBy="user")
      */
@@ -67,6 +68,7 @@ class User implements EntityInterface
 
     /**
      * The people who think that I’m their friend.
+     * @var ArrayCollection|Event[]
      *
      * @OneToMany(targetEntity="Friendship", mappedBy="friend")
      */
@@ -195,16 +197,20 @@ class User implements EntityInterface
     }
 
     /**
+     * Where user_id = myself
+     *
      * @param Friendship $friendship
      * @return void
      */
     public function addFriendship(Friendship $friendship)
     {
         $this->friends->add($friendship);
-        $friendship->friend->addFriendshipWithMe($friendship);
+        $friendship->getFriend()->addFriendshipWithMe($friendship);
     }
 
     /**
+     * Where friend_id = myself
+     *
      * @param Friendship $friendship
      * @return void
      */
@@ -234,6 +240,14 @@ class User implements EntityInterface
     public function getFriendships()
     {
         return $this->friends;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getFriendshipsWithMe()
+    {
+        return $this->friendsWithMe;
     }
 
     /**

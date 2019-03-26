@@ -196,9 +196,13 @@ class UserEndpoint extends Endpoint implements EndpointInterface
      */
     protected function getFriends(User $user): array
     {
+        $allFriends = array_merge(
+            $user->getFriendships()->toArray(),
+            $user->getFfriendhipsWithMe()->toArray()
+        );
         $friends = [];
         /** @var Friendship $friendship */
-        foreach ($user->getFriendships() as $friendship) {
+        foreach ($allFriends as $friendship) {
             /** @var User $friend */
             $friend = $friendship->getFriend();
             $friends[] = (object) [
