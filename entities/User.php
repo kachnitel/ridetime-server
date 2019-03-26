@@ -60,7 +60,7 @@ class User implements EntityInterface
 
     /**
      * The people who I think are my friends.
-     * @var ArrayCollection|Event[]
+     * @var ArrayCollection|User[]
      *
      * @OneToMany(targetEntity="Friendship", mappedBy="user")
      */
@@ -68,7 +68,7 @@ class User implements EntityInterface
 
     /**
      * The people who think that I’m their friend.
-     * @var ArrayCollection|Event[]
+     * @var ArrayCollection|User[]
      *
      * @OneToMany(targetEntity="Friendship", mappedBy="friend")
      */

@@ -36,7 +36,7 @@ class Friendship implements EntityInterface
     /**
      * Get the value of friend
      */
-    public function getFriend(): User
+    public function getFriend(): ?User
     {
         return $this->friend;
     }
@@ -56,7 +56,7 @@ class Friendship implements EntityInterface
     /**
      * Get the value of user
      */
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
