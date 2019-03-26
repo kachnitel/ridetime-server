@@ -220,6 +220,8 @@ class User implements EntityInterface
     }
 
     /**
+     * Create a friendship with status 0
+     *
      * @param User $friend
      * @return void
      */

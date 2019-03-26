@@ -4,7 +4,6 @@ namespace RideTimeServer\API\Controllers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use RideTimeServer\API\Endpoints\UserEndpoint;
-use RideTimeServer\API\Endpoints\EndpointInterface;
 use RideTimeServer\API\PictureHandler;
 
 class AuthController extends BaseController
@@ -71,7 +70,10 @@ class AuthController extends BaseController
         return $response->withJson($result)->withStatus($status);
     }
 
-    protected function getEndpoint(): EndpointInterface
+    /**
+     * @return UserEndpoint
+     */
+    protected function getEndpoint()
     {
         return new UserEndpoint(
             $this->container->entityManager,

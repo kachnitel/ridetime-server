@@ -4,7 +4,6 @@ namespace RideTimeServer\API\Controllers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use RideTimeServer\API\Endpoints\EventEndpoint;
-use RideTimeServer\API\Endpoints\EndpointInterface;
 
 class EventController extends BaseController
 {
@@ -23,7 +22,10 @@ class EventController extends BaseController
         return $response->withJson($result)->withStatus(201);
     }
 
-    protected function getEndpoint(): EndpointInterface
+    /**
+     * @return EventEndpoint
+     */
+    protected function getEndpoint()
     {
         return new EventEndpoint(
             $this->container->entityManager,

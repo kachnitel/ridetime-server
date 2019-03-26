@@ -4,7 +4,6 @@ namespace RideTimeServer\API\Controllers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Container\ContainerInterface;
-use Doctrine\ORM\EntityManager;
 use RideTimeServer\API\Endpoints\EndpointInterface;
 
 abstract class BaseController
@@ -65,5 +64,5 @@ abstract class BaseController
      *
      * @return EndpointInterface
      */
-    abstract protected function getEndpoint(): EndpointInterface;
+    abstract protected function getEndpoint();
 }
