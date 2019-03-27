@@ -3,6 +3,7 @@ namespace RideTimeServer\API\Endpoints;
 
 use RideTimeServer\Entities\User;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\Common\Collections\Criteria;
 
 class UserEndpoint extends Endpoint implements EndpointInterface
 {
@@ -15,6 +16,20 @@ class UserEndpoint extends Endpoint implements EndpointInterface
     public function get(int $userId)
     {
         return $this->getEntity(User::class, $userId);
+    }
+
+    /**
+     * @return array[User]
+     */
+    public function list(): array
+    {
+        $criteria = Criteria::create()
+            // ->where(Criteria::expr()->gt('date', new \DateTime()))
+            // ->orderBy(array('date' => Criteria::ASC))
+            // ->setFirstResult(0)
+            ->setMaxResults(20);
+
+        return $this->listEntities(User::class, [$this, 'getDetail'], $criteria);
     }
 
     /**

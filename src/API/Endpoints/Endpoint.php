@@ -80,8 +80,13 @@ abstract class Endpoint
      * @param callable $entityExtractor
      * @return array
      */
-    protected function listEntities(string $entityClass, callable $entityExtractor, Criteria $searchCriteria = null): array
+    protected function listEntities(
+        string $entityClass,
+        callable $entityExtractor,
+        Criteria $searchCriteria = null
+    ): array
     {
+        // REVIEW: does this fetch all before filtering?
         $entities = $this->entityManager->getRepository($entityClass)->findAll();
 
         if ($searchCriteria) {
