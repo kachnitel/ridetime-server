@@ -55,8 +55,8 @@ class Router
             $app->post('/users/{id}/picture', 'RideTimeServer\API\Controllers\UserController:uploadPicture');
             /** Request friendship */
             $app->post('/users/{id}/friends/{friendId}', 'RideTimeServer\API\Controllers\UserController:addFriend');
-            /** Request friendship */
-            $app->post(
+            /** Accept friendship */
+            $app->put(
                 '/users/{id}/friends/{friendId}/accept',
                 'RideTimeServer\API\Controllers\UserController:acceptFriend'
             );
