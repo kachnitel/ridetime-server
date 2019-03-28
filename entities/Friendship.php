@@ -112,10 +112,15 @@ class Friendship implements EntityInterface
      */
     public function __toString()
     {
-        return json_encode([
-            'user' => $this->user->getId(),
-            'friend' => $this->friend->getId(),
+        return json_encode($this->asObject());
+    }
+
+    public function asObject()
+    {
+        return (object) [
+            'userId' => $this->user->getId(),
+            'friendId' => $this->friend->getId(),
             'status' => $this->status
-        ]);
+        ];
     }
 }
