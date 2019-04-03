@@ -62,6 +62,7 @@ class Router
                 '/users/{id}/friends/{friendId}/accept',
                 'RideTimeServer\API\Controllers\UserController:acceptFriend'
             );
+            $app->delete('/users/{id}/friends/{friendId}', 'RideTimeServer\API\Controllers\UserController:removeFriend');
         });
     }
 }

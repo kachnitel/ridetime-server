@@ -144,6 +144,19 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         return $friend;
     }
 
+    public function removeFriend(int $userId, int $friendId)
+    {
+        $user = $this->get($userId);
+        $friend = $this->get($friendId);
+
+        $fs = $user->removeFriend($friend);
+
+        $this->entityManager->remove($fs);
+        $this->entityManager->flush();
+
+        return true;
+    }
+
     /**
      * TODO: Validate input!
      *
@@ -248,16 +261,16 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         $friends = [];
         /** @var Friendship $friendship */
         foreach ($user->getFriendships() as $friendship) {
-            if ($friendship->getStatus() === 1) {
+            // if ($friendship->getStatus() === 1) {
                 $friends[] = $friendship->asObject();
-            }
+            // }
         }
 
         /** @var Friendship $friendship */
         foreach ($user->getFriendshipsWithMe() as $friendship) {
-            if ($friendship->getStatus() === 1) {
+            // if ($friendship->getStatus() === 1) {
                 $friends[] = $friendship->asObject();
-            }
+            // }
         }
 
         return $friends;

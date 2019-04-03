@@ -211,6 +211,16 @@ class User implements EntityInterface
     }
 
     /**
+     * @param Friendship $friendship
+     * @return void
+     */
+    public function removeFriendship(Friendship $friendship)
+    {
+        $friendship->getFriend()->friendsWithMe->removeElement($friendship);
+        $this->friends->removeElement($friendship);
+    }
+
+    /**
      * Where friend_id = myself
      *
      * @param Friendship $friendship
@@ -254,6 +264,22 @@ class User implements EntityInterface
             throw new UserException('Cannot accept friendship from ' . $user->getId() . ' - Not found', 404);
         }
         $friendship->accept();
+    }
+
+    /**
+     * @param User $user
+     * @return void
+     */
+    public function removeFriend(User $user)
+    {
+        /** @var Friendship $friendship */
+        $friendship = $this->friends->filter(function ($fs) use ($user) {
+            /** @var Friendship $fs */
+            return $fs->getFriend() === $user;
+        })->first();
+
+        $this->removeFriendship($friendship);
+        return $friendship;
     }
 
     /**

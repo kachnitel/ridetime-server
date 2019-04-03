@@ -127,6 +127,14 @@ class UserController extends BaseController
         return $response->withJson($endpoint->getDetail($result));
     }
 
+    public function removeFriend(Request $request, Response $response, array $args): Response
+    {
+        $endpoint = $this->getEndpoint();
+        $result = $endpoint->removeFriend($args['id'], $args['friendId']);
+
+        return $response->withStatus(204);
+    }
+
     /**
      * @return UserEndpoint
      */
