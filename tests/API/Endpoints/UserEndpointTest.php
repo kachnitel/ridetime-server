@@ -108,9 +108,8 @@ class UserEndpointTest extends EndpointTestCase
 
         $this->assertEquals([], $endpoint->getDetail($user)->friends);
 
-        // TODO: acceptFriendship
-        $friend1->getFriendshipsWithMe()[0]->setStatus(1);
-        $user->getFriendshipsWithMe()[0]->setStatus(1);
+        $friend1->getFriendshipsWithMe()[0]->accept();
+        $user->getFriendshipsWithMe()[0]->accept();
 
         $this->assertEqualsCanonicalizing(
             [$friend1->getId(), $friend2->getId()],
