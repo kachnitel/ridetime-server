@@ -71,7 +71,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
      */
     public function performUpdate(User $user, array $data, string $authId): User
     {
-        if (!in_array($authId, $user->getAuthIds())) {
+        if ($authId !== $user->getAuthId()) {
             throw new \Exception('Trying to update other user than self.', 403);
         }
 
@@ -100,13 +100,6 @@ class UserEndpoint extends Endpoint implements EndpointInterface
         }
 
         return $user;
-    }
-
-    public function addAuthId(User $user, string $authId)
-    {
-        $user->addAuthId($authId);
-
-        $this->saveEntity($user);
     }
 
     /**
@@ -175,7 +168,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
             'phone' => false,
             'hometown' => false,
             'picture' => false,
-            'authIds' => false,
+            'authId' => true,
             'level' => false,
             'bike' => false,
             'favourites' => false

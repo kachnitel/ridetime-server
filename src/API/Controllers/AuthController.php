@@ -5,6 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use RideTimeServer\API\Endpoints\UserEndpoint;
 use RideTimeServer\API\PictureHandler;
+use RideTimeServer\Exception\UserException;
 
 class AuthController extends BaseController
 {
@@ -38,9 +39,15 @@ class AuthController extends BaseController
         $userEmail = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
 
         $user = $this->getEndpoint()->findBy('email', $userEmail);
-        // If user has new ID from auth, save it
-        if (!in_array($authUserId, $user->getAuthIds())) {
-            $this->getEndpoint()->addAuthId($user, $authUserId);
+        // Verify user from token
+        if ($authUserId !== $user->getAuthId()) {
+            $e = new UserException('Authentication ID mismatch', 400);
+            $e->setData((object) [
+                'expectedId' => $user->getAuthId(),
+                'requestTokenId' => $authUserId
+            ]);
+
+            throw $e;
         }
         $result = $this->getEndpoint()->getDetail($user);
 
@@ -63,7 +70,7 @@ class AuthController extends BaseController
             $data['picture'] = $handler->processPictureUrl($data['picture'], 0);
         }
 
-        $data['authIds'] = $authUserId;
+        $data['authId'] = $authUserId;
         $result = $this->getEndpoint()->add($data, $this->container['logger']);
         $status = 201;
 

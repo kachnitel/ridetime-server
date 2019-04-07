@@ -31,7 +31,8 @@ class UserEndpointTest extends EndpointTestCase
         $user = $this->callMethod($endpoint, 'createUser', [[
             'name' => 'Joe',
             'email' => 'e@mail.ca',
-            'hometown' => 'Whistler, BC'
+            'hometown' => 'Whistler, BC',
+            'authId' => '123'
         ]]);
 
         $this->assertNull($user->getLevel());
@@ -48,7 +49,7 @@ class UserEndpointTest extends EndpointTestCase
             'name' => 'Joe',
             'email' => 'e@mail.ca',
             'hometown' => 'Whistler, BC',
-            'authIds' => '123'
+            'authId' => 123
         ]]);
 
         $endpoint->performUpdate($user, ['name' => 'Joseph'], '123');
@@ -66,7 +67,7 @@ class UserEndpointTest extends EndpointTestCase
             'name' => 'Joe',
             'email' => 'e@mail.ca',
             'hometown' => 'Whistler, BC',
-            'authIds' => '123'
+            'authId' => '123'
         ]]);
 
         $this->expectException(\Exception::class);
@@ -82,6 +83,7 @@ class UserEndpointTest extends EndpointTestCase
         $user = $this->callMethod($endpoint, 'createUser', [[
             'name' => 'Joe',
             'email' => 'e@mail.ca',
+            'authId' => 123
         ]]);
 
         $this->assertEquals([], $endpoint->getDetail($user)->locations);

@@ -30,12 +30,11 @@ class User implements EntityInterface
     private $email;
 
     /**
-     * TODO: May need to be redesigned to prevent duplication
-     * @Column(type="simple_array", nullable=true)
+     * @Column(type="string")
      *
-     * @var array
+     * @var string
      */
-    private $authIds = [];
+    private $authId;
 
     /**
      * @Column(type="string", nullable=true, length=15)
@@ -439,43 +438,18 @@ class User implements EntityInterface
      *
      * @return string
      */
-    public function getAuthIds(): ?array
+    public function getAuthId(): string
     {
-        return $this->authIds;
+        return $this->authId;
     }
 
     /**
-     * @param string $authIds Comma separated list of IDs
+     * @param string $authId
      * @return void
      */
-    public function setAuthIds(string $authIds)
+    public function setAuthId(string $authId)
     {
-        $this->authIds = explode(',', $authIds);
-
-        return $this;
-    }
-
-    /**
-     * Add a value of authId
-     *
-     * @param string $authId
-     *
-     * @return self
-     */
-    public function addAuthId(string $authId)
-    {
-        if (strstr($authId, ',') !== false) {
-            throw new \Exception('Auth ID cannot contain a comma');
-        }
-
-        $this->authIds[] = $authId;
-
-        return $this;
-    }
-
-    public function deleteAuthId(string $authId)
-    {
-        $this->authIds = array_diff($this->authIds, [$authId]);
+        $this->authId = $authId;
 
         return $this;
     }
