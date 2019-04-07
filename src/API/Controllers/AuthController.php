@@ -42,7 +42,8 @@ class AuthController extends BaseController
         // Verify user from token
         if ($authUserId !== $user->getAuthId()) {
             $e = new UserException('Authentication ID mismatch', 400);
-            $e->setData((object) [
+            $e->setData([
+                'userId' => $user->getId(),
                 'expectedId' => $user->getAuthId(),
                 'requestTokenId' => $authUserId
             ]);

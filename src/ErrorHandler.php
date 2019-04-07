@@ -4,6 +4,7 @@ namespace RideTimeServer;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Monolog\Logger;
+use RideTimeServer\Exception\RTException;
 
 class ErrorHandler {
     /**
@@ -16,37 +17,50 @@ class ErrorHandler {
         $this->logger = $logger;
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \Exception $exception) {
-        $errorData = [
+    public function __invoke(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        \Exception $exception
+    ) {
+        $errorInfo = [
             'status' => 'error'
         ];
+        $errorDetail = [];
+
+        if ($exception instanceof RTException) {
+            $errorDetail['data'] = $exception->getData();
+        }
 
         if ($this->isUserError($exception->getCode())) {
+            $logLevel = Logger::INFO;
+
             $httpResponseCode = $exception->getCode();
-            $errorData['message'] = $exception->getMessage();
-            $errorData['code'] = $httpResponseCode;
-            $this->logger->log(Logger::INFO, $exception->getMessage());
+            $errorInfo['message'] = $exception->getMessage();
+            $errorInfo['code'] = $httpResponseCode;
         } else {
+            $logLevel = Logger::ERROR;
+
             $httpResponseCode = 500;
 
-            $errorData['errorId'] = uniqid('err-');
-            $errorData['timestamp'] = time();
+            $errorInfo['errorId'] = uniqid('err-');
+            $errorInfo['timestamp'] = time();
 
-            $errorDetail = [
-                'trace' => $exception->getTrace(),
-                'code' => $exception->getCode()
-            ];
-
-            $this->logger->log(
-                Logger::ERROR,
-                $exception->getMessage(),
-                array_merge($errorData, $errorDetail)
-            );
+            $errorDetail['trace'] = $exception->getTrace();
+            $errorDetail['code'] = $exception->getCode();
         }
+
+        $this->logger->log(
+            $logLevel,
+            $exception->getMessage(),
+            [
+                'info' => $errorInfo,
+                'detail' => $errorDetail
+            ]
+        );
 
         return $response
             ->withStatus($httpResponseCode)
-            ->withJson($errorData);
+            ->withJson($errorInfo);
     }
 
     /**
