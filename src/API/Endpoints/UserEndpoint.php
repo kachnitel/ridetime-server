@@ -56,9 +56,9 @@ class UserEndpoint extends Endpoint implements EndpointInterface
      *
      * @return User
      */
-    public function update(User $user, array $data, string $authId): User
+    public function update(User $user, array $data): User
     {
-        $result = $this->performUpdate($user, $data, $authId);
+        $result = $this->performUpdate($user, $data);
 
         $this->saveEntity($result);
         return $result;
@@ -70,12 +70,8 @@ class UserEndpoint extends Endpoint implements EndpointInterface
      * @param string $authId
      * @return User
      */
-    public function performUpdate(User $user, array $data, string $authId): User
+    public function performUpdate(User $user, array $data): User
     {
-        if ($authId !== $user->getAuthId()) {
-            throw new \Exception('Trying to update other user than self.', 403);
-        }
-
         $userEditableProperties = [
             'name',
             'email',

@@ -27,13 +27,18 @@ class UserController extends BaseController
         // FIXME: unnecessary, call update w/ ID and use User internally in Endpoint
         /** @var \RideTimeServer\Entities\User $user */
         $user = $endpoint->get($args['id']);
+        $currentUser = $request->getAttribute('currentUser');
+        if ($user !== $currentUser) {
+            throw new UserException('Cannot update another user!', 403);
+        }
 
         $data = $this->processUserData($request, $args['id']);
 
         $result = $endpoint->update(
             $user,
             $data,
-            $request->getAttribute('token')['sub']
+            $request->getAttribute('token')['sub'] // TODO: currentUser === $user check above, remove from endpoint?
+            // TODO: Add to request/accept/remove mate
         );
 
         // 200, there's no updated HTTP code
@@ -127,6 +132,7 @@ class UserController extends BaseController
         return $response->withJson($endpoint->getDetail($result));
     }
 
+    // TODO: Verify signed in is one of args ids
     public function removeFriend(Request $request, Response $response, array $args): Response
     {
         $endpoint = $this->getEndpoint();
