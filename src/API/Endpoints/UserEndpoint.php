@@ -2,8 +2,9 @@
 namespace RideTimeServer\API\Endpoints;
 
 use RideTimeServer\Entities\User;
-use Doctrine\ORM\EntityNotFoundException;
+use RideTimeServer\Exception\EntityNotFoundException;
 use Doctrine\Common\Collections\Criteria;
+use RideTimeServer\Exception\RTException;
 
 class UserEndpoint extends Endpoint implements EndpointInterface
 {
@@ -297,15 +298,15 @@ class UserEndpoint extends Endpoint implements EndpointInterface
      */
     public function findBy(string $attribute, string $value): User
     {
-        if ($attribute === 'email') {
-            $results = $this->entityManager->getRepository(User::class)->findByEmail($value);
-            if (empty($results)) {
-                throw new EntityNotFoundException('User with e-mail ' . $value . ' doesn\'t exist', 404);
-            }
-            return $results[0];
-        } else {
-            throw new \Exception('User search by ' . $attribute . ' not supported');
+        try {
+            $result = $this->entityManager->getRepository(User::class)->findOneBy([$attribute , $value]);
+        } catch (\Doctrine\ORM\ORMException $e) {
+            throw new RTException("Error looking up User by {$attribute} = {$value}", 0, $e);
         }
+        if (empty($result)) {
+            throw new EntityNotFoundException("User with {$attribute} = {$value} not found", 404);
+        }
+        return $result;
     }
 
     /**

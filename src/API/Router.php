@@ -2,6 +2,7 @@
 namespace RideTimeServer\API;
 
 use Slim\App;
+use RideTimeServer\API\Middleware\CurrentUserMiddleware;
 
 class Router
 {
@@ -25,6 +26,7 @@ class Router
         $this->app->post('/signup', 'RideTimeServer\API\Controllers\AuthController:signUp');
 
         $app = $this->app;
+        $cuMiddleware = new CurrentUserMiddleware($app->getContainer());
         $this->app->group('/api', function () use ($app) {
             /**
              * Events
@@ -63,6 +65,6 @@ class Router
                 'RideTimeServer\API\Controllers\UserController:acceptFriend'
             );
             $app->delete('/users/{id}/friends/{friendId}', 'RideTimeServer\API\Controllers\UserController:removeFriend');
-        });
+        })->add($cuMiddleware->getMiddleware());
     }
 }
