@@ -66,7 +66,6 @@ class UserController extends BaseController
         /** @var \RideTimeServer\Entities\User $user */
         $user = $endpoint->get($args['id']);
 
-
         // First look for an uploaded picture
         // http://www.slimframework.com/docs/v3/cookbook/uploading-files.html
         if (empty($request->getUploadedFiles()['picture'])) {
@@ -93,16 +92,13 @@ class UserController extends BaseController
 
         $result = $endpoint->update(
             $user,
-            ['picture' => $picture],
-            $request->getAttribute('token')['sub']
+            ['picture' => $picture]
         );
 
         return $response->withJson($endpoint->getDetail($result));
     }
 
     /**
-     * TODO: Verify signed in is $args['id']
-     *
      * @param Request $request
      * @param Response $response
      * @param array $args
@@ -110,6 +106,10 @@ class UserController extends BaseController
      */
     public function addFriend(Request $request, Response $response, array $args): Response
     {
+        if ($request->getAttribute('currentUser')->getId() !== (int) $args['id']) {
+            throw new UserException('ID must be same as current user', 403);
+        }
+
         $endpoint = $this->getEndpoint();
         $result = $endpoint->addFriend($args['id'], $args['friendId']);
 
@@ -117,8 +117,6 @@ class UserController extends BaseController
     }
 
     /**
-     * TODO: Verify signed in is $args['friendId']
-     *
      * @param Request $request
      * @param Response $response
      * @param array $args
@@ -126,15 +124,31 @@ class UserController extends BaseController
      */
     public function acceptFriend(Request $request, Response $response, array $args): Response
     {
+        if ($request->getAttribute('currentUser')->getId() !== (int) $args['friendId']) {
+            throw new UserException('Friend ID must be same as current user', 403);
+        }
+
         $endpoint = $this->getEndpoint();
         $result = $endpoint->acceptFriend($args['id'], $args['friendId']);
 
         return $response->withJson($endpoint->getDetail($result));
     }
 
-    // TODO: Verify signed in is one of args ids
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function removeFriend(Request $request, Response $response, array $args): Response
     {
+        if (
+            $request->getAttribute('currentUser')->getId() !== (int) $args['id'] &&
+            $request->getAttribute('currentUser')->getId() !== (int) $args['friendId']
+        ) {
+            throw new UserException('ID or Friend ID must be same as current user', 403);
+        }
+
         $endpoint = $this->getEndpoint();
         $result = $endpoint->removeFriend($args['id'], $args['friendId']);
 
