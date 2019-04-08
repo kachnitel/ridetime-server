@@ -50,9 +50,6 @@ class AuthMiddleware
 
     protected function getErrorHandlerCallback() {
         return function (ResponseInterface $response, $arguments) {
-            $data['status'] = 'error';
-            $data['message'] = $arguments['message'];
-
             throw new AuthException(
                 'Authentication failed: ' . $arguments['message']
                 , $response->getStatusCode() ?? 401
