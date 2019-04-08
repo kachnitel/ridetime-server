@@ -29,17 +29,17 @@ class UserController extends BaseController
         $user = $endpoint->get($args['id']);
         $currentUser = $request->getAttribute('currentUser');
         if ($user !== $currentUser) {
-            throw new UserException('Cannot update another user!', 403);
+            $e = new UserException('Cannot update another user!', 403);
+            $e->setData([
+                'currentUser' => $currentUser->getId(),
+                'user' => $user->getId()
+            ]);
+            throw $e;
         }
 
         $data = $this->processUserData($request, $args['id']);
 
-        $result = $endpoint->update(
-            $user,
-            $data,
-            $request->getAttribute('token')['sub'] // TODO: currentUser === $user check above, remove from endpoint?
-            // TODO: Add to request/accept/remove mate
-        );
+        $result = $endpoint->update($user, $data);
 
         // 200, there's no updated HTTP code
         return $response->withJson($endpoint->getDetail($result));
