@@ -7,6 +7,7 @@ use Psr\Container\ContainerInterface;
 use RideTimeServer\API\Endpoints\UserEndpoint;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
+use RideTimeServer\Entities\User;
 
 class UserController extends BaseController
 {
@@ -27,15 +28,7 @@ class UserController extends BaseController
         // FIXME: unnecessary, call update w/ ID and use User internally in Endpoint
         /** @var \RideTimeServer\Entities\User $user */
         $user = $endpoint->get($args['id']);
-        $currentUser = $request->getAttribute('currentUser');
-        if ($user !== $currentUser) {
-            $e = new UserException('Cannot update another user!', 403);
-            $e->setData([
-                'currentUser' => $currentUser->getId(),
-                'user' => $user->getId()
-            ]);
-            throw $e;
-        }
+        $this->validateUser($request->getAttribute('currentUser'), $user);
 
         $data = $this->processUserData($request, $args['id']);
 
@@ -65,6 +58,7 @@ class UserController extends BaseController
         $endpoint = $this->getEndpoint();
         /** @var \RideTimeServer\Entities\User $user */
         $user = $endpoint->get($args['id']);
+        $this->validateUser($request->getAttribute('currentUser'), $user);
 
         // First look for an uploaded picture
         // http://www.slimframework.com/docs/v3/cookbook/uploading-files.html
@@ -164,5 +158,24 @@ class UserController extends BaseController
             $this->container->entityManager,
             $this->container->logger
         );
+    }
+
+    /**
+     * Throw error uf users are not the same
+     *
+     * @param User $currentUser
+     * @param User $user
+     * @return void
+     */
+    protected function validateUser(User $currentUser, User $user)
+    {
+        if ($user !== $currentUser) {
+            $e = new UserException('Cannot update another user!', 403);
+            $e->setData([
+                'currentUser' => $currentUser->getId(),
+                'user' => $user->getId()
+            ]);
+            throw $e;
+        }
     }
 }
