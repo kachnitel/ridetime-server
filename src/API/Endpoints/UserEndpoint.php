@@ -299,7 +299,7 @@ class UserEndpoint extends Endpoint implements EndpointInterface
     public function findBy(string $attribute, string $value): User
     {
         try {
-            $result = $this->entityManager->getRepository(User::class)->findOneBy([$attribute , $value]);
+            $result = $this->entityManager->getRepository(User::class)->findOneBy([$attribute => $value]);
         } catch (\Doctrine\ORM\ORMException $e) {
             throw new RTException("Error looking up User by {$attribute} = {$value}", 0, $e);
         }
