@@ -2,7 +2,6 @@
 namespace RideTimeServer;
 
 use Slim\App;
-use Doctrine\ORM\EntityManager;
 
 use RideTimeServer\API\Middleware\AuthMiddleware;
 use RideTimeServer\API\Middleware\LoggerMiddleware;
