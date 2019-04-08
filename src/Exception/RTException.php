@@ -11,7 +11,7 @@ class RTException extends \Exception
     /**
      * Get the value of data
      */
-    public function getData(): array
+    public function getData(): ?array
     {
         return $this->data;
     }
