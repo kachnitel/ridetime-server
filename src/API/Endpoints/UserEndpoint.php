@@ -66,7 +66,6 @@ class UserEndpoint extends Endpoint implements EndpointInterface
     /**
      * @param User $user
      * @param array $data
-     * @param string $authId
      * @return User
      */
     public function performUpdate(User $user, array $data): User

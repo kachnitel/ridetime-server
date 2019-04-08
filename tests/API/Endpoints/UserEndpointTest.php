@@ -59,22 +59,6 @@ class UserEndpointTest extends EndpointTestCase
         $this->assertEquals('e@mail.ca', $user->getEmail());
     }
 
-    public function testUpdateWrongAuthId()
-    {
-        $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));
-
-        $user = $this->callMethod($endpoint, 'createUser', [[
-            'name' => 'Joe',
-            'email' => 'e@mail.ca',
-            'hometown' => 'Whistler, BC',
-            'authId' => '123'
-        ]]);
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Trying to update other user than self.');
-        $endpoint->performUpdate($user, ['name' => 'Joseph'], '12');
-    }
-
     public function testGetLocations()
     {
         $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));

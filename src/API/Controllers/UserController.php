@@ -69,7 +69,6 @@ class UserController extends BaseController
 
         /** @var UploadedFile $uploadedFile */
         $uploadedFile = $request->getUploadedFiles()['picture'];
-
         $picture = $this->handleUploadPicture($uploadedFile, $args['id']);
 
         $result = $endpoint->update(
