@@ -8,6 +8,7 @@ use RideTimeServer\API\Endpoints\UserEndpoint;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
 use RideTimeServer\Entities\User;
+use Slim\Http\UploadedFile;
 
 class UserController extends BaseController
 {
@@ -66,8 +67,21 @@ class UserController extends BaseController
             throw new UserException('Picture not found in request', 400);
         }
 
-        /** @var \Slim\Http\UploadedFile $uploadedFile */
+        /** @var UploadedFile $uploadedFile */
         $uploadedFile = $request->getUploadedFiles()['picture'];
+
+        $picture = $this->handleUploadPicture($uploadedFile, $args['id']);
+
+        $result = $endpoint->update(
+            $user,
+            ['picture' => $picture]
+        );
+
+        return $response->withJson($endpoint->getDetail($result));
+    }
+
+    protected function handleUploadPicture(UploadedFile $uploadedFile, int $id): ?string
+    {
         if ($uploadedFile->getError() === 1) {
             $this->container['logger']->error('Error uploading file', [
                 'filename' => $uploadedFile->getClientFilename(),
@@ -82,14 +96,8 @@ class UserController extends BaseController
             $this->container['s3']['client'],
             $this->container['s3']['bucket']
         );
-        $picture = $handler->processPicture($uploadedFile, $args['id']);
 
-        $result = $endpoint->update(
-            $user,
-            ['picture' => $picture]
-        );
-
-        return $response->withJson($endpoint->getDetail($result));
+        return $handler->processPicture($uploadedFile, $id);
     }
 
     /**
