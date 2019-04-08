@@ -2,7 +2,6 @@
 namespace RideTimeServer\Entities;
 
 use \Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Criteria;
 use RideTimeServer\Exception\UserException;
 
 /**
@@ -30,7 +29,7 @@ class User implements EntityInterface
     private $email;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", unique=true)
      *
      * @var string
      */
