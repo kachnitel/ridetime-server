@@ -284,7 +284,6 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
 
     /**
      * Find an user by $attribute
-     * currently only email is supported
      *
      * @param string $attribute
      * @param string $value
