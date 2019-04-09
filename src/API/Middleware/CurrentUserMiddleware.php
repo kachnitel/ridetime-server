@@ -7,6 +7,7 @@ use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\UserEndpoint;
 use RideTimeServer\Exception\RTException;
 use RideTimeServer\Exception\EntityNotFoundException;
+use RideTimeServer\Exception\UserException;
 
 class CurrentUserMiddleware {
     /**
@@ -19,7 +20,7 @@ class CurrentUserMiddleware {
         $this->container = $container;
     }
 
-    public function getMiddleware()
+    public function getMiddleware(bool $requireUser = false)
     {
         $container = $this->container;
 
@@ -30,7 +31,7 @@ class CurrentUserMiddleware {
          *
          * @return \Psr\Http\Message\ResponseInterface
          */
-        return function (Request $request, Response $response, callable $next) use ($container) {
+        return function (Request $request, Response $response, callable $next) use ($container, $requireUser) {
             $token = $request->getAttribute('token');
             $logger = $container['logger'];
 
@@ -42,6 +43,9 @@ class CurrentUserMiddleware {
             try {
                 $user = $endpoint->findBy('authId', $token['sub']);
             } catch (EntityNotFoundException $e) {
+                if ($requireUser) {
+                    throw new UserException('Attempting to access resource without valid user', 400);
+                }
                 $logger->info('User not found by token[sub] = ' . $token['sub']);
                 return $next($request, $response);
             }
