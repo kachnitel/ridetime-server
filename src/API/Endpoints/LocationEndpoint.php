@@ -2,6 +2,7 @@
 namespace RideTimeServer\API\Endpoints;
 
 use RideTimeServer\Entities\Location;
+use Doctrine\Common\Collections\Criteria;
 
 class LocationEndpoint extends BaseEndpoint implements EndpointInterface
 {
@@ -36,8 +37,16 @@ class LocationEndpoint extends BaseEndpoint implements EndpointInterface
     /**
      * @return array[Location]
      */
-    public function list(): array
+    public function list(?array $ids): array
     {
-        return $this->listEntities(Location::class, [$this, 'getDetail']);
+        $criteria = Criteria::create()
+            // ->orderBy(array('date' => Criteria::ASC)) // distance by default
+            ->setMaxResults(20);
+
+        if ($ids) {
+            $criteria->where(Criteria::expr()->in('id', $ids));
+        }
+
+        return $this->listEntities(Location::class, [$this, 'getDetail'], $criteria);
     }
 }

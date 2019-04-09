@@ -22,13 +22,14 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
     /**
      * @return array[User]
      */
-    public function list(): array
+    public function list(?array $ids): array
     {
         $criteria = Criteria::create()
-            // ->where(Criteria::expr()->gt('date', new \DateTime()))
-            // ->orderBy(array('date' => Criteria::ASC))
-            // ->setFirstResult(0)
             ->setMaxResults(20);
+
+        if ($ids) {
+            $criteria->where(Criteria::expr()->in('id', $ids));
+        }
 
         return $this->listEntities(User::class, [$this, 'getDetail'], $criteria);
     }

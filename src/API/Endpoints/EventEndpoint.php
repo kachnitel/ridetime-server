@@ -133,10 +133,14 @@ class EventEndpoint extends BaseEndpoint implements EndpointInterface
     /**
      * @return array[Event]
      */
-    public function list(): array
+    public function list(?array $ids): array
     {
+        $expr = $ids
+            ? Criteria::expr()->in('id', $ids)
+            : Criteria::expr()->gt('date', new \DateTime());
+
         $criteria = Criteria::create()
-            ->where(Criteria::expr()->gt('date', new \DateTime()))
+            ->where($expr)
             ->orderBy(array('date' => Criteria::ASC))
             ->setFirstResult(0)
             ->setMaxResults(20);

@@ -72,6 +72,8 @@ abstract class BaseEndpoint
         return $entity;
     }
 
+    abstract function list(?array $ids);
+
     /**
      * Second argument should accept EntityInterface as a parameter
      * and return an object to return in the Response
@@ -83,11 +85,13 @@ abstract class BaseEndpoint
     protected function listEntities(
         string $entityClass,
         callable $entityExtractor,
-        Criteria $searchCriteria = null
+        Criteria $searchCriteria
     ): array
     {
+        $repository = $this->entityManager->getRepository($entityClass);
+
         // REVIEW: does this fetch all before filtering?
-        $entities = $this->entityManager->getRepository($entityClass)->findAll();
+        $entities = $repository->findAll();
 
         if ($searchCriteria) {
             $entities = (new ArrayCollection($entities))->matching($searchCriteria);

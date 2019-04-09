@@ -54,7 +54,10 @@ abstract class BaseController
     {
         $endpoint = $this->getEndpoint();
 
-        $result = $endpoint->list();
+        $ids = $request->getQueryParam('ids')
+            ? array_map(function ($id) { return (int) $id; }, $request->getQueryParam('ids'))
+            : null;
+        $result = $endpoint->list($ids);
 
         return $response->withJson($result);
     }
