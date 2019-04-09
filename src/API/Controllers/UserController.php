@@ -174,8 +174,11 @@ class UserController extends BaseController
      * @param User $user
      * @return void
      */
-    protected function validateUser(User $currentUser, User $user)
+    protected function validateUser(?User $currentUser, User $user)
     {
+        if ($currentUser === null) {
+            throw new UserException('Cannot validate user', 400);
+        }
         if ($user !== $currentUser) {
             $e = new UserException('Cannot update another user!', 403);
             $e->setData([
