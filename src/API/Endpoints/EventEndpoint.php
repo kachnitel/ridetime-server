@@ -1,14 +1,12 @@
 <?php
 namespace RideTimeServer\API\Endpoints;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Collections\Criteria;
 use Monolog\Logger;
 
 use RideTimeServer\Entities\Event;
-use RideTimeServer\Entities\EntityInterface;
 
-class EventEndpoint extends Endpoint implements EndpointInterface
+class EventEndpoint extends BaseEndpoint implements EndpointInterface
 {
     /**
      * @param array $data

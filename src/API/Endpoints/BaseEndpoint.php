@@ -8,7 +8,7 @@ use Monolog\Logger;
 use RideTimeServer\Entities\EntityInterface;
 use RideTimeServer\Exception\EntityNotFoundException;
 
-abstract class Endpoint
+abstract class BaseEndpoint
 {
     /**
      * Doctrine entity manager

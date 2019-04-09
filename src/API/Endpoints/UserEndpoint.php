@@ -6,7 +6,7 @@ use RideTimeServer\Exception\EntityNotFoundException;
 use Doctrine\Common\Collections\Criteria;
 use RideTimeServer\Exception\RTException;
 
-class UserEndpoint extends Endpoint implements EndpointInterface
+class UserEndpoint extends BaseEndpoint implements EndpointInterface
 {
     /**
      * Load user from database
@@ -48,7 +48,6 @@ class UserEndpoint extends Endpoint implements EndpointInterface
 
     /**
      * Update $user with $data
-     * Uses $authId to verify identity
      *
      * @param User $user
      * @param array $data

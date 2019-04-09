@@ -1,13 +1,9 @@
 <?php
 namespace RideTimeServer\API\Endpoints;
 
-use Doctrine\ORM\EntityManager;
-use Monolog\Logger;
-
 use RideTimeServer\Entities\Location;
-use RideTimeServer\Entities\EntityInterface;
 
-class LocationEndpoint extends Endpoint implements EndpointInterface
+class LocationEndpoint extends BaseEndpoint implements EndpointInterface
 {
         /**
      * Get location detail
