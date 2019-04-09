@@ -8,6 +8,7 @@ use RideTimeServer\API\Middleware\LoggerMiddleware;
 use RideTimeServer\API\Database;
 use RideTimeServer\API\Router;
 use Aws\S3\S3Client;
+use Psr\Container\ContainerInterface;
 
 class AppLoader implements AppLoaderInterface
 {
@@ -47,39 +48,10 @@ class AppLoader implements AppLoaderInterface
             return (new Logger())->getLogger($config);
         };
 
+        $this->initErrorHandlers($container);
+
         $container['entityManager'] = function($container) use ($config, $secrets) {
             return (new Database())->getEntityManager($config['doctrine'], $secrets['db']);
-        };
-
-        $container['errorHandler'] = function($container) {
-            return new ErrorHandler($container['logger']);
-        };
-
-        $container['phpErrorHandler'] = function($container) {
-            return new PHPErrorHandler($container['logger']);
-        };
-
-        $container['notFoundHandler'] = function ($container) {
-            return function ($request, $response) use ($container) {
-                return $response->withStatus(404)
-                    ->withHeader('Content-Type', 'text/html')
-                    ->withJson([
-                        'status' => 'error',
-                        'message' => 'Not found'
-                    ]);
-            };
-        };
-
-        $container['notAllowedHandler'] = function ($container) {
-            return function ($request, $response, $methods) use ($container) {
-                return $response->withStatus(405)
-                    ->withHeader('Allow', implode(', ', $methods))
-                    ->withHeader('Content-type', 'text/html')
-                    ->withJson([
-                        'status' => 'error',
-                        'message' => 'Method must be one of: ' . implode(', ', $methods)
-                    ]);
-            };
         };
 
         $container['s3'] = function ($container) use ($secrets) {
@@ -98,6 +70,41 @@ class AppLoader implements AppLoaderInterface
                 'client' => $client,
                 'bucket' => $credentials['s3bucket']
             ];
+        };
+    }
+
+
+    protected function initErrorHandlers(ContainerInterface $container)
+    {
+        $container['errorHandler'] = function($container) {
+            return new ErrorHandler($container['logger']);
+        };
+
+        $container['phpErrorHandler'] = function($container) {
+            return new PHPErrorHandler($container['logger']);
+        };
+
+        $container['notFoundHandler'] = function ($container) {
+            return function ($request, $response) {
+                return $response->withStatus(404)
+                    ->withHeader('Content-Type', 'text/html')
+                    ->withJson([
+                        'status' => 'error',
+                        'message' => 'Not found'
+                    ]);
+            };
+        };
+
+        $container['notAllowedHandler'] = function ($container) {
+            return function ($request, $response, $methods) {
+                return $response->withStatus(405)
+                    ->withHeader('Allow', implode(', ', $methods))
+                    ->withHeader('Content-type', 'text/html')
+                    ->withJson([
+                        'status' => 'error',
+                        'message' => 'Method must be one of: ' . implode(', ', $methods)
+                    ]);
+            };
         };
     }
 
