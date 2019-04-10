@@ -72,7 +72,7 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
      */
     public function performUpdate(User $user, array $data): User
     {
-        $userEditableProperties = [
+        $editableProperties = [
             'name',
             'email',
             'phone',
@@ -82,19 +82,9 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
             'bike',
             'favourites'
         ];
+        $properties = array_fill_keys($editableProperties, false);
 
-        foreach ($userEditableProperties as $property) {
-            $method = $this->getSetterMethod($user, $property);
-
-            if (!empty($data[$property])) {
-                // TODO: validate
-                $user->{$method}((string) $data[$property]);
-            }
-        }
-
-        if (isset($data['locations'])) {
-            $this->setLocations($user, $data['locations']);
-        }
+        $this->applyProperties($properties, $user, $data);
 
         return $user;
     }
@@ -158,7 +148,6 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
         $user = new User();
 
         // Basic (scalar) properties
-        // Array, value is whether field is mandatory
         $properties = [
             'name' => true,
             'email' => true,
@@ -171,6 +160,22 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
             'favourites' => false
         ];
 
+        $this->applyProperties($properties, $user, $data);
+
+        return $user;
+    }
+
+    /**
+     * REVIEW:
+     * Aside from supplied properties, also sets 'locations'
+     *
+     * @param array $properties [string $property => bool $required]
+     * @param User $user
+     * @param array $data
+     * @return void
+     */
+    protected function applyProperties(array $properties, User $user, array $data)
+    {
         foreach ($properties as $property => $req) {
             $method = $this->getSetterMethod($user, $property);
 
@@ -186,8 +191,6 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
         if (!empty($data['locations'])) {
             $this->setLocations($user, $data['locations']);
         }
-
-        return $user;
     }
 
     /**
