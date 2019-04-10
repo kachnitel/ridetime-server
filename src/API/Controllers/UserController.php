@@ -12,16 +12,6 @@ use Slim\Http\UploadedFile;
 
 class UserController extends BaseController
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
-
     public function update(Request $request, Response $response, array $args): Response
     {
         /** @var UserEndpoint $endpoint */
