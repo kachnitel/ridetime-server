@@ -3,7 +3,6 @@ namespace RideTimeServer\API\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Container\ContainerInterface;
 use RideTimeServer\API\Endpoints\UserEndpoint;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
@@ -21,7 +20,7 @@ class UserController extends BaseController
         $user = $endpoint->get($args['id']);
         $this->validateUser($request->getAttribute('currentUser'), $user);
 
-        $data = $this->processUserData($request, $args['id']);
+        $data = $this->processUserData($request, $user);
 
         $result = $endpoint->update($user, $data);
 
@@ -29,15 +28,15 @@ class UserController extends BaseController
         return $response->withJson($endpoint->getDetail($result));
     }
 
-    protected function processUserData(Request $request, int $userId): array
+    protected function processUserData(Request $request, User $user): array
     {
         $data = $request->getParsedBody();
-        if (!empty($data['picture'])) {
+        if (!empty($data['picture']) && $user->getPicture() !== $data['picture']) {
             $handler = new PictureHandler(
                 $this->container['s3']['client'],
                 $this->container['s3']['bucket']
             );
-            $data['picture'] = $handler->processPictureUrl($data['picture'], $userId);
+            $data['picture'] = $handler->processPictureUrl($data['picture'], $user->getId());
         }
 
         return $data ?? [];
@@ -141,7 +140,7 @@ class UserController extends BaseController
         }
 
         $endpoint = $this->getEndpoint();
-        $result = $endpoint->removeFriend($args['id'], $args['friendId']);
+        $endpoint->removeFriend($args['id'], $args['friendId']);
 
         return $response->withStatus(204);
     }
