@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use RideTimeServer\API\Endpoints\UserEndpoint;
 use RideTimeServer\API\PictureHandler;
 use RideTimeServer\Exception\UserException;
+use RideTimeServer\Exception\EntityNotFoundException;
 
 class AuthController extends BaseController
 {
@@ -38,7 +39,11 @@ class AuthController extends BaseController
         $data = $request->getParsedBody();
         $userEmail = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
 
-        $user = $this->getEndpoint()->findBy('email', $userEmail);
+        try {
+            $user = $this->getEndpoint()->findBy('email', $userEmail);
+        } catch (EntityNotFoundException $exception) {
+            throw new UserException($exception->getMessage(), 404, $exception);
+        }
         // Verify user from token
         if ($authUserId !== $user->getAuthId()) {
             $e = new UserException('Authentication ID mismatch', 400);
