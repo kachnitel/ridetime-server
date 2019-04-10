@@ -5,6 +5,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Monolog\Logger;
 use RideTimeServer\Exception\RTException;
+use RideTimeServer\Exception\UserException;
 
 class ErrorHandler {
     /**
@@ -22,24 +23,25 @@ class ErrorHandler {
         ResponseInterface $response,
         \Exception $exception
     ) {
+        // Returned to Response
         $errorInfo = [
             'status' => 'error'
         ];
+        // Logged
         $errorDetail = [];
 
         if ($exception instanceof RTException) {
             $errorDetail['data'] = $exception->getData();
         }
 
-        if ($this->isUserError($exception->getCode())) {
+        if ($this->isUserError($exception)) {
             $logLevel = Logger::INFO;
+            $httpResponseCode = $exception->getCode() > 400 ? $exception->getCode() : 400;
 
-            $httpResponseCode = $exception->getCode();
             $errorInfo['message'] = $exception->getMessage();
             $errorInfo['code'] = $httpResponseCode;
         } else {
             $logLevel = Logger::ERROR;
-
             $httpResponseCode = 500;
 
             $errorInfo['errorId'] = uniqid('err-');
@@ -64,13 +66,11 @@ class ErrorHandler {
     }
 
     /**
-     * Return true if in 4xx range, otherwise return false
-     *
      * @param integer $code
      * @return boolean
      */
-    protected function isUserError(int $code)
+    protected function isUserError(\Throwable $error)
     {
-        return ($code >= 400 && $code < 500) ? true : false;
+        return $error instanceof UserException;
     }
 }

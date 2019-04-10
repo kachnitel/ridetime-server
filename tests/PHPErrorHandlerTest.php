@@ -46,5 +46,6 @@ class PHPErrorHandlerTest extends ErrorHandlerTestCase
         $responseData = json_decode($response->getBody());
 
         $this->assertServerErrorResponseParams($responseData);
+        $this->assertStringStartsWith('err-php-', $responseData->errorId);
     }
 }
