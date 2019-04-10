@@ -74,7 +74,7 @@ class UserEndpointTest extends EndpointTestCase
 
         $location = new Location();
         $location->setId(1);
-        $user->addHomeLocation($location);
+        $user->addLocation($location);
         $this->assertEquals([1], $endpoint->getDetail($user)->locations);
     }
 

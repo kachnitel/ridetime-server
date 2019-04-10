@@ -114,7 +114,7 @@ class User implements EntityInterface
      * @var ArrayCollection|Location[]
      * @ManyToMany(targetEntity="Location")
      */
-    private $homeLocations;
+    private $locations;
 
     /**
      * Constructor
@@ -480,9 +480,9 @@ class User implements EntityInterface
      *
      * @return User
      */
-    public function addHomeLocation(\RideTimeServer\Entities\Location $location)
+    public function addLocation(\RideTimeServer\Entities\Location $location)
     {
-        $this->homeLocations[] = $location;
+        $this->locations[] = $location;
 
         return $this;
     }
@@ -494,9 +494,9 @@ class User implements EntityInterface
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeHomeLocation(\RideTimeServer\Entities\Location $location)
+    public function removeLocation(\RideTimeServer\Entities\Location $location)
     {
-        return $this->homeLocations->removeElement($location);
+        return $this->locations->removeElement($location);
     }
 
     /**
@@ -504,8 +504,8 @@ class User implements EntityInterface
      *
      * @return ArrayCollection
      */
-    public function getHomeLocations()
+    public function getLocations()
     {
-        return $this->homeLocations;
+        return $this->locations;
     }
 }

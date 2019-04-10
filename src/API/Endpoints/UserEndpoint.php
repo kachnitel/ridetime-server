@@ -91,7 +91,7 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
         }
 
         if (isset($data['locations'])) {
-            $this->setHomeLocations($user, $data['locations']);
+            $this->setLocations($user, $data['locations']);
         }
 
         return $user;
@@ -182,7 +182,7 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
         }
 
         if (!empty($data['locations'])) {
-            $this->setHomeLocations($user, $data['locations']);
+            $this->setLocations($user, $data['locations']);
         }
 
         return $user;
@@ -207,7 +207,7 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
             'favourites' => $user->getFavourites(),
             'picture' => $user->getPicture(),
             'email' => $user->getEmail(),
-            'locations' => $this->getHomeLocations($user)
+            'locations' => $this->getLocations($user)
         ];
     }
 
@@ -268,13 +268,13 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
      * @param User $user
      * @return int[]
      */
-    protected function getHomeLocations(User $user): array
+    protected function getLocations(User $user): array
     {
         $locations = [];
 
-        if (!empty($user->getHomeLocations())) {
+        if (!empty($user->getLocations())) {
             /** @var \RideTimeServer\Entities\Location $location */
-            foreach ($user->getHomeLocations() as $location) {
+            foreach ($user->getLocations() as $location) {
                 $locations[] = $location->getId();
             }
         }
@@ -307,13 +307,13 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
      * @param array $locationIds
      * @return void
      */
-    protected function setHomeLocations(User $user, array $locationIds)
+    protected function setLocations(User $user, array $locationIds)
     {
-        !empty($user->getHomeLocations()) && $user->getHomeLocations()->clear();
+        !empty($user->getLocations()) && $user->getLocations()->clear();
 
         $locationEndpoint = new LocationEndpoint($this->entityManager, $this->logger);
         foreach ($locationIds as $locationId) {
-            $user->addHomeLocation($locationEndpoint->get($locationId));
+            $user->addLocation($locationEndpoint->get($locationId));
         }
     }
 }
