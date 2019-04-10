@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Criteria;
 use RideTimeServer\Exception\RTException;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Event;
+use RideTimeServer\Exception\UserException;
 
 class UserEndpoint extends BaseEndpoint implements EndpointInterface
 {
@@ -178,14 +179,13 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
     protected function applyProperties(array $properties, User $user, array $data)
     {
         foreach ($properties as $property => $req) {
-            $method = $this->getSetterMethod($user, $property);
-
             if (empty($data[$property])) {
                 if ($req) {
-                    throw new \Exception('User creation failed: property ' . $property . ' is required.', 400);
+                    throw new UserException('User creation failed: property ' . $property . ' is required.', 422);
                 }
                 continue;
             }
+            $method = $this->getSetterMethod($user, $property);
             $user->{$method}((string) $data[$property]);
         }
 
