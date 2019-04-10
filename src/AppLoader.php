@@ -87,7 +87,6 @@ class AppLoader implements AppLoaderInterface
         $container['notFoundHandler'] = function ($container) {
             return function ($request, $response) {
                 return $response->withStatus(404)
-                    ->withHeader('Content-Type', 'text/html')
                     ->withJson([
                         'status' => 'error',
                         'message' => 'Not found'
@@ -99,7 +98,6 @@ class AppLoader implements AppLoaderInterface
             return function ($request, $response, $methods) {
                 return $response->withStatus(405)
                     ->withHeader('Allow', implode(', ', $methods))
-                    ->withHeader('Content-type', 'text/html')
                     ->withJson([
                         'status' => 'error',
                         'message' => 'Method must be one of: ' . implode(', ', $methods)
