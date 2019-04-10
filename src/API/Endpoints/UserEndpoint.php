@@ -166,8 +166,9 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
     }
 
     /**
+     * Apply $data into $user's $properties
      * REVIEW:
-     * Aside from supplied properties, also sets 'locations'
+     * Aside from supplied $properties, also sets 'locations'
      *
      * @param array $properties [string $property => bool $required]
      * @param User $user
