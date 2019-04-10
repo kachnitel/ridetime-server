@@ -16,7 +16,11 @@ class PHPErrorHandler {
         $this->logger = $logger;
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \Throwable $error) {
+    public function __invoke(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        \Throwable $error
+    ) {
         $errorData = [
             'status' => 'error',
             'errorId' => uniqid('err-php-'),
@@ -31,7 +35,10 @@ class PHPErrorHandler {
         $this->logger->log(
             Logger::ERROR,
             $error->getMessage(),
-            array_merge($errorData, $errorDetail)
+            [
+                'info' => $errorData,
+                'detail' => $errorDetail
+            ]
         );
 
         return $response

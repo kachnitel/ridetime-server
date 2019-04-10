@@ -23,7 +23,7 @@ class PHPErrorHandlerTest extends ErrorHandlerTestCase
         );
 
         $this->assertTrue($logHandler->hasRecord('Test PHP error message', Logger::ERROR));
-        $this->assertNotEmpty($logHandler->getRecords()[0]['context']['trace']);
+        $this->assertNotEmpty($logHandler->getRecords()[0]['context']['detail']['trace']);
         $this->assertEquals(500, $response->getStatusCode());
     }
 
