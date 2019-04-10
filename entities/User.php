@@ -124,6 +124,7 @@ class User implements EntityInterface
         $this->events = new ArrayCollection();
         $this->friends = new ArrayCollection();
         $this->friendsWithMe = new ArrayCollection();
+        $this->locations = new ArrayCollection();
     }
 
     /**

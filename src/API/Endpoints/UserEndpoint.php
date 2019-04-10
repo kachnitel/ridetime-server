@@ -5,6 +5,8 @@ use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\EntityNotFoundException;
 use Doctrine\Common\Collections\Criteria;
 use RideTimeServer\Exception\RTException;
+use RideTimeServer\Entities\Location;
+use RideTimeServer\Entities\Event;
 
 class UserEndpoint extends BaseEndpoint implements EndpointInterface
 {
@@ -225,17 +227,13 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
      * Find events for user
      *
      * @param User $user
-     * @return array
+     * @return int[]
      */
     protected function getUserEvents(User $user): array
     {
-        $events = [];
-        /** @var Event $event */
-        foreach ($user->getEvents() as $event) {
-            $events[] = $event->getId();
-        }
-
-        return $events;
+        return $user->getEvents()->map(function(Event $event) {
+            return $event->getId();
+        })->toArray();;
     }
 
     /**
@@ -270,16 +268,9 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
      */
     protected function getLocations(User $user): array
     {
-        $locations = [];
-
-        if (!empty($user->getLocations())) {
-            /** @var \RideTimeServer\Entities\Location $location */
-            foreach ($user->getLocations() as $location) {
-                $locations[] = $location->getId();
-            }
-        }
-
-        return $locations;
+        return $user->getLocations()->map(function(Location $location) {
+            return $location->getId();
+        })->toArray();
     }
 
     /**
