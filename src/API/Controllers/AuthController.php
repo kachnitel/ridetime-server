@@ -39,11 +39,7 @@ class AuthController extends BaseController
         $data = $request->getParsedBody();
         $userEmail = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
 
-        try {
-            $user = $this->getEndpoint()->findBy('email', $userEmail);
-        } catch (EntityNotFoundException $exception) {
-            throw new UserException($exception->getMessage(), 404, $exception);
-        }
+        $user = $this->getEndpoint()->findBy('email', $userEmail);
         // Verify user from token
         if ($authUserId !== $user->getAuthId()) {
             $e = new UserException('Authentication ID mismatch', 400);
