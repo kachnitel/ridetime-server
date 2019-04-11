@@ -74,19 +74,10 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
      */
     public function performUpdate(User $user, array $data): User
     {
-        $editableProperties = [
-            'name',
-            'email',
-            'phone',
-            'picture',
-            'hometown',
-            'level',
-            'bike',
-            'favourites'
-        ];
-        $properties = array_fill_keys($editableProperties, false);
-
-        $this->applyProperties($properties, $user, $data);
+        $user->applyProperties($data);
+        if (!empty($data['locations'])) {
+            $this->setLocations($user, $data['locations']);
+        }
 
         return $user;
     }
@@ -147,52 +138,20 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
      */
     protected function createUser(array $data): User
     {
-        $user = new User();
-
-        // Basic (scalar) properties
-        $properties = [
-            'name' => true,
-            'email' => true,
-            'phone' => false,
-            'hometown' => false,
-            'picture' => false,
-            'authId' => true,
-            'level' => false,
-            'bike' => false,
-            'favourites' => false
-        ];
-
-        $this->applyProperties($properties, $user, $data);
-
-        return $user;
-    }
-
-    /**
-     * Apply $data into $user's $properties
-     * REVIEW:
-     * Aside from supplied $properties, also sets 'locations'
-     *
-     * @param array $properties [string $property => bool $required]
-     * @param User $user
-     * @param array $data
-     * @return void
-     */
-    protected function applyProperties(array $properties, User $user, array $data)
-    {
-        foreach ($properties as $property => $req) {
-            if (empty($data[$property])) {
-                if ($req) {
-                    throw new UserException('User creation failed: property ' . $property . ' is required.', 422);
-                }
-                continue;
+        foreach (['name', 'email', 'authId'] as $prop) {
+            if (empty($data[$prop])) {
+                throw new UserException('User creation failed: property ' . $prop . ' is required.', 422);
             }
-            $method = $this->getSetterMethod($user, $property);
-            $user->{$method}((string) $data[$property]);
         }
-
+        
+        $user = new User();
+        $user->setAuthId($data['authId']);
+        $user->applyProperties($data);
         if (!empty($data['locations'])) {
             $this->setLocations($user, $data['locations']);
         }
+
+        return $user;
     }
 
     /**
@@ -207,25 +166,15 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
             'id' => $user->getId(),
             'name' => $user->getName(),
             'hometown' => $user->getHometown(),
-            'events' => $this->getUserEvents($user),
+            'events' => $this->getUserEventIds($user),
             'friends' => $this->getFriends($user),
             'level' => $user->getLevel(),
             'bike' => $user->getBike(),
             'favourites' => $user->getFavourites(),
             'picture' => $user->getPicture(),
             'email' => $user->getEmail(),
-            'locations' => $this->getLocations($user)
+            'locations' => $this->getLocationIds($user)
         ];
-    }
-
-    protected function getSetterMethod(User $user, string $property): string
-    {
-        $method = 'set' . ucfirst($property);
-        if (!method_exists($user, $method)) {
-            throw new \RuntimeException('Trying to update User with non-existing method ' . $method);
-        }
-
-        return $method;
     }
 
     /**
@@ -234,7 +183,7 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
      * @param User $user
      * @return int[]
      */
-    protected function getUserEvents(User $user): array
+    protected function getUserEventIds(User $user): array
     {
         return $user->getEvents()->map(function(Event $event) {
             return $event->getId();
@@ -271,7 +220,7 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
      * @param User $user
      * @return int[]
      */
-    protected function getLocations(User $user): array
+    protected function getLocationIds(User $user): array
     {
         return $user->getLocations()->map(function(Location $location) {
             return $location->getId();

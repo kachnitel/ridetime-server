@@ -3,6 +3,7 @@ namespace RideTimeServer\Entities;
 
 use \Doctrine\Common\Collections\ArrayCollection;
 use RideTimeServer\Exception\UserException;
+use RideTimeServer\Exception\RTException;
 
 /**
  * @Entity
@@ -508,5 +509,43 @@ class User implements EntityInterface
     public function getLocations()
     {
         return $this->locations;
+    }
+
+    /**
+     * Update User with $data
+     * Only applies editable scalar properties
+     *
+     * @param array $data
+     * @return void
+     */
+    public function applyProperties(array $data)
+    {
+        $properties = [
+            'name',
+            'email',
+            'phone',
+            'hometown',
+            'picture',
+            'level',
+            'bike',
+            'favourites'
+        ];
+
+        foreach ($properties as $property) {
+            if (!empty($data[$property])) {
+                $method = $this->getSetterMethod($property);
+                $this->{$method}((string) $data[$property]);
+            }
+        }
+    }
+
+    protected function getSetterMethod(string $property): string
+    {
+        $method = 'set' . ucfirst($property);
+        if (!method_exists($this, $method)) {
+            throw new RTException('Trying to update User with non-existing method ' . $method);
+        }
+
+        return $method;
     }
 }
