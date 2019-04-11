@@ -2,6 +2,7 @@
 namespace RideTimeServer;
 
 use Monolog\Logger as Monolog;
+use Monolog\Formatter\JsonFormatter;
 
 class Logger
 {
@@ -16,6 +17,7 @@ class Logger
         $logger = new \Monolog\Logger($config['appName']);
 
         $fileHandler = new \Monolog\Handler\StreamHandler($config['logPath']);
+        $fileHandler->setFormatter(new JsonFormatter());
         $logger->pushHandler($fileHandler);
         return $logger;
     }
