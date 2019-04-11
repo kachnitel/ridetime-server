@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Monolog\Logger;
 use RideTimeServer\Entities\EntityInterface;
 use RideTimeServer\Exception\EntityNotFoundException;
+use RideTimeServer\Exception\UserException;
 
 abstract class BaseEndpoint
 {
@@ -50,7 +51,7 @@ abstract class BaseEndpoint
             /**
              * TODO: determine the conflicting column
              */
-            throw new \Exception('Error: ' . $entityClassName . ' already exists', 409);
+            throw new UserException($entityClassName . ' already exists', 409);
         }
     }
 
