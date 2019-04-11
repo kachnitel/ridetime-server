@@ -8,6 +8,7 @@ use RideTimeServer\Exception\RTException;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Exception\UserException;
+use RideTimeServer\Entities\Friendship;
 
 class UserEndpoint extends BaseEndpoint implements EndpointInterface
 {
@@ -249,18 +250,18 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
     protected function getFriends(User $user): array
     {
         $friends = [];
+        $filter = function(Friendship $friendship) {
+            return $friendship->getStatus() === 1;
+        };
+
         /** @var Friendship $friendship */
-        foreach ($user->getFriendships() as $friendship) {
-            if ($friendship->getStatus() === 1) {
-                $friends[] = $friendship->getFriend()->getId();
-            }
+        foreach ($user->getFriendships()->filter($filter) as $friendship) {
+            $friends[] = $friendship->getFriend()->getId();
         }
 
         /** @var Friendship $friendship */
-        foreach ($user->getFriendshipsWithMe() as $friendship) {
-            if ($friendship->getStatus() === 1) {
-                $friends[] = $friendship->getUser()->getId();
-            }
+        foreach ($user->getFriendshipsWithMe()->filter($filter) as $friendship) {
+            $friends[] = $friendship->getUser()->getId();
         }
 
         return $friends;
