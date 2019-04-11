@@ -282,7 +282,7 @@ class User implements EntityInterface
     }
 
     /**
-     * @return ArrayCollection
+     * @return ArrayCollection|Friendship[]
      */
     public function getFriendships()
     {
@@ -290,7 +290,7 @@ class User implements EntityInterface
     }
 
     /**
-     * @return ArrayCollection
+     * @return ArrayCollection|Friendship[]
      */
     public function getFriendshipsWithMe()
     {

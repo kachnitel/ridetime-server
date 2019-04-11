@@ -11,17 +11,15 @@ use Slim\Http\UploadedFile;
 
 class UserController extends BaseController
 {
+    use ValidateUserTrait;
+
     public function update(Request $request, Response $response, array $args): Response
     {
-        /** @var UserEndpoint $endpoint */
-        $endpoint = $this->getEndpoint();
-        // FIXME: unnecessary, call update w/ ID and use User internally in Endpoint
-        /** @var \RideTimeServer\Entities\User $user */
-        $user = $endpoint->get($args['id']);
-        $this->validateUser($request->getAttribute('currentUser'), $user);
-
+        $user = $this->validateUser($request, $args['id']);
         $data = $this->processUserData($request, $user);
 
+        /** @var UserEndpoint $endpoint */
+        $endpoint = $this->getEndpoint();
         $result = $endpoint->update($user, $data);
 
         // 200, there's no updated HTTP code
@@ -44,11 +42,7 @@ class UserController extends BaseController
 
     public function uploadPicture(Request $request, Response $response, array $args): Response
     {
-        /** @var UserEndpoint $endpoint */
-        $endpoint = $this->getEndpoint();
-        /** @var \RideTimeServer\Entities\User $user */
-        $user = $endpoint->get($args['id']);
-        $this->validateUser($request->getAttribute('currentUser'), $user);
+        $user = $this->validateUser($request, $args['id']);
 
         // First look for an uploaded picture
         // http://www.slimframework.com/docs/v3/cookbook/uploading-files.html
@@ -60,6 +54,8 @@ class UserController extends BaseController
         $uploadedFile = $request->getUploadedFiles()['picture'];
         $picture = $this->handleUploadPicture($uploadedFile, $args['id']);
 
+        /** @var UserEndpoint $endpoint */
+        $endpoint = $this->getEndpoint();
         $result = $endpoint->update(
             $user,
             ['picture' => $picture]
@@ -96,14 +92,12 @@ class UserController extends BaseController
      */
     public function addFriend(Request $request, Response $response, array $args): Response
     {
-        if ($request->getAttribute('currentUser')->getId() !== (int) $args['id']) {
-            throw new UserException('ID must be same as current user', 403);
-        }
+        $this->validateUser($request, (int) $args['id']);
 
         $endpoint = $this->getEndpoint();
-        $result = $endpoint->addFriend($args['id'], $args['friendId']);
+        $endpoint->addFriend($args['id'], $args['friendId']);
 
-        return $response->withJson($endpoint->getDetail($result));
+        return $response->withStatus(204);
     }
 
     /**
@@ -114,14 +108,12 @@ class UserController extends BaseController
      */
     public function acceptFriend(Request $request, Response $response, array $args): Response
     {
-        if ($request->getAttribute('currentUser')->getId() !== (int) $args['friendId']) {
-            throw new UserException('Friend ID must be same as current user', 403);
-        }
+        $this->validateUser($request, (int) $args['friendId']);
 
         $endpoint = $this->getEndpoint();
-        $result = $endpoint->acceptFriend($args['id'], $args['friendId']);
+        $endpoint->acceptFriend($args['id'], $args['friendId']);
 
-        return $response->withJson($endpoint->getDetail($result));
+        return $response->withStatus(204);
     }
 
     /**
@@ -154,27 +146,5 @@ class UserController extends BaseController
             $this->container->entityManager,
             $this->container->logger
         );
-    }
-
-    /**
-     * Throw error uf users are not the same
-     *
-     * @param User $currentUser
-     * @param User $user
-     * @return void
-     */
-    protected function validateUser(?User $currentUser, User $user)
-    {
-        if ($currentUser === null) {
-            throw new UserException('Cannot validate user', 400);
-        }
-        if ($user !== $currentUser) {
-            $e = new UserException('Cannot update another user!', 403);
-            $e->setData([
-                'currentUser' => $currentUser->getId(),
-                'user' => $user->getId()
-            ]);
-            throw $e;
-        }
     }
 }
