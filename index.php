@@ -1,10 +1,17 @@
 <?php
-
 declare(strict_types=1);
-error_reporting(E_ALL);
+
+function exception_error_handler($severity, $message, $file, $line) {
+    if (!(error_reporting() & $severity)) {
+        // This error code is not included in error_reporting
+        return;
+    }
+    throw new ErrorException($message, 0, $severity, $file, $line);
+}
+set_error_handler("exception_error_handler");
+
+error_reporting(-1);
 define('ROOT_DIR', __DIR__);
-// TODO: Error handler to catch warnings etc
-ini_set('display_errors', '1');
 
 use RideTimeServer\AppLoader;
 
