@@ -53,7 +53,7 @@ class DashboardController
     {
         $this->getUserEndpoint()->acceptFriend(
             $args['id'],
-            $request->getAttribute('currentUser')
+            $request->getAttribute('currentUser')->getId()
         );
 
         return $response->withStatus(204);
