@@ -105,6 +105,8 @@ class UserController extends BaseController
      * @param Response $response
      * @param array $args
      * @return Response
+     *
+     * @deprecated
      */
     public function acceptFriend(Request $request, Response $response, array $args): Response
     {

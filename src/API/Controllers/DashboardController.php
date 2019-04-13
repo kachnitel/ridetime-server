@@ -3,10 +3,11 @@ namespace RideTimeServer\API\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use RideTimeServer\Entities\User;
 use Psr\Container\ContainerInterface;
-use RideTimeServer\Entities\Friendship;
 use Doctrine\Common\Collections\Collection;
+use RideTimeServer\Entities\User;
+use RideTimeServer\Entities\Friendship;
+use RideTimeServer\API\Endpoints\UserEndpoint;
 
 class DashboardController
 {
@@ -40,6 +41,24 @@ class DashboardController
         ]);
     }
 
+    /**
+     * Accept friendship request from $args['id']
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function acceptFriend(Request $request, Response $response, array $args): Response
+    {
+        $this->getUserEndpoint()->acceptFriend(
+            $args['id'],
+            $request->getAttribute('currentUser')
+        );
+
+        return $response->withStatus(204);
+    }
+
     protected function filterPendingRequests(Collection $friendships)
     {
         $filter = function(Friendship $friendship) {
@@ -47,5 +66,16 @@ class DashboardController
         };
 
         return $friendships->filter($filter);
+    }
+
+    /**
+     * @return UserEndpoint
+     */
+    protected function getUserEndpoint(): UserEndpoint
+    {
+        return new UserEndpoint(
+            $this->container->entityManager,
+            $this->container->logger
+        );
     }
 }

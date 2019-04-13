@@ -83,7 +83,7 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
     }
 
     /**
-     * @param integer $userId
+     * @param integer $userId Logged in user
      * @param integer $friendId
      * @return User
      */
@@ -101,12 +101,11 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
 
     /**
      * @param integer $userId
-     * @param integer $friendId
+     * @param integer $friendId Logged in user
      * @return User
      */
     public function acceptFriend(int $userId, int $friendId): User
     {
-        // To keep consistent, $user is requesting while $friend is logged in
         $user = $this->get($userId);
         $friend = $this->get($friendId);
 
@@ -143,7 +142,7 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
                 throw new UserException('User creation failed: property ' . $prop . ' is required.', 422);
             }
         }
-        
+
         $user = new User();
         $user->setAuthId($data['authId']);
         $user->applyProperties($data);
