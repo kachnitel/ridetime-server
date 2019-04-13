@@ -7,7 +7,8 @@ use Monolog\Logger;
 use RideTimeServer\Exception\RTException;
 use RideTimeServer\Exception\UserException;
 
-class ErrorHandler {
+class ErrorHandler
+{
     /**
      * @var Logger
      */
