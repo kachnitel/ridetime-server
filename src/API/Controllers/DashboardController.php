@@ -36,6 +36,7 @@ class DashboardController
             });
 
         return $response->withJson([
+            'currentUser' => $this->getUserEndpoint()->getDetail($user),
             'requests' => array_values($fRequests->toArray()),
             'sentRequests' => array_values($sentRequests->toArray())
         ]);
