@@ -123,6 +123,7 @@ class UserController extends BaseController
      * @param Response $response
      * @param array $args
      * @return Response
+     * @deprecated
      */
     public function removeFriend(Request $request, Response $response, array $args): Response
     {

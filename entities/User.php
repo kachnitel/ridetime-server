@@ -199,7 +199,7 @@ class User implements EntityInterface
     }
 
     /**
-     * Where user_id = myself
+     * Adds friendship to both parties
      *
      * @param Friendship $friendship
      * @return void
@@ -267,16 +267,21 @@ class User implements EntityInterface
     }
 
     /**
+     * Look into both friends collections and delete
      * @param User $user
      * @return void
      */
     public function removeFriend(User $user)
     {
         /** @var Friendship $friendship */
-        $friendship = $this->friends->filter(function ($fs) use ($user) {
-            /** @var Friendship $fs */
+        $friendship = $this->friends->filter(function (Friendship $fs) use ($user) {
             return $fs->getFriend() === $user;
         })->first();
+        if (empty($friendship)) {
+            $friendship = $this->friendsWithMe->filter(function (Friendship $fs) use ($user) {
+                return $fs->getUser() === $user;
+            })->first();
+        }
 
         $this->removeFriendship($friendship);
         return $friendship;

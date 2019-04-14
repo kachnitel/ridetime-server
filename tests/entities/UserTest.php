@@ -44,4 +44,30 @@ class UserTest extends TestCase
         $this->expectException(UserException::class);
         $user->acceptFriend($friend);
     }
+
+    public function testRemoveFriend()
+    {
+        $user = new User();
+        $friendA = new User();
+        $friendB = new User();
+
+        $user->addFriend($friendA);
+        $this->assertEquals(
+            $friendA,
+            $user->getFriendships()->first()->getFriend()
+        );
+
+        $user->removeFriend($friendA);
+        $this->assertEmpty($user->getFriendships());
+
+        $friendB->addFriend($user);
+        $this->assertEquals(
+            $friendB,
+            $user->getFriendshipsWithMe()->first()->getUser()
+        );
+
+        $user->removeFriend($friendB);
+        $this->assertEmpty($user->getFriendshipsWithMe());
+
+    }
 }

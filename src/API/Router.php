@@ -70,8 +70,6 @@ class Router
         $app->post('/users/{id}/picture', 'RideTimeServer\API\Controllers\UserController:uploadPicture');
         /** Request friendship */
         $app->post('/users/{id}/friends/{friendId}', 'RideTimeServer\API\Controllers\UserController:addFriend');
-        /** Delete friendship */
-        $app->delete('/users/{id}/friends/{friendId}', 'RideTimeServer\API\Controllers\UserController:removeFriend');
     }
 
     protected function initDashboardRoutes(App $app)
@@ -79,5 +77,7 @@ class Router
         $app->get('', 'RideTimeServer\API\Controllers\DashboardController:all');
         /** Accept friendship */
         $app->put('/friends/{id}/accept', 'RideTimeServer\API\Controllers\DashboardController:acceptFriend');
+        /** Decline friendship */
+        $app->delete('/friends/{id}', 'RideTimeServer\API\Controllers\DashboardController:removeFriend');
     }
 }

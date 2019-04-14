@@ -60,6 +60,26 @@ class DashboardController
         return $response->withStatus(204);
     }
 
+    /**
+     * Delete friendship between current user and $args['id']
+     * independent on who requested the friendship
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function removeFriend(Request $request, Response $response, array $args): Response
+    {
+        $fs = $request->getAttribute('currentUser')->removeFriend(
+            $this->getUserEndpoint()->get($args['id'])
+        );
+        $this->container['entityManager']->remove($fs);
+        $this->container['entityManager']->flush();
+
+        return $response->withStatus(204);
+    }
+
     protected function filterPendingRequests(Collection $friendships)
     {
         $filter = function(Friendship $friendship) {
