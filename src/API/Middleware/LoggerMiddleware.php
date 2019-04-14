@@ -29,7 +29,7 @@ class LoggerMiddleware
          * @return \Psr\Http\Message\ResponseInterface
          */
         return function (Request $request, Response $response, callable $next) use ($container) {
-            $container['logger']->addInfo($request->getMethod() . ' ' . $request->getUri()->getPath());
+            $container['logger']->addDebug($request->getMethod() . ' ' . $request->getUri()->getPath());
 
             $response = $next($request, $response);
 
