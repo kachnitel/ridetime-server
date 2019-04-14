@@ -84,8 +84,8 @@ class UserEndpointTest extends EndpointTestCase
     public function testUserReturnsConfirmedFriends()
     {
         $user = new User();
-        $friend1 = $this->generateUser();
-        $friend2 = $this->generateUser();
+        $friend1 = $this->generateUser(1);
+        $friend2 = $this->generateUser(2);
 
         $user->addFriend($friend1);
         $friend2->addFriend($user);
@@ -103,14 +103,14 @@ class UserEndpointTest extends EndpointTestCase
         );
     }
 
-    protected function generateUser(): User
+    protected function generateUser($id = null): User
     {
         $userClass = new \ReflectionClass(User::class);
         $user = $userClass->newInstance();
 
         $property = $userClass->getProperty('id');
         $property->setAccessible(true);
-        $property->setValue($user, uniqid());
+        $property->setValue($user, $id ?? uniqid());
 
         return $user;
     }
