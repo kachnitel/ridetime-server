@@ -235,10 +235,13 @@ class User implements EntityInterface
      * Create a friendship with status 0
      *
      * @param User $friend
-     * @return void
+     * @return Friendship
      */
-    public function addFriend(User $friend)
+    public function addFriend(User $friend): Friendship
     {
+        if ($friend === $this) {
+            throw new UserException('Cannot request friendship with yourself');
+        }
         $fs = new Friendship();
         $fs->setUser($this);
         $fs->setFriend($friend);
@@ -246,6 +249,7 @@ class User implements EntityInterface
         $fs->setStatus(0);
 
         $this->addFriendship($fs);
+        return $fs;
     }
 
     /**
