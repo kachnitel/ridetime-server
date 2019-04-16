@@ -22,6 +22,9 @@ class UserTest extends TestCase
         $this->assertSame($friend, $friendship->getFriend());
         $this->assertEquals(0, $friendship->getStatus());
         $this->assertContains($friendship, $friend->getFriendshipsWithMe());
+
+        $this->expectException(UserException::class);
+        $user->addFriend($user);
     }
 
     public function testAcceptFriend()

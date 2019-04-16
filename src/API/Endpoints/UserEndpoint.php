@@ -68,35 +68,45 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
     }
 
     /**
-     * @param User $user
-     * @param array $data
+     * Find an user by $attribute
+     *
+     * @param string $attribute
+     * @param string $value
      * @return User
      */
-    public function performUpdate(User $user, array $data): User
+    public function findBy(string $attribute, string $value): User
     {
-        $user->applyProperties($data);
-        if (!empty($data['locations'])) {
-            $this->setLocations($user, $data['locations']);
+        try {
+            $result = $this->entityManager->getRepository(User::class)->findOneBy([$attribute => $value]);
+        } catch (\Doctrine\ORM\ORMException $e) {
+            throw new RTException("Error looking up User by {$attribute} = {$value}", 0, $e);
         }
-
-        return $user;
+        if (empty($result)) {
+            throw new EntityNotFoundException("User with {$attribute} = {$value} not found", 404);
+        }
+        return $result;
     }
+
+    /**
+     * Friendship management
+     */
+
 
     /**
      * @param integer $userId Logged in user
      * @param integer $friendId
-     * @return User
+     * @return Friendship
      */
-    public function addFriend(int $userId, int $friendId): User
+    public function addFriend(int $userId, int $friendId): Friendship
     {
         $user = $this->get($userId);
         $friend = $this->get($friendId);
 
-        $user->addFriend($friend);
+        $fs = $user->addFriend($friend);
 
         $this->saveEntity($user);
 
-        return $user;
+        return $fs;
     }
 
     /**
@@ -127,6 +137,26 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
         $this->entityManager->flush();
 
         return true;
+    }
+
+    /**
+     * TODO:
+     * Functions below would be better suited in User?
+     */
+
+    /**
+     * @param User $user
+     * @param array $data
+     * @return User
+     */
+    public function performUpdate(User $user, array $data): User
+    {
+        $user->applyProperties($data);
+        if (!empty($data['locations'])) {
+            $this->setLocations($user, $data['locations']);
+        }
+
+        return $user;
     }
 
     /**
@@ -224,26 +254,6 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
         return $user->getLocations()->map(function(Location $location) {
             return $location->getId();
         })->toArray();
-    }
-
-    /**
-     * Find an user by $attribute
-     *
-     * @param string $attribute
-     * @param string $value
-     * @return User
-     */
-    public function findBy(string $attribute, string $value): User
-    {
-        try {
-            $result = $this->entityManager->getRepository(User::class)->findOneBy([$attribute => $value]);
-        } catch (\Doctrine\ORM\ORMException $e) {
-            throw new RTException("Error looking up User by {$attribute} = {$value}", 0, $e);
-        }
-        if (empty($result)) {
-            throw new EntityNotFoundException("User with {$attribute} = {$value} not found", 404);
-        }
-        return $result;
     }
 
     /**

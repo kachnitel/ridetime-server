@@ -42,6 +42,18 @@ class DashboardController
         ]);
     }
 
+    public function requestFriend(Request $request, Response $response, array $args): Response
+    {
+        $friendship = $this->getUserEndpoint()->addFriend(
+            $request->getAttribute('currentUser')->getId(),
+            $args['id']
+        );
+
+        return $response->withJson([
+            'friendship' => $friendship->asObject()
+        ]);
+    }
+
     /**
      * Accept friendship request from $args['id']
      *
