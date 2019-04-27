@@ -8,10 +8,45 @@ use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
 use RideTimeServer\Entities\User;
 use Slim\Http\UploadedFile;
+use Elasticsearch\ClientBuilder;
 
 class UserController extends BaseController
 {
     use ValidateUserTrait;
+
+    public function search(Request $request, Response $response, array $args): Response
+    {
+        $query = $request->getQueryParams();
+        if (empty($query['q'])) {
+            throw new UserException('Missing required parameter "q"');
+        }
+
+        $search = explode(':', $query['q']);
+        if (count($search) !== 2) {
+            throw new UserException('Search query must be in format key:search term');
+        }
+
+        $esClient = ClientBuilder::create()->build();
+        $params = [
+            'index' => 'test',
+            'type' => 'user',
+            'body' => [
+                'query' => [
+                    'match_phrase_prefix' => [
+                        $search[0] => $search[1]
+                    ]
+                ]
+            ]
+        ];
+
+        $result = $esClient->search($params);
+
+        $hits = array_map(function($hit) {
+            return $hit['_source'];
+        }, $result['hits']['hits']);
+
+        return $response->withJson($hits);
+    }
 
     public function update(Request $request, Response $response, array $args): Response
     {

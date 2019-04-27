@@ -62,6 +62,8 @@ class Router
     {
         /** List users */
         $app->get('/users', 'RideTimeServer\API\Controllers\UserController:list');
+        /** Search users */
+        $app->get('/users/search', 'RideTimeServer\API\Controllers\UserController:search');
         /** Get user detail */
         $app->get('/users/{id}', 'RideTimeServer\API\Controllers\UserController:get');
         /** Update user */
