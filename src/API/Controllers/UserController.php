@@ -21,15 +21,24 @@ class UserController extends BaseController
             throw new UserException('Missing required parameter "q"');
         }
 
-        $search = explode(':', $query['q']);
+        $search = explode(':', $query['q'], 2);
         if (count($search) !== 2) {
             throw new UserException('Search query must be in format key:search term');
         }
 
         $esClient = ClientBuilder::create()->build();
+        /**
+         * TODO:
+         * Create a more sophisticated query, index from cfg...
+         * $search[0] can be exploded to multiple fields
+         * - https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html#type-phrase
+         * Sanitize both strings - only a-z keys, reasonable values
+         * FIXME: ES data stored as strings currently
+         *
+         */
         $params = [
-            'index' => 'test',
-            'type' => 'user',
+            'index' => 'user',
+            // 'type' => 'user',
             'body' => [
                 'query' => [
                     'match_phrase_prefix' => [
