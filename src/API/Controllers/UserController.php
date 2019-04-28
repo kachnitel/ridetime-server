@@ -33,12 +33,10 @@ class UserController extends BaseController
          * $search[0] can be exploded to multiple fields
          * - https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html#type-phrase
          * Sanitize both strings - only a-z keys, reasonable values
-         * FIXME: ES data stored as strings currently
          *
          */
         $params = [
             'index' => 'user',
-            // 'type' => 'user',
             'body' => [
                 'query' => [
                     'match_phrase_prefix' => [
