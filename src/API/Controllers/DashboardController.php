@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Friendship;
 use RideTimeServer\API\Endpoints\UserEndpoint;
+use RideTimeServer\API\Endpoints\NotificationsEndpoint;
+use RideTimeServer\Notifications;
 
 class DashboardController
 {
@@ -47,6 +49,17 @@ class DashboardController
         $friendship = $this->getUserEndpoint()->addFriend(
             $request->getAttribute('currentUser')->getId(),
             $args['id']
+        );
+
+        $notifications = new Notifications();
+        $notifications->sendNotification(
+            $friendship->getFriend()->getNotificationsTokens()->toArray(),
+            'Friend request from ' . $friendship->getUser()->getName(),
+            null,
+            (object) [
+                'type' => 'friendRequest',
+                'from' => $friendship->getUser()->getId()
+            ]
         );
 
         return $response->withJson([
@@ -107,6 +120,14 @@ class DashboardController
     protected function getUserEndpoint(): UserEndpoint
     {
         return new UserEndpoint(
+            $this->container->entityManager,
+            $this->container->logger
+        );
+    }
+
+    protected function getNotificationsEndpoint(): NotificationsEndpoint
+    {
+        return new NotificationsEndpoint(
             $this->container->entityManager,
             $this->container->logger
         );
