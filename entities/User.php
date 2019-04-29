@@ -118,6 +118,14 @@ class User implements EntityInterface
     private $locations;
 
     /**
+     * Tokens for Push Notifications
+     * @var ArrayCollection|NotificationsToken[]
+     *
+     * @OneToMany(targetEntity="NotificationsToken", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $notificationsTokens;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -556,5 +564,34 @@ class User implements EntityInterface
         }
 
         return $method;
+    }
+
+    /**
+     * Get tokens for Push Notifications
+     *
+     * @return  ArrayCollection|NotificationsToken[]
+     */
+    public function getNotificationsTokens()
+    {
+        return $this->notificationsTokens;
+    }
+
+    /**
+     * Set tokens for Push Notifications
+     *
+     * @param  ArrayCollection|NotificationsToken[]  $notificationsTokens  Tokens for Push Notifications
+     *
+     * @return  self
+     */
+    public function setNotificationsTokens($notificationsTokens)
+    {
+        $this->notificationsTokens = $notificationsTokens;
+
+        return $this;
+    }
+
+    public function addNotificationsToken(NotificationsToken $token)
+    {
+        $this->notificationsTokens[] = $token;
     }
 }

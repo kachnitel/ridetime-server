@@ -38,6 +38,10 @@ class Router
         $this->app->group('/dashboard', function (App $app) use ($that) {
             $that->initDashboardRoutes($app);
         })->add($cuMiddleware->getMiddleware(true));
+
+        $this->app->group('/notifications', function (App $app) use ($that) {
+            $that->initNotificationsRoutes($app);
+        })->add($cuMiddleware->getMiddleware(true));
     }
 
     protected function initEventRoutes(App $app)
@@ -82,5 +86,13 @@ class Router
         $app->put('/friends/{id}/accept', 'RideTimeServer\API\Controllers\DashboardController:acceptFriend');
         /** Decline/Delete friendship */
         $app->delete('/friends/{id}', 'RideTimeServer\API\Controllers\DashboardController:removeFriend');
+    }
+
+    protected function initNotificationsRoutes(App $app)
+    {
+        /** Set notifications token */
+        $app->put('/token', 'RideTimeServer\API\Controllers\NotificationsController:setToken');
+        /** Send notification */
+        // $app->post('', 'RideTimeServer\API\Controllers');
     }
 }

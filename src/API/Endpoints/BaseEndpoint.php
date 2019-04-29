@@ -73,8 +73,6 @@ abstract class BaseEndpoint
         return $entity;
     }
 
-    abstract function list(?array $ids);
-
     /**
      * Second argument should accept EntityInterface as a parameter
      * and return an object to return in the Response
