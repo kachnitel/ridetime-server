@@ -30,17 +30,19 @@ class UserController extends BaseController
         /**
          * TODO:
          * Create a more sophisticated query, index from cfg...
-         * $search[0] can be exploded to multiple fields
+         * $search[0]/$key can be exploded to multiple fields
          * - https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html#type-phrase
-         * Sanitize both strings - only a-z keys, reasonable values
          *
          */
+        $key = filter_var($search[0], FILTER_SANITIZE_STRING);
+        $val = filter_var($search[1], FILTER_SANITIZE_STRING);
+
         $params = [
             'index' => 'user',
             'body' => [
                 'query' => [
                     'match_phrase_prefix' => [
-                        $search[0] => $search[1]
+                        $key => $val
                     ]
                 ]
             ]
