@@ -262,9 +262,9 @@ class User implements EntityInterface
 
     /**
      * @param User $user User which initiated the friend request
-     * @return void
+     * @return Friendship
      */
-    public function acceptFriend(User $user)
+    public function acceptFriend(User $user): Friendship
     {
         /** @var Friendship $friendship */
         $friendship = $this->friendsWithMe->filter(function ($fs) use ($user) {
@@ -276,6 +276,7 @@ class User implements EntityInterface
             throw new UserException('Cannot accept friendship from ' . $user->getId() . ' - Not found', 404);
         }
         $friendship->accept();
+        return $friendship;
     }
 
     /**

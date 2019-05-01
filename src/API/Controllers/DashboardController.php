@@ -78,9 +78,21 @@ class DashboardController
      */
     public function acceptFriend(Request $request, Response $response, array $args): Response
     {
-        $this->getUserEndpoint()->acceptFriend(
+        $friendship = $this->getUserEndpoint()->acceptFriend(
             $args['id'],
             $request->getAttribute('currentUser')->getId()
+        );
+
+        $notifications = new Notifications();
+        $notifications->sendNotification(
+            $friendship->getUser()->getNotificationsTokens()->toArray(),
+            'Friend request accepted',
+            $friendship->getUser()->getName() . ' accepted your friend request!',
+            (object) [
+                'type' => 'friendRequestAccepted',
+                'from' => $friendship->getFriend()->getId()
+            ],
+            'friendship'
         );
 
         return $response->withStatus(204);

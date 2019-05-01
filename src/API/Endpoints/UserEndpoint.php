@@ -114,16 +114,16 @@ class UserEndpoint extends BaseEndpoint implements EndpointInterface
      * @param integer $friendId Logged in user
      * @return User
      */
-    public function acceptFriend(int $userId, int $friendId): User
+    public function acceptFriend(int $userId, int $friendId): Friendship
     {
         $user = $this->get($userId);
         $friend = $this->get($friendId);
 
-        $friend->acceptFriend($user);
+        $friendship = $friend->acceptFriend($user);
 
         $this->saveEntity($friend);
 
-        return $friend;
+        return $friendship;
     }
 
     public function removeFriend(int $userId, int $friendId)
