@@ -54,12 +54,13 @@ class DashboardController
         $notifications = new Notifications();
         $notifications->sendNotification(
             $friendship->getFriend()->getNotificationsTokens()->toArray(),
-            'Friend request from ' . $friendship->getUser()->getName(),
-            null,
+            'New friend request',
+            $friendship->getUser()->getName() . ' wants to be your friend!',
             (object) [
                 'type' => 'friendRequest',
                 'from' => $friendship->getUser()->getId()
-            ]
+            ],
+            'friendship'
         );
 
         return $response->withJson([
