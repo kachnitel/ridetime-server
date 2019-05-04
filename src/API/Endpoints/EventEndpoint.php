@@ -6,7 +6,7 @@ use Monolog\Logger;
 
 use RideTimeServer\Entities\Event;
 
-class EventEndpoint extends BaseEndpoint implements EndpointInterface
+class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
     /**
      * @param array $data

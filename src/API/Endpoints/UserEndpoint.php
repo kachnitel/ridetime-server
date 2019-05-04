@@ -10,7 +10,7 @@ use RideTimeServer\Entities\Event;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\Entities\Friendship;
 
-class UserEndpoint extends BaseEndpoint implements EndpointInterface
+class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
     /**
      * Load user from database
