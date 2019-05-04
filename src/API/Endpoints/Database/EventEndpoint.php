@@ -1,9 +1,9 @@
 <?php
-namespace RideTimeServer\API\Endpoints;
+namespace RideTimeServer\API\Endpoints\Database;
 
 use Doctrine\Common\Collections\Criteria;
 use Monolog\Logger;
-
+use RideTimeServer\API\Endpoints\EntityEndpointInterface;
 use RideTimeServer\Entities\Event;
 
 class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface

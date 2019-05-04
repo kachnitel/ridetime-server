@@ -3,7 +3,7 @@ namespace RideTimeServer\API\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use RideTimeServer\API\Endpoints\UserEndpoint;
+use RideTimeServer\API\Endpoints\Database\UserEndpoint;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
 use RideTimeServer\Entities\User;

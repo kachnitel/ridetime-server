@@ -4,7 +4,7 @@ namespace RideTimeServer\API\Middleware;
 use Psr\Container\ContainerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use RideTimeServer\API\Endpoints\UserEndpoint;
+use RideTimeServer\API\Endpoints\Database\UserEndpoint;
 use RideTimeServer\Exception\RTException;
 use RideTimeServer\Exception\EntityNotFoundException;
 use RideTimeServer\Exception\UserException;

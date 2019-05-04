@@ -1,8 +1,9 @@
 <?php
-namespace RideTimeServer\API\Endpoints;
+namespace RideTimeServer\API\Endpoints\Database;
 
 use RideTimeServer\Entities\NotificationsToken;
 use RideTimeServer\Entities\User;
+use RideTimeServer\API\Endpoints\EndpointInterface;
 
 class NotificationsEndpoint extends BaseEndpoint implements EndpointInterface
 {

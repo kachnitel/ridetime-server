@@ -4,7 +4,7 @@ namespace RideTimeServer\API\Endpoints;
 use RideTimeServer\Entities\Location;
 use Doctrine\Common\Collections\Criteria;
 
-class LocationEndpoint extends BaseEndpoint implements EntityEndpointInterface
+class LocationEndpoint extends Database\BaseEndpoint implements EntityEndpointInterface
 {
         /**
      * Get location detail

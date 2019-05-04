@@ -1,5 +1,5 @@
 <?php
-namespace RideTimeServer\API\Endpoints;
+namespace RideTimeServer\API\Endpoints\Database;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Collections\Criteria;

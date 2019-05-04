@@ -3,7 +3,7 @@ namespace RideTimeServer\API\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use RideTimeServer\API\Endpoints\EventEndpoint;
+use RideTimeServer\API\Endpoints\Database\EventEndpoint;
 
 class EventController extends BaseController
 {

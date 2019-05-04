@@ -1,7 +1,7 @@
 <?php
 namespace RideTimeServer\Tests\API\Endpoints;
 
-use RideTimeServer\API\Endpoints\UserEndpoint;
+use RideTimeServer\API\Endpoints\Database\UserEndpoint;
 use Monolog\Logger;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Location;

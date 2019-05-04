@@ -5,7 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Container\ContainerInterface;
 use RideTimeServer\Exception\UserException;
-use RideTimeServer\API\Endpoints\NotificationsEndpoint;
+use RideTimeServer\API\Endpoints\Database\NotificationsEndpoint;
 
 class NotificationsController
 {

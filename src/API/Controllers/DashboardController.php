@@ -7,8 +7,8 @@ use Psr\Container\ContainerInterface;
 use Doctrine\Common\Collections\Collection;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Friendship;
-use RideTimeServer\API\Endpoints\UserEndpoint;
-use RideTimeServer\API\Endpoints\NotificationsEndpoint;
+use RideTimeServer\API\Endpoints\Database\UserEndpoint;
+use RideTimeServer\API\Endpoints\Database\NotificationsEndpoint;
 use RideTimeServer\Notifications;
 
 class DashboardController

@@ -1,5 +1,5 @@
 <?php
-namespace RideTimeServer\API\Endpoints;
+namespace RideTimeServer\API\Endpoints\Database;
 
 use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\EntityNotFoundException;
@@ -9,6 +9,7 @@ use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\Entities\Friendship;
+use RideTimeServer\API\Endpoints\EntityEndpointInterface;
 
 class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
