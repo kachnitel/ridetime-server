@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8cbb7735ea67fbbac9093afc260af272",
+    "content-hash": "905bd8e732dce6d2e810565fd1abc8d2",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1076,6 +1076,45 @@
                 "search"
             ],
             "time": "2019-04-24T08:57:42+00:00"
+        },
+        {
+            "name": "emarref/guzzle-param-middleware",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/emarref/guzzle-param-middleware.git",
+                "reference": "829acd8ce262b68afcf04604bba443a71676102b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/emarref/guzzle-param-middleware/zipball/829acd8ce262b68afcf04604bba443a71676102b",
+                "reference": "829acd8ce262b68afcf04604bba443a71676102b",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Emarref\\Guzzle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Malcolm Fell",
+                    "email": "emarref@gmail.com"
+                }
+            ],
+            "description": "Guzzle Middleware that adds one or more query parameters to all requests for a client.",
+            "time": "2016-04-12T23:07:13+00:00"
         },
         {
             "name": "firebase/php-jwt",

@@ -11,7 +11,8 @@
         "codercat/jwk-to-pem": "^0.0.1",
         "aws/aws-sdk-php": "^3.87",
         "elasticsearch/elasticsearch": "^6.5",
-        "guzzlehttp/guzzle": "^6.3"
+        "guzzlehttp/guzzle": "^6.3",
+        "emarref/guzzle-param-middleware": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0",

@@ -60,6 +60,10 @@ class Router
     {
         /** List locations */
         $app->get('/locations', 'RideTimeServer\API\Controllers\LocationController:list');
+        /** Nearby locations */
+        $app->get('/locations/nearby', 'RideTimeServer\API\Controllers\LocationController:nearby');
+        /** Bounding box */
+        $app->get('/locations/bbox', 'RideTimeServer\API\Controllers\LocationController:bbox');
     }
 
     protected function initUserRoutes(App $app)

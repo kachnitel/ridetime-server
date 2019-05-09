@@ -9,6 +9,7 @@ use RideTimeServer\API\Database;
 use RideTimeServer\API\Router;
 use Aws\S3\S3Client;
 use Psr\Container\ContainerInterface;
+use RideTimeServer\API\Connectors\TrailforksConnector;
 
 class AppLoader implements AppLoaderInterface
 {
@@ -70,6 +71,13 @@ class AppLoader implements AppLoaderInterface
                 'client' => $client,
                 'bucket' => $credentials['s3bucket']
             ];
+        };
+
+        $container['trailforks'] = function($container) use ($secrets) {
+            return new TrailforksConnector(
+                $secrets['trailforks']['app_id'],
+                $secrets['trailforks']['app_secret']
+            );
         };
     }
 
