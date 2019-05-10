@@ -64,6 +64,8 @@ class Router
         $app->get('/locations/nearby', 'RideTimeServer\API\Controllers\LocationController:nearby');
         /** Bounding box */
         $app->get('/locations/bbox', 'RideTimeServer\API\Controllers\LocationController:bbox');
+        /** Search */
+        $app->get('/locations/search', 'RideTimeServer\API\Controllers\LocationController:search');
     }
 
     protected function initUserRoutes(App $app)

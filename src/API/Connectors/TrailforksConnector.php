@@ -73,6 +73,17 @@ class TrailforksConnector
         return $this->doRequest('regions', $query)->data;
     }
 
+    public function searchLocations(string $search, $fields = [])
+    {
+        $filter = "search::{$search};bottom::ridingarea";
+        $query = [
+            'filter' => $filter,
+            'fields' => join(',', $fields)
+        ];
+
+        return $this->doRequest('regions', $query)->data;
+    }
+
     protected function doRequest(string $endpoint, array $query)
     {
         try {

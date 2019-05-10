@@ -33,6 +33,15 @@ class LocationController extends BaseController
         return $response->withJson($result);
     }
 
+    public function search(Request $request, Response $response, array $args): Response
+    {
+        $tfEndpoint = new TrailforksEndpoint($this->container['trailforks']);
+
+        $result = $tfEndpoint->locationsSearch($request->getQueryParams()['name']);
+
+        return $response->withJson($result);
+    }
+
     /**
      * @return LocationEndpoint
      */

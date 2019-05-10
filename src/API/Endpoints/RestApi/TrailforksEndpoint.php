@@ -11,6 +11,7 @@ use RideTimeServer\API\Connectors\TrailforksConnector;
  */
 class TrailforksEndpoint
 {
+    const REGION_MAP_URL_PREFIX = 'https://ep1.pinkbike.org/files/regionmaps/';
     /**
      * @var TrailforksConnector
      */
@@ -55,6 +56,13 @@ class TrailforksEndpoint
         );
     }
 
+    public function locationsSearch(string $search): array
+    {
+        return $this->processLocations(
+            $this->connector->searchLocations($search, $this->fields['locations'])
+        );
+    }
+
     protected function processLocations(array $results): array
     {
         $filtered = array_values($this->filterHidden($results));
@@ -85,7 +93,7 @@ class TrailforksEndpoint
                 2 => (int) $location->tc_5,
                 3 => (int) $location->tc_6
             ],
-            'imagemap' => $location->imagemap,
+            'imagemap' => $location->imagemap ? self::REGION_MAP_URL_PREFIX . $location->imagemap : null,
             'shuttle' => (bool) $location->shuttle,
             'bikepark' => (bool) $location->bikepark
         ];
