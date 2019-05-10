@@ -3,6 +3,12 @@ namespace RideTimeServer\API\Endpoints\RestApi;
 
 use RideTimeServer\API\Connectors\TrailforksConnector;
 
+/**
+ * REVIEW:
+ * Could move locationsNearby and BBox to LocationEndpoint
+ * deprecating this class
+ * since all API logic is in Connector
+ */
 class TrailforksEndpoint
 {
     /**
@@ -67,21 +73,21 @@ class TrailforksEndpoint
     protected function getLocationDetail(object $location): object
     {
         return (object) [
-            'id' => $location->rid,
+            'id' => (int) $location->rid,
             'name' => $location->title,
             'coords' => [
-                $location->latitude,
-                $location->longitude
+                (float) $location->latitude,
+                (float) $location->longitude
             ],
-            'difficulties' => [
-                0 => $location->tc_3,
-                1 => $location->tc_4,
-                2 => $location->tc_5,
-                3 => $location->tc_6
+            'difficulties' => (object) [
+                0 => (int) $location->tc_3,
+                1 => (int) $location->tc_4,
+                2 => (int) $location->tc_5,
+                3 => (int) $location->tc_6
             ],
             'imagemap' => $location->imagemap,
-            'shuttle' => $location->shuttle,
-            'bikepark' => $location->bikepark
+            'shuttle' => (bool) $location->shuttle,
+            'bikepark' => (bool) $location->bikepark
         ];
     }
 }
