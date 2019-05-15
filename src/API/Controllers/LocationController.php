@@ -27,7 +27,7 @@ class LocationController extends BaseController
     {
         $tfEndpoint = new TrailforksEndpoint($this->container['trailforks']);
 
-        $bbox = explode(',', '49.7,-123.1,49.8,-123.2');
+        $bbox = $request->getQueryParams()['coords'];
         $result = $tfEndpoint->locationsBBox($bbox);
 
         return $response->withJson($result);
