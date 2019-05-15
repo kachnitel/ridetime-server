@@ -43,7 +43,8 @@ class TrailforksConnector
         $filter = "nearby_range::{$range};lat::{$latLon[0]};lon::{$latLon[1]};bottom::ridingarea";
         $query = [
             'filter' => $filter,
-            'fields' => join(',', $fields)
+            'fields' => join(',', $fields),
+            'rows' => 20
         ];
 
         return $this->doRequest('regions', $query)->data;
@@ -67,7 +68,8 @@ class TrailforksConnector
         $filter = "bbox::{$boundary};bottom::ridingarea";
         $query = [
             'filter' => $filter,
-            'fields' => join(',', $fields)
+            'fields' => join(',', $fields),
+            'rows' => 20
         ];
 
         return $this->doRequest('regions', $query)->data;
@@ -78,7 +80,8 @@ class TrailforksConnector
         $filter = "search::{$search};bottom::ridingarea";
         $query = [
             'filter' => $filter,
-            'fields' => join(',', $fields)
+            'fields' => join(',', $fields),
+            'rows' => 20
         ];
 
         return $this->doRequest('regions', $query)->data;
