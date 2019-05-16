@@ -1,7 +1,7 @@
 <?php
 namespace RideTimeServer\API\Controllers;
 
-use RideTimeServer\API\Endpoints\LocationEndpoint;
+use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
 use Psr\Http\Message\ServerRequestInterface as Request;
 // use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Http\Response;
@@ -19,6 +19,7 @@ class LocationController extends BaseController
         ];
         $range = $request->getQueryParams()['range'];
         $result = $tfEndpoint->locationsNearby($latLon, $range);
+        $this->cacheResult($result);
 
         return $response->withJson($result);
     }
@@ -29,6 +30,7 @@ class LocationController extends BaseController
 
         $bbox = $request->getQueryParams()['coords'];
         $result = $tfEndpoint->locationsBBox($bbox);
+        $this->cacheResult($result);
 
         return $response->withJson($result);
     }
@@ -38,8 +40,14 @@ class LocationController extends BaseController
         $tfEndpoint = new TrailforksEndpoint($this->container['trailforks']);
 
         $result = $tfEndpoint->locationsSearch($request->getQueryParams()['name']);
+        $this->cacheResult($result);
 
         return $response->withJson($result);
+    }
+
+    protected function cacheResult(array $result)
+    {
+        $this->getEndpoint()->addMultiple($result);
     }
 
     /**

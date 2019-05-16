@@ -11,8 +11,7 @@ class Location implements EntityInterface
 {
     /**
      * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @Column(type="integer", unique=true)
      *
      * @var int
      */

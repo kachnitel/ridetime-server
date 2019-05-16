@@ -1,10 +1,11 @@
 <?php
-namespace RideTimeServer\API\Endpoints;
+namespace RideTimeServer\API\Endpoints\Database;
 
 use RideTimeServer\Entities\Location;
 use Doctrine\Common\Collections\Criteria;
+use RideTimeServer\API\Endpoints\EntityEndpointInterface;
 
-class LocationEndpoint extends Database\BaseEndpoint implements EntityEndpointInterface
+class LocationEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
         /**
      * Get location detail
@@ -48,5 +49,20 @@ class LocationEndpoint extends Database\BaseEndpoint implements EntityEndpointIn
         }
 
         return $this->listEntities(Location::class, [$this, 'getDetail'], $criteria);
+    }
+
+    public function addMultiple(array $items)
+    {
+        foreach ($items as $item) {
+            $location = $this->entityManager->find(Location::class, $item->id) ?? new Location();
+            $location->setId($item->id);
+            $location->setName($item->name);
+            $location->setDifficulties($item->difficulties);
+            $location->setGpsLat($item->coords[0]);
+            $location->setGpsLon($item->coords[1]);
+
+            $this->entityManager->persist($location);
+        }
+        $this->entityManager->flush();
     }
 }
