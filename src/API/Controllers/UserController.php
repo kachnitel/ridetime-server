@@ -8,12 +8,19 @@ use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
 use RideTimeServer\Entities\User;
 use Slim\Http\UploadedFile;
-use Elasticsearch\ClientBuilder;
 
 class UserController extends BaseController
 {
     use ValidateUserTrait;
 
+    /**
+     * Search using field:value formatted string
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function search(Request $request, Response $response, array $args): Response
     {
         $query = $request->getQueryParams();
@@ -25,34 +32,11 @@ class UserController extends BaseController
         if (count($search) !== 2) {
             throw new UserException('Search query must be in format key:search term');
         }
-
-        $esClient = ClientBuilder::create()->build();
-        /**
-         * TODO:
-         * Create a more sophisticated query, index from cfg...
-         * $search[0]/$key can be exploded to multiple fields
-         * - https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html#type-phrase
-         *
-         */
         $key = filter_var($search[0], FILTER_SANITIZE_STRING);
         $val = filter_var($search[1], FILTER_SANITIZE_STRING);
 
-        $params = [
-            'index' => 'user',
-            'body' => [
-                'query' => [
-                    'match_phrase_prefix' => [
-                        $key => $val
-                    ]
-                ]
-            ]
-        ];
-
-        $result = $esClient->search($params);
-
-        $hits = array_map(function($hit) {
-            return $hit['_source'];
-        }, $result['hits']['hits']);
+        $ep = $this->getEndpoint();
+        $hits = $ep->search($key, $val);
 
         return $response->withJson($hits);
     }

@@ -39,6 +39,20 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
         return $this->listEntities(User::class, [$this, 'getDetail'], $criteria);
     }
 
+    public function search(string $field, string $text): array
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('u')->from(User::class, 'u')->where(
+            $queryBuilder->expr()->like('u.' . $field, ':text')
+        )->setParameter('text', '%' . $text . '%');
+
+        $results = [];
+        foreach ($queryBuilder->getQuery()->getResult() as $item) {
+            $results[] = $this->getDetail($item);
+        }
+        return $results;
+    }
+
     /**
      * FIXME: should return User(/Event/...) rather than detail
      * @param array $data
