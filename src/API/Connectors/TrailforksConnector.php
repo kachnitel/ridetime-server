@@ -40,14 +40,8 @@ class TrailforksConnector
      */
     public function getLocationsNearby(array $latLon, int $range, $fields = [])
     {
-        $filter = "nearby_range::{$range};lat::{$latLon[0]};lon::{$latLon[1]};bottom::ridingarea";
-        $query = [
-            'filter' => $filter,
-            'fields' => join(',', $fields),
-            'rows' => 20
-        ];
-
-        return $this->doRequest('regions', $query)->data;
+        $filter = "nearby_range::{$range};lat::{$latLon[0]};lon::{$latLon[1]}";
+        return $this->locations($filter, $fields);
     }
 
     /**
@@ -65,19 +59,19 @@ class TrailforksConnector
     public function getLocationsBBox(array $bbox, $fields = [])
     {
         $boundary = join(',', $bbox);
-        $filter = "bbox::{$boundary};bottom::ridingarea";
-        $query = [
-            'filter' => $filter,
-            'fields' => join(',', $fields),
-            'rows' => 20
-        ];
-
-        return $this->doRequest('regions', $query)->data;
+        $filter = "bbox::{$boundary}";
+        return $this->locations($filter, $fields);
     }
 
     public function searchLocations(string $search, $fields = [])
     {
-        $filter = "search::{$search};bottom::ridingarea";
+        $filter = "search::{$search}";
+        return $this->locations($filter, $fields);
+    }
+
+    public function locations(string $filter, array $fields)
+    {
+        $filter .= ';bottom::ridingarea';
         $query = [
             'filter' => $filter,
             'fields' => join(',', $fields),
