@@ -51,17 +51,15 @@ class User implements EntityInterface
     private $picture;
 
     /**
-     * Many users can join many events
-     * @var ArrayCollection|Event[]
+     * @var ArrayCollection|EventMember[]
      *
-     * @ManyToMany(targetEntity="Event", inversedBy="users")
-     * @JoinTable(name="users_events")
+     * @ManyToMany(targetEntity="EventMember", inversedBy="users")
      */
     private $events;
 
     /**
      * The people who I think are my friends.
-     * @var ArrayCollection|User[]
+     * @var ArrayCollection|Friendship[]
      *
      * @OneToMany(targetEntity="Friendship", mappedBy="user", cascade={"persist", "remove"})
      */
@@ -69,7 +67,7 @@ class User implements EntityInterface
 
     /**
      * The people who think that I’m their friend.
-     * @var ArrayCollection|User[]
+     * @var ArrayCollection|Friendship[]
      *
      * @OneToMany(targetEntity="Friendship", mappedBy="friend", cascade={"persist", "remove"})
      */
@@ -171,6 +169,7 @@ class User implements EntityInterface
     }
 
     /**
+     * TODO: Join(request if private)
      * Add event.
      *
      * @param \RideTimeServer\Entities\Event $event
@@ -197,13 +196,23 @@ class User implements EntityInterface
     }
 
     /**
+     * TODO: Filter confirmed & add getInvites..? || (string $status = "confirmed")
      * Get events.
      *
+     * @param string $status // TODO:
      * @return ArrayCollection
      */
-    public function getEvents()
+    public function getEvents(string $status)
     {
-        return $this->events;
+        $filter = function(EventMember $em) use ($status) {
+            return $em->getStatus() === $status;
+        };
+
+        $map = function(EventMember $em) {
+            return $em->getEvent();
+        };
+
+        return $this->events->filter($filter)->map($map);
     }
 
     /**

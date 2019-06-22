@@ -9,6 +9,10 @@ use \Doctrine\Common\Collections\ArrayCollection;
  */
 class Event implements EntityInterface
 {
+    const STATUS_CONFIRMED = "confirmed";
+    const STATUS_INVITED = "invited";
+    const STATUS_REQUESTED = "requested";
+
     /**
      * @Id
      * @GeneratedValue
@@ -40,11 +44,11 @@ class Event implements EntityInterface
     private $createdBy;
 
     /**
-     * @var ArrayCollection|User[]
+     * @var ArrayCollection|EventMember[]
      *
-     * @ManyToMany(targetEntity="User", mappedBy="events")
+     * @OneToMany(targetEntity="EventMember", mappedBy="event", cascade={"remove"})
      */
-    private $users;
+    private $members;
 
     /**
      * @Column(type="smallint")
@@ -69,11 +73,18 @@ class Event implements EntityInterface
     private $location;
 
     /**
+     * @Column(type="boolean")
+     *
+     * @var bool
+     */
+    private $private = false;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->users = new ArrayCollection();
+        $this->members = new ArrayCollection();
     }
 
     /**
@@ -183,40 +194,45 @@ class Event implements EntityInterface
     }
 
     /**
-     * Add user.
-     *
-     * @param User $user
-     *
-     * @return Event
+     * Invite user
      */
-    public function addUser(User $user)
+    public function invite(User $user): EventMember
     {
-        $user->addEvent($this);
-        $this->users[] = $user;
+        $ms = new EventMember();
+        $ms->setUser($user);
+        $ms->setStatus(Event::STATUS_INVITED);
+        $ms->setEvent($this);
 
-        return $this;
+        $this->members->add($ms);
+        return $ms;
     }
 
     /**
-     * Remove user.
-     *
-     * @param User $user
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * Request join
+     * REVIEW: Decouple from EventMember
+     * - Move to EventEndpoint?
+     * - OR
+     * - static EventMember::join($user, $event)
+     *      {new self();$user->addEvent;$event->addMember} ?
      */
-    public function removeUser(User $user)
+    public function join(User $user): EventMember
     {
-        return $this->users->removeElement($user);
+        $ms = new EventMember();
+        $ms->setUser($user);
+        $status = $this->getPrivate() ? Event::STATUS_REQUESTED : Event::STATUS_CONFIRMED;
+        $ms->setStatus($status);
+        $ms->setEvent($this);
+
+        $this->members->add($ms);
+        return $ms;
     }
 
     /**
-     * Get users.
-     *
-     * @return ArrayCollection
+     * @return ArrayCollection|EventMember[]
      */
-    public function getUsers()
+    public function getMembers(): ArrayCollection
     {
-        return $this->users;
+        return $this->members;
     }
 
     /**
@@ -299,6 +315,30 @@ class Event implements EntityInterface
     public function setLocation(Location $location)
     {
         $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of private
+     *
+     * @return bool
+     */
+    public function getPrivate()
+    {
+        return $this->private;
+    }
+
+    /**
+     * Set the value of private
+     *
+     * @param bool $private
+     *
+     * @return self
+     */
+    public function setPrivate(bool $private)
+    {
+        $this->private = $private;
 
         return $this;
     }

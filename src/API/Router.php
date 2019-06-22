@@ -54,6 +54,14 @@ class Router
         $app->post('/events', 'RideTimeServer\API\Controllers\EventController:add');
         /** Add event member */
         $app->post('/events/{id}/members', 'RideTimeServer\API\Controllers\EventController:addMember');
+        /**
+         * POST /events/{id}/join (Request join) // check for status invited => accept; public ? confirmed : requested
+         * PUT /events/{id}/join/{userId} (Accept request from userId)
+         * DEL /events/{id}/join/{userId} (Decline request)
+         * POST /events/{id}/invite [ids] // accept existing status == requested
+         * PUT /events/{id}/invite (Accept)
+         * DEL /events/{id}/invite (Decline)
+         */
     }
 
     protected function initLocationRoutes(App $app)
@@ -66,6 +74,9 @@ class Router
         $app->get('/locations/bbox', 'RideTimeServer\API\Controllers\LocationController:bbox');
         /** Search */
         $app->get('/locations/search', 'RideTimeServer\API\Controllers\LocationController:search');
+        /** TODO: List location top routes and trails */
+        // $app->get('/locations/{id}/popular', 'RideTimeServer\API\Controllers\LocationController:popular');
+        /** TODO: Search location trails and routes */
     }
 
     protected function initUserRoutes(App $app)

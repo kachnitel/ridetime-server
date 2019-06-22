@@ -222,14 +222,14 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
     }
 
     /**
-     * Find events for user
+     * Find confirmed events for user
      *
      * @param User $user
      * @return int[]
      */
     protected function getUserEventIds(User $user): array
     {
-        return $user->getEvents()->map(function(Event $event) {
+        return $user->getEvents(Event::STATUS_CONFIRMED)->map(function(Event $event) {
             return $event->getId();
         })->toArray();;
     }
