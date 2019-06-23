@@ -113,63 +113,6 @@ class UserController extends BaseController
     }
 
     /**
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     * @return Response
-     * @deprecated
-     */
-    public function addFriend(Request $request, Response $response, array $args): Response
-    {
-        $this->validateUser($request, (int) $args['id']);
-
-        $endpoint = $this->getEndpoint();
-        $endpoint->addFriend($args['id'], $args['friendId']);
-
-        return $response->withStatus(204);
-    }
-
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     * @return Response
-     *
-     * @deprecated
-     */
-    public function acceptFriend(Request $request, Response $response, array $args): Response
-    {
-        $this->validateUser($request, (int) $args['friendId']);
-
-        $endpoint = $this->getEndpoint();
-        $endpoint->acceptFriend($args['id'], $args['friendId']);
-
-        return $response->withStatus(204);
-    }
-
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     * @return Response
-     * @deprecated
-     */
-    public function removeFriend(Request $request, Response $response, array $args): Response
-    {
-        if (
-            $request->getAttribute('currentUser')->getId() !== (int) $args['id'] &&
-            $request->getAttribute('currentUser')->getId() !== (int) $args['friendId']
-        ) {
-            throw new UserException('ID or Friend ID must be same as current user', 403);
-        }
-
-        $endpoint = $this->getEndpoint();
-        $endpoint->removeFriend($args['id'], $args['friendId']);
-
-        return $response->withStatus(204);
-    }
-
-    /**
      * @return UserEndpoint
      */
     protected function getEndpoint()
