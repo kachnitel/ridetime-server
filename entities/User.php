@@ -53,7 +53,7 @@ class User implements EntityInterface
     /**
      * @var ArrayCollection|EventMember[]
      *
-     * @ManyToMany(targetEntity="EventMember", inversedBy="users")
+     * @OneToMany(targetEntity="EventMember", mappedBy="user")
      */
     private $events;
 
