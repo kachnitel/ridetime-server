@@ -7,7 +7,13 @@ use RideTimeServer\API\Endpoints\Database\EventEndpoint;
 
 class EventController extends BaseController
 {
-    public function addMember(Request $request, Response $response, array $args): Response
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function invite(Request $request, Response $response, array $args): Response
     {
         $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
 
@@ -15,11 +21,9 @@ class EventController extends BaseController
         $userId = (int) filter_var($data['userId'], FILTER_SANITIZE_NUMBER_INT);
 
         $eventEndpoint = $this->getEndpoint();
-        $event = $eventEndpoint->get($eventId);
+        $eventEndpoint->invite($eventId, $userId);
 
-        $result = $eventEndpoint->addEventMember($event, $userId);
-
-        return $response->withJson($result)->withStatus(201);
+        return $response->withStatus(201);
     }
 
     /**

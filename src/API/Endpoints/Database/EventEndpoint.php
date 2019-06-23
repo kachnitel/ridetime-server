@@ -5,6 +5,7 @@ use Doctrine\Common\Collections\Criteria;
 use Monolog\Logger;
 use RideTimeServer\API\Endpoints\EntityEndpointInterface;
 use RideTimeServer\Entities\Event;
+use RideTimeServer\Entities\EventMember;
 
 class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
@@ -97,8 +98,13 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     protected function getEventMembers(Event $event): array
     {
         $members = [];
-        /** @var \RideTimeServer\Entities\User $user */
-        foreach ($event->getUsers() as $user) {
+        /** @var \RideTimeServer\Entities\EventMember $member */
+        foreach ($event->getMembers() as $member) {
+            if ($member->getStatus() !== Event::STATUS_CONFIRMED) {
+                continue;
+            }
+            /** @var \RideTimeServer\Entities\User $user */
+            $user = $member->getUser();
             $members[] = (object) [
                 'id' => $user->getId(),
                 'name' => $user->getName(),
@@ -112,22 +118,19 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     /**
      * Returns updated members list
      *
-     * @param Event $event
-     * @param integer $memberID
-     * @return array
+     * @param integer $eventId
+     * @param integer $memberId
+     * @return null
      */
-    public function addEventMember(Event $event, int $memberID): object
+    public function invite(int $eventId, int $memberId)
     {
+        $event = $this->get($eventId);
         $user = (new UserEndpoint($this->entityManager, $this->logger))
-            ->get($memberID);
+            ->get($memberId);
 
-        $event->addUser($user);
+        $event->invite($user);
 
-        $this->entityManager->persist($event);
-
-        $this->entityManager->flush();
-
-        return $this->getDetail($event);
+        $this->saveEntity($event);
     }
 
     /**

@@ -53,14 +53,14 @@ class Router
         /** Create event */
         $app->post('/events', 'RideTimeServer\API\Controllers\EventController:add');
         /** Add event member */
-        $app->post('/events/{id}/members', 'RideTimeServer\API\Controllers\EventController:addMember');
+        $app->post('/events/{id}/invite/{userId}', 'RideTimeServer\API\Controllers\EventController:invite');
         /**
          * POST /events/{id}/join (Request join) // check for status invited => accept; public ? confirmed : requested
          * PUT /events/{id}/join/{userId} (Accept request from userId)
          * DEL /events/{id}/join/{userId} (Decline request)
-         * POST /events/{id}/invite [ids] // accept existing status == requested
-         * PUT /events/{id}/invite (Accept)
-         * DEL /events/{id}/invite (Decline)
+         * POST /events/{id}/invite/{userId} // accept existing status == requested
+         * PUT /events/{id}/invite (Accept invite)
+         * DEL /events/{id}/invite (Decline invite)
          */
     }
 
