@@ -132,7 +132,19 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         $user = (new UserEndpoint($this->entityManager, $this->logger))
             ->get($memberId);
 
+        $filter = function(EventMember $membership) use ($user) {
+            return $membership->getUser() === $user;
+        };
+        if ($event->getMembers()->exists($filter)) {
+            /** @var EventMember $membership */
+            // REVIEW:
+            $membership = $event->getMembers()->filter($filter)->first();
+            if ($membership->getStatus() === Event::STATUS_REQUESTED) {
+                $membership->setStatus(Event::STATUS_CONFIRMED);
+            }
+        } else {
             $event->invite($user);
+        }
 
         $this->saveEntity($event);
     }
