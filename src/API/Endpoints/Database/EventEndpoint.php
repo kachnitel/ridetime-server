@@ -23,14 +23,17 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     }
 
     /**
+     * TODO: Validate $data
+     *
      * @param array $data
      * @return Event
      */
     protected function createEvent(array $data): Event
     {
         // Ride must be created by existing user
+        // FIXME: must come from controller/request/current user
         $user = (new UserEndpoint($this->entityManager, $this->logger))
-            ->get($data['createdBy']);
+            ->get((int) $data['createdBy']);
 
         $location = (new LocationEndpoint($this->entityManager, $this->logger))
             ->get($data['location']);
@@ -48,8 +51,12 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
             $event->setRoute($data['route']);
         }
 
+        $membership = new EventMember();
+        $membership->setEvent($event);
+        $membership->setUser($user);
+        $membership->setStatus(Event::STATUS_CONFIRMED);
         // Creating user automatically joins
-        $event->addUser($user);
+        $event->addMember($membership);
 
         return $event;
     }
@@ -116,11 +123,8 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     }
 
     /**
-     * Returns updated members list
-     *
      * @param integer $eventId
      * @param integer $memberId
-     * @return null
      */
     public function invite(int $eventId, int $memberId)
     {
@@ -128,7 +132,7 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         $user = (new UserEndpoint($this->entityManager, $this->logger))
             ->get($memberId);
 
-        $event->invite($user);
+            $event->invite($user);
 
         $this->saveEntity($event);
     }

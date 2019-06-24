@@ -2,6 +2,7 @@
 namespace RideTimeServer\Entities;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+use \Doctrine\ORM\PersistentCollection;
 
 /**
  * @Entity
@@ -44,9 +45,9 @@ class Event implements EntityInterface
     private $createdBy;
 
     /**
-     * @var ArrayCollection|EventMember[]
+     * @var PersistentCollection|EventMember[]
      *
-     * @OneToMany(targetEntity="EventMember", mappedBy="event", cascade={"remove"})
+     * @OneToMany(targetEntity="EventMember", mappedBy="event", cascade={"persist", "remove"})
      */
     private $members;
 
@@ -227,10 +228,15 @@ class Event implements EntityInterface
         return $ms;
     }
 
+    public function addMember(EventMember $membership)
+    {
+        $this->members->add($membership);
+    }
+
     /**
-     * @return ArrayCollection|EventMember[]
+     * @return PersistentCollection|EventMember[]
      */
-    public function getMembers(): ArrayCollection
+    public function getMembers(): PersistentCollection
     {
         return $this->members;
     }
