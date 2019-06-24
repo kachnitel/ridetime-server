@@ -8,6 +8,8 @@ use RideTimeServer\API\Endpoints\Database\EventEndpoint;
 class EventController extends BaseController
 {
     /**
+     * TODO: Notifications
+     *
      * @param Request $request
      * @param Response $response
      * @param array $args
@@ -18,7 +20,7 @@ class EventController extends BaseController
         $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
 
         $data = $request->getParsedBody();
-        $userId = (int) filter_var($data['userId'], FILTER_SANITIZE_NUMBER_INT);
+        $userId = (int) filter_var($args['userId'], FILTER_SANITIZE_NUMBER_INT);
 
         $eventEndpoint = $this->getEndpoint();
         $eventEndpoint->invite($eventId, $userId);
