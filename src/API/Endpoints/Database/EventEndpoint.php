@@ -144,13 +144,14 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     /**
      * @param integer $eventId
      * @param integer $memberId
+     * @return string
      */
-    public function invite(int $eventId, int $memberId)
+    public function invite(int $eventId, int $memberId): string
     {
         $event = $this->get($eventId);
         $user = $this->getUser($memberId);
 
-        $membership = $this->confirmMemberIfStatus($event, $user, Event::STATUS_REQUESTED) || $event->invite($user);
+        $membership = $this->confirmMemberIfStatus($event, $user, Event::STATUS_REQUESTED) ?? $event->invite($user);
 
         $this->saveEntity($event);
         return $membership->getStatus();
@@ -180,7 +181,7 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
             }
             return $membership;
         }
-        return false;
+        return null;
     }
 
     protected function getUser(int $userId): User
