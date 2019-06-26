@@ -99,6 +99,24 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     }
 
     /**
+     * @return array[Event]
+     */
+    public function list(?array $ids): array
+    {
+        $expr = $ids
+            ? Criteria::expr()->in('id', $ids)
+            : Criteria::expr()->gt('date', new \DateTime());
+
+        $criteria = Criteria::create()
+            ->where($expr)
+            ->orderBy(array('date' => Criteria::ASC))
+            ->setFirstResult(0)
+            ->setMaxResults(20);
+
+        return $this->listEntities(Event::class, [$this, 'getDetail'], $criteria);
+    }
+
+    /**
      * @param Event $event
      * @return array
      */
