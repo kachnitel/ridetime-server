@@ -141,6 +141,17 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         return $members;
     }
 
+    public function join(int $eventId, int $userId): string
+    {
+        $event = $this->get($eventId);
+        $user = $this->getUser($userId);
+
+        $membership = $this->confirmMemberIfStatus($event, $user, Event::STATUS_INVITED) ?? $event->join($user);
+
+        $this->saveEntity($event);
+        return $membership->getStatus();
+    }
+
     /**
      * @param integer $eventId
      * @param integer $memberId

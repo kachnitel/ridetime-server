@@ -54,12 +54,14 @@ class Router
         $app->post('/events', 'RideTimeServer\API\Controllers\EventController:add');
         /** Add event member */
         $app->post('/events/{id}/invite/{userId}', 'RideTimeServer\API\Controllers\EventController:invite');
+        /** Request join / accept invite */
+        $app->post('/events/{id}/join', 'RideTimeServer\API\Controllers\EventController:join');
         /**
-         * POST /events/{id}/join (Request join) // check for status invited => accept; public ? confirmed : requested
+         * *POST /events/{id}/join (Request join) // check for status invited => accept; public ? confirmed : requested
          * PUT /events/{id}/join/{userId} (Accept request from userId)
          * DEL /events/{id}/join/{userId} (Decline request)
-         * POST /events/{id}/invite/{userId} // accept existing status == requested
-         * PUT /events/{id}/invite (Accept invite)
+         * *POST /events/{id}/invite/{userId} // accept existing status == requested
+         * PUT /events/{id}/invite (Accept invite) // use POST join
          * DEL /events/{id}/invite (Decline invite)
          */
     }
@@ -97,6 +99,9 @@ class Router
     {
         /** Get dashboard */
         $app->get('', 'RideTimeServer\API\Controllers\DashboardController:all');
+        /**
+         * TODO: move friendship to UserController
+         */
         /** Request friendship */
         $app->post('/friends/{id}', 'RideTimeServer\API\Controllers\DashboardController:requestFriend');
         /** Accept friendship */
