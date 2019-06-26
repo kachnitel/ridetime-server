@@ -6,6 +6,7 @@ use Monolog\Logger;
 use RideTimeServer\API\Endpoints\EntityEndpointInterface;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EventMember;
+use RideTimeServer\Entities\User;
 
 class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
@@ -147,10 +148,26 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     public function invite(int $eventId, int $memberId)
     {
         $event = $this->get($eventId);
-        $user = (new UserEndpoint($this->entityManager, $this->logger))
-            ->get($memberId);
+        $user = $this->getUser($memberId);
 
-        // Confirm request if exists for user
+        $membership = $this->confirmMemberIfStatus($event, $user, Event::STATUS_REQUESTED) || $event->invite($user);
+
+        $this->saveEntity($event);
+        return $membership->getStatus();
+    }
+
+    /**
+     * Confirm request/invite if exists for user
+     *
+     * Returns EventMember or false if membership doesn't exist
+     *
+     * @param Event $event
+     * @param User $user
+     * @param string $status
+     * @return boolean|EventMember
+     */
+    protected function confirmMemberIfStatus(Event $event, User $user, string $status)
+    {
         $existing = $event->getMembers()->matching(Criteria::create()
             ->where(Criteria::expr()->eq('user', $user))
             ->andWhere(Criteria::expr()->eq('event', $event))
@@ -158,32 +175,17 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         if (!$existing->isEmpty()) {
             /** @var EventMember $membership */
             $membership = $existing->first();
-            if ($membership->getStatus() === Event::STATUS_REQUESTED) {
+            if ($membership->getStatus() === $status) {
                 $membership->setStatus(Event::STATUS_CONFIRMED);
             }
-            // TODO: Different return value?
-        } else {
-            $event->invite($user);
+            return $membership;
         }
-
-        $this->saveEntity($event);
+        return false;
     }
 
-    /**
-     * @return array[Event]
-     */
-    public function list(?array $ids): array
+    protected function getUser(int $userId): User
     {
-        $expr = $ids
-            ? Criteria::expr()->in('id', $ids)
-            : Criteria::expr()->gt('date', new \DateTime());
-
-        $criteria = Criteria::create()
-            ->where($expr)
-            ->orderBy(array('date' => Criteria::ASC))
-            ->setFirstResult(0)
-            ->setMaxResults(20);
-
-        return $this->listEntities(Event::class, [$this, 'getDetail'], $criteria);
+        return (new UserEndpoint($this->entityManager, $this->logger))
+            ->get($userId);
     }
 }
