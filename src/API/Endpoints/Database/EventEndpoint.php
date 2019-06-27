@@ -118,6 +118,8 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     }
 
     /**
+     * Returns thumbnails of confirmed users
+     *
      * @param Event $event
      * @return array
      */
@@ -168,6 +170,17 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         return $membership->getStatus();
     }
 
+    public function removeMember(int $eventId, int $memberId)
+    {
+        $event = $this->get($eventId);
+        $user = $this->getUser($memberId);
+
+        $membership = $this->findEventMember($event, $user);
+        $event->getMembers()->removeElement($membership);
+
+        $this->saveEntity($event);
+    }
+
     /**
      * Confirm request/invite if exists for user
      *
@@ -180,19 +193,31 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
      */
     protected function confirmMemberIfStatus(Event $event, User $user, string $status)
     {
-        $existing = $event->getMembers()->matching(Criteria::create()
-            ->where(Criteria::expr()->eq('user', $user))
-            ->andWhere(Criteria::expr()->eq('event', $event))
-        );
-        if (!$existing->isEmpty()) {
+        $membership = $this->findEventMember($event, $user);
+        if ($membership) {
             /** @var EventMember $membership */
-            $membership = $existing->first();
             if ($membership->getStatus() === $status) {
                 $membership->setStatus(Event::STATUS_CONFIRMED);
             }
             return $membership;
         }
         return null;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param Event $event
+     * @param User $user
+     * @return EventMember|null
+     */
+    protected function findEventMember(Event $event, User $user)
+    {
+        $existing = $event->getMembers()->matching(Criteria::create()
+            ->where(Criteria::expr()->eq('user', $user))
+            ->andWhere(Criteria::expr()->eq('event', $event))
+        );
+        return $existing->isEmpty() ? null : $existing->first();
     }
 
     protected function getUser(int $userId): User
