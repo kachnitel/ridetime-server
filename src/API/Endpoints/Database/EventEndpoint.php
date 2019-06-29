@@ -7,6 +7,7 @@ use RideTimeServer\API\Endpoints\EntityEndpointInterface;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Entities\User;
+use RideTimeServer\Exception\EntityNotFoundException;
 
 class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
@@ -176,9 +177,12 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         $user = $this->getUser($memberId);
 
         $membership = $this->findEventMember($event, $user);
-        $event->getMembers()->removeElement($membership);
+        if (!$membership) {
+            throw new EntityNotFoundException("User ${memberId} is not a member of event ${eventId}.");
+        }
 
-        $this->saveEntity($event);
+        $this->entityManager->remove($membership);
+        $this->entityManager->flush();
     }
 
     /**

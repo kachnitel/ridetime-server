@@ -4,6 +4,7 @@ namespace RideTimeServer\API\Controllers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use RideTimeServer\API\Endpoints\Database\EventEndpoint;
+use RideTimeServer\Exception\EntityNotFoundException;
 
 class EventController extends BaseController
 {
@@ -45,6 +46,24 @@ class EventController extends BaseController
         $result = $eventEndpoint->join($eventId, $userId);
 
         return $response->withStatus(201)->withJson(['status' => $result]);
+    }
+
+    public function declineInvite(Request $request, Response $response, array $args): Response
+    {
+        $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
+        $userId = (int) $request->getAttribute('currentUser')->getId();
+
+        $eventEndpoint = $this->getEndpoint();
+        try {
+            $result = $eventEndpoint->removeMember($eventId, $userId);
+        } catch (EntityNotFoundException $exception) {
+            return $response->withStatus(404)->withJson([
+                'status' => 'error',
+                'message' => $exception->getMessage()
+            ]);
+        }
+
+        return $response->withStatus(200)->withJson(['status' => $result]);
     }
 
     /**
