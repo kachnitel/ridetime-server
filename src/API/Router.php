@@ -57,7 +57,8 @@ class Router
         /** Request join / accept invite */
         $app->post('/events/{id}/join', 'RideTimeServer\API\Controllers\EventController:join');
         /** Decline invite / leave event */
-        $app->delete('/events/{id}[/invite]', 'RideTimeServer\API\Controllers\EventController:declineInvite');
+        $app->delete('/events/{id}/invite', 'RideTimeServer\API\Controllers\EventController:declineInvite');
+        $app->delete('/events/{id}/leave', 'RideTimeServer\API\Controllers\EventController:declineInvite');
         /**
          * *POST /events/{id}/join (Request join) // check for status invited => accept; public ? confirmed : requested
          * PUT /events/{id}/join/{userId} (Accept request from userId)
