@@ -2,6 +2,7 @@
 namespace RideTimeServer\Entities;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+use \Doctrine\Common\Collections\Collection;
 use \Doctrine\ORM\PersistentCollection;
 
 /**
@@ -39,7 +40,7 @@ class Event implements EntityInterface
     /**
      * @var User
      *
-     * @ManyToOne(targetEntity="User", inversedBy="events")
+     * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="created_by_id", referencedColumnName="id", nullable=false)
      */
     private $createdBy;
@@ -236,9 +237,14 @@ class Event implements EntityInterface
     /**
      * @return PersistentCollection|EventMember[]
      */
-    public function getMembers(): PersistentCollection
+    public function getMembers(): Collection
     {
         return $this->members;
+    }
+
+    public function removeMember(EventMember $membership)
+    {
+        $this->members->removeElement($membership);
     }
 
     /**

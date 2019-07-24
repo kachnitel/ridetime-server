@@ -16,7 +16,7 @@ class EventMember implements EntityInterface
 
     /**
      * @var Event
-     * @ManyToOne(targetEntity="Event", inversedBy="users")
+     * @ManyToOne(targetEntity="Event", inversedBy="members")
      * @Id
      */
     private $event;

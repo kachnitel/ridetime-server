@@ -169,16 +169,15 @@ class User implements EntityInterface
     }
 
     /**
-     * TODO: Join(request if private)
      * Add event.
      *
      * @param \RideTimeServer\Entities\Event $event
      *
      * @return User
      */
-    public function addEvent(\RideTimeServer\Entities\Event $event)
+    public function addEvent(\RideTimeServer\Entities\EventMember $membership)
     {
-        $this->events[] = $event;
+        $this->events[] = $membership;
 
         return $this;
     }
@@ -190,16 +189,15 @@ class User implements EntityInterface
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeEvent(\RideTimeServer\Entities\Event $event)
+    public function removeEvent(\RideTimeServer\Entities\EventMember $membership)
     {
-        return $this->events->removeElement($event);
+        return $this->events->removeElement($membership);
     }
 
     /**
-     * TODO: Filter confirmed & add getInvites..? || (string $status = "confirmed")
      * Get events.
      *
-     * @param string $status // TODO:
+     * @param string $status
      * @return ArrayCollection
      */
     public function getEvents(string $status)

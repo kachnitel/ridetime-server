@@ -103,18 +103,6 @@ class UserEndpointTest extends EndpointTestCase
         );
     }
 
-    protected function generateUser($id = null): User
-    {
-        $userClass = new \ReflectionClass(User::class);
-        $user = $userClass->newInstance();
-
-        $property = $userClass->getProperty('id');
-        $property->setAccessible(true);
-        $property->setValue($user, $id ?? uniqid());
-
-        return $user;
-    }
-
     // TODO:
     // Need to test against actual DB
     // as per Doctrine recommendations
