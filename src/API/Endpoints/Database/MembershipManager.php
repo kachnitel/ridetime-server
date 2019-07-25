@@ -38,7 +38,7 @@ class MembershipManager
     {
         $membership = $this->findEventMember($event, $user);
         if (!$membership) {
-            throw new EntityNotFoundException("User {$user->getId()} is not a member of event {$event->getId()}.");
+            throw new EntityNotFoundException("User {$user->getId()} is not a member of event {$event->getId()}.", 404);
         }
         $user->removeEvent($membership);
         $event->removeMember($membership);
