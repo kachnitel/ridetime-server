@@ -52,23 +52,14 @@ class Router
         $app->get('/events/{id}', 'RideTimeServer\API\Controllers\EventController:get');
         /** Create event */
         $app->post('/events', 'RideTimeServer\API\Controllers\EventController:add');
+        /** - Membership routes - */
         /** Add event member */
         $app->post('/events/{id}/invite/{userId}', 'RideTimeServer\API\Controllers\EventController:invite');
         /** Request join / accept invite */
         $app->post('/events/{id}/join', 'RideTimeServer\API\Controllers\EventController:join');
         /** Decline invite / leave event */
-        $app->delete('/events/{id}/invite', 'RideTimeServer\API\Controllers\EventController:declineInvite');
-        $app->delete('/events/{id}/leave', 'RideTimeServer\API\Controllers\EventController:declineInvite');
-        /**
-         * *POST /events/{id}/join (Request join) // check for status invited => accept; public ? confirmed : requested
-         * PUT /events/{id}/join/{userId} (Accept request from userId)
-         * DEL /events/{id}/join/{userId} (Decline request)
-         * *POST /events/{id}/invite/{userId} // accept existing status == requested
-         * PUT /events/{id}/invite (Accept invite) // use POST join
-         * *DEL /events/{id}/invite (Decline invite)
-         * DEL /events/{id}/members/{userId} (Remove member) // same as decline request
-         * *DEL /events/{id} (Leave) // same as decline invite
-         */
+        $app->delete('/events/{id}/invite', 'RideTimeServer\API\Controllers\EventController:leave');
+        $app->delete('/events/{id}/leave', 'RideTimeServer\API\Controllers\EventController:leave');
     }
 
     protected function initLocationRoutes(App $app)
