@@ -48,12 +48,21 @@ class EventController extends BaseController
         return $response->withStatus(201)->withJson(['status' => $result]);
     }
 
+    /**
+     * Leave event or decline invite
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function leave(Request $request, Response $response, array $args): Response
     {
         $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
         $userId = (int) $request->getAttribute('currentUser')->getId();
 
         $eventEndpoint = $this->getEndpoint();
+        // TODO: Test and review: should be handled by error handler
         try {
             $result = $eventEndpoint->removeMember($eventId, $userId);
         } catch (EntityNotFoundException $exception) {
