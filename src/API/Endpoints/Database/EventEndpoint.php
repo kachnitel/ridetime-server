@@ -149,8 +149,8 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         $event = $this->get($eventId);
         $user = $this->getUser($userId);
 
-        // REFACTOR: Action MembershipManager
-        $membership = $this->confirmMemberIfStatus($event, $user, Event::STATUS_INVITED) ?? $event->join($user);
+        $membershipManager = new MembershipManager();
+        $membership = $membershipManager->join($event, $user);
 
         // REFACTOR: DB
         $this->saveEntity($event);
@@ -168,8 +168,8 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         $event = $this->get($eventId);
         $user = $this->getUser($memberId);
 
-        // REFACTOR: Action MembershipManager
-        $membership = $this->confirmMemberIfStatus($event, $user, Event::STATUS_REQUESTED) ?? $event->invite($user);
+        $membershipManager = new MembershipManager();
+        $membership = $membershipManager->invite($event, $user);
 
         // REFACTOR: DB
         $this->saveEntity($event);
@@ -194,7 +194,6 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         $event = $this->get($eventId);
         $user = $this->getUser($memberId);
 
-        // REFACTOR: Action MembershipManager
         $membershipManager = new MembershipManager();
         $membership = $membershipManager->removeMember($event, $user);
 

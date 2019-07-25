@@ -9,6 +9,16 @@ use Doctrine\Common\Collections\Criteria;
 
 class MembershipManager
 {
+    public function join(Event $event, User $user): EventMember
+    {
+        return $this->confirmMemberIfStatus($event, $user, Event::STATUS_INVITED) ?? $event->join($user);
+    }
+
+    public function invite(Event $event, User $user): EventMember
+    {
+        return $this->confirmMemberIfStatus($event, $user, Event::STATUS_REQUESTED) ?? $event->invite($user);
+    }
+
     public function removeMember(Event $event, User $user): EventMember
     {
         $membership = $this->findEventMember($event, $user);
