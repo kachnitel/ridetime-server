@@ -1,7 +1,7 @@
 <?php
 namespace RideTimeServer\Tests\API;
 
-use PHPUnit\Framework\TestCase;
+use RideTimeServer\Tests\RTTestCase;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 
@@ -10,7 +10,7 @@ use Doctrine\ORM\Tools\Setup;
  * (TODO: doc. DB creation)
  * Cleans up created entities in tearDown.
  */
-class APITestCase extends TestCase
+class APITestCase extends RTTestCase
 {
     /**
      * @var EntityManager
@@ -58,14 +58,6 @@ class APITestCase extends TestCase
             }
         }
         $this->entityManager->flush();
-    }
-
-    public function callMethod($obj, string $name, array $args)
-    {
-        $class = new \ReflectionClass($obj);
-        $method = $class->getMethod($name);
-        $method->setAccessible(true);
-        return $method->invokeArgs($obj, $args);
     }
 
     private function loadTestSecrets(): object
