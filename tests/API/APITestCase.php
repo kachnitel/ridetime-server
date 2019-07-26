@@ -1,5 +1,5 @@
 <?php
-namespace RideTimeServer\Tests\API\Endpoints;
+namespace RideTimeServer\Tests\API;
 
 use PHPUnit\Framework\TestCase;
 use Doctrine\ORM\EntityManager;
@@ -8,7 +8,7 @@ use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EntityInterface;
 
-class EndpointTestCase extends TestCase
+class APITestCase extends TestCase
 {
     /**
      * @var EntityManager
@@ -42,8 +42,6 @@ class EndpointTestCase extends TestCase
     }
 
     /**
-     * FIXME: Undefined index: id
-     *
      * @return void
      */
     protected function tearDown(): void
@@ -70,7 +68,7 @@ class EndpointTestCase extends TestCase
 
     private function loadTestSecrets(): object
     {
-        $file = __DIR__ . '/../../../.secrets.test.json';
+        $file = __DIR__ . '/../../.secrets.test.json';
         $contents = file_get_contents($file);
         $decoded = json_decode($contents);
 
