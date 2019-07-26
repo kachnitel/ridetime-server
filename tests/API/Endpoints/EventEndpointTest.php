@@ -5,9 +5,8 @@ use RideTimeServer\API\Endpoints\Database\EventEndpoint;
 use Monolog\Logger;
 use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Entities\Event;
-use RideTimeServer\Tests\API\APITestCase;
 
-class EventEndpointTest extends APITestCase
+class EventEndpointTest extends EndpointTestCase
 {
     public function testRemoveMember()
     {

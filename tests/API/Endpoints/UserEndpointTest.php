@@ -5,9 +5,8 @@ use RideTimeServer\API\Endpoints\Database\UserEndpoint;
 use Monolog\Logger;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Location;
-use RideTimeServer\Tests\API\APITestCase;
 
-class UserEndpointTest extends APITestCase
+class UserEndpointTest extends EndpointTestCase
 {
     public function testGetDetailReturnsBasicInfo()
     {

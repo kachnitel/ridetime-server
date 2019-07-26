@@ -3,9 +3,8 @@ namespace RideTimeServer\Tests\API\Endpoints;
 
 use RideTimeServer\Entities\EventMember;
 use RideTimeServer\API\Endpoints\Database\MembershipManager;
-use RideTimeServer\Tests\API\APITestCase;
 
-class MembershipManagerTest extends APITestCase
+class MembershipManagerTest extends EndpointTestCase
 {
     public function testRemoveMember()
     {
