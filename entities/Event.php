@@ -192,7 +192,7 @@ class Event implements EntityInterface
      */
     public function getCreatedBy()
     {
-        return (int) $this->createdBy;
+        return $this->createdBy;
     }
 
     /**
@@ -212,10 +212,8 @@ class Event implements EntityInterface
     /**
      * Request join
      * REVIEW: Decouple from EventMember
-     * - Move to EventEndpoint?
-     * - OR
-     * - static EventMember::join($user, $event)
-     *      {new self();$user->addEvent;$event->addMember} ?
+     * - Move to MembershipManager::join?
+     *      {new EventMember();$user->addEvent;$event->addMember} ?
      */
     public function join(User $user): EventMember
     {
