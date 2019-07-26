@@ -56,6 +56,7 @@ abstract class BaseEndpoint
     }
 
     /**
+     * REVIEW: Requires entities to be flushed
      * @param string $entityClass
      * @param integer $id
      * @return EntityInterface
