@@ -86,12 +86,25 @@ class EventController extends BaseController
     public function remove(Request $request, Response $response, array $args): Response
     {
         // TODO: must be member of event
-        $currentUserId = (int) $request->getAttribute('currentUser')->getId();
+        // $currentUserId = (int) $request->getAttribute('currentUser')->getId();
         $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
         $userId = (int) filter_var($args['userId'], FILTER_SANITIZE_NUMBER_INT);
 
         $eventEndpoint = $this->getEndpoint();
         $result = $eventEndpoint->removeMember($eventId, $userId);
+
+        return $response->withStatus(200)->withJson(['status' => $result]);
+    }
+
+    public function acceptRequest(Request $request, Response $response, array $args): Response
+    {
+        // TODO: must be member of event
+        // $currentUserId = (int) $request->getAttribute('currentUser')->getId();
+        $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
+        $userId = (int) filter_var($args['userId'], FILTER_SANITIZE_NUMBER_INT);
+
+        $eventEndpoint = $this->getEndpoint();
+        $result = $eventEndpoint->acceptRequest($eventId, $userId);
 
         return $response->withStatus(200)->withJson(['status' => $result]);
     }

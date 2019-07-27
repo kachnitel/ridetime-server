@@ -202,6 +202,19 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         $this->entityManager->flush();
     }
 
+    public function acceptRequest(int $eventId, int $memberId)
+    {
+        // REFACTOR: DB
+        $event = $this->get($eventId);
+        $user = $this->getUser($memberId);
+
+        $membershipManager = new MembershipManager();
+        $membership = $membershipManager->acceptRequest($event, $user);
+
+        // REFACTOR: DB
+        $this->saveEntity($membership);
+    }
+
     protected function getUser(int $userId): User
     {
         return (new UserEndpoint($this->entityManager, $this->logger))

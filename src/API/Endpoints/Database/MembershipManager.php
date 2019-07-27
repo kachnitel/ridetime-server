@@ -6,6 +6,7 @@ use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Exception\EntityNotFoundException;
 use Doctrine\Common\Collections\Criteria;
+use RideTimeServer\Exception\UserException;
 
 class MembershipManager
 {
@@ -34,11 +35,32 @@ class MembershipManager
      * @param User $user
      * @return EventMember
      */
+    public function acceptRequest(Event $event, User $user): EventMember
+    {
+        $result = $this->confirmMemberIfStatus($event, $user, Event::STATUS_REQUESTED);
+        if (!$result) {
+            throw new UserException(
+                "User {$user->getId()} has no pending request to join of event {$event->getId()}.",
+                400
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param Event $event
+     * @param User $user
+     * @return EventMember
+     */
     public function removeMember(Event $event, User $user): EventMember
     {
         $membership = $this->findEventMember($event, $user);
         if (!$membership) {
-            throw new EntityNotFoundException("User {$user->getId()} is not a member of event {$event->getId()}.", 404);
+            throw new EntityNotFoundException(
+                "User {$user->getId()} is not a member of event {$event->getId()}.",
+                404
+            );
         }
         $user->removeEvent($membership);
         $event->removeMember($membership);

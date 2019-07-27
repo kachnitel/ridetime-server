@@ -60,11 +60,11 @@ class Router
         /** Decline invite / leave event */
         $app->delete('/events/{id}/invite', 'RideTimeServer\API\Controllers\EventController:leave');
         $app->delete('/events/{id}/leave', 'RideTimeServer\API\Controllers\EventController:leave');
-        /** Decline request / remove member (moderator only) TODO: */
+        /** Decline request / remove member (moderator only TODO:) */
         $app->delete('/events/{id}/join/{userId}', 'RideTimeServer\API\Controllers\EventController:remove');
         $app->delete('/events/{id}/members/{userId}', 'RideTimeServer\API\Controllers\EventController:remove');
-        /** Accept request (moderator only) TODO: */
-        $app->put('/events/{id}/join/{userId}', 'RideTimeServer\API\Controllers\EventController:accept');
+        /** Accept request (moderator only TODO:) */
+        $app->put('/events/{id}/join/{userId}', 'RideTimeServer\API\Controllers\EventController:acceptRequest');
     }
 
     protected function initLocationRoutes(App $app)

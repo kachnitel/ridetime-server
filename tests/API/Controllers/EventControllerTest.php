@@ -59,4 +59,49 @@ class EventControllerTest extends APITestCase
 
         $this->assertNotContains($member, $event->getMembers());
     }
+
+    public function testAcceptRequest()
+    {
+        $container = new Container([
+            'entityManager' => $this->entityManager,
+            'logger' => new Logger('EventControllerTest')
+        ]);
+        $controller = new EventController($container);
+
+        // Setup entities
+        $user = $this->generateUser(); // User being accepted
+        $event = $this->generateEvent();
+        $mod = $event->getCreatedBy(); // User initiating the action
+
+        $this->entityManager->persist($user);
+        $this->entityManager->persist($mod);
+        $this->entityManager->persist($event);
+        $this->entityManager->flush();
+
+        // Add user to event
+        $member = new EventMember();
+        $member->setEvent($event);
+        $member->setUser($user);
+        $member->setStatus(Event::STATUS_REQUESTED);
+        $event->addMember($member);
+        $user->addEvent($member);
+
+        // Create an empty request
+        $request = new Request(
+            'DELETE',
+            new Uri('http', 'www.test.ca'),
+            new Headers([]),
+            [],
+            [],
+            new Stream(fopen('php://memory', 'r+'))
+        );
+        $request = $request->withAttribute('currentUser', $mod);
+
+        $controller->acceptRequest($request, new Response(), [
+            'id' => $event->getId(),
+            'userId' => $user->getId()
+        ]);
+
+        $this->assertEquals(Event::STATUS_CONFIRMED, $member->getStatus());
+    }
 }
