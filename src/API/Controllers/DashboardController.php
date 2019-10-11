@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Friendship;
 use RideTimeServer\API\Endpoints\Database\UserEndpoint;
-use RideTimeServer\API\Endpoints\Database\NotificationsEndpoint;
 use RideTimeServer\Notifications;
 
 class DashboardController
@@ -133,14 +132,6 @@ class DashboardController
     protected function getUserEndpoint(): UserEndpoint
     {
         return new UserEndpoint(
-            $this->container->entityManager,
-            $this->container->logger
-        );
-    }
-
-    protected function getNotificationsEndpoint(): NotificationsEndpoint
-    {
-        return new NotificationsEndpoint(
             $this->container->entityManager,
             $this->container->logger
         );
