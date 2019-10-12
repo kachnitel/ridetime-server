@@ -124,7 +124,7 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     {
         return $user->getEvents(Event::STATUS_INVITED)
             ->map(function(Event $event) { return $this->getDetail($event); })
-            ->toArray();
+            ->getValues();
     }
 
     /**
