@@ -30,11 +30,10 @@ class Router
 
         $that = $this; // bit JavaScripty
         $this->app->group('/api', function (App $app) use ($that) {
-            $that->initEventRoutes($app);
+            // $that->initEventRoutes($app);
             $that->initLocationRoutes($app);
-            $app->group('/users', function (App $app) use ($that) {
-                $that->initUserRoutes($app);
-            });
+            $app->group('/events', function (App $app) use ($that) { $that->initEventRoutes($app); });
+            $app->group('/users', function (App $app) use ($that) { $that->initUserRoutes($app); });
         })->add($cuMiddleware->getMiddleware(true));
 
         $this->app->group('/dashboard', function (App $app) use ($that) {
@@ -50,24 +49,24 @@ class Router
     protected function initEventRoutes(App $app)
     {
         /** List events */
-        $app->get('/events', 'RideTimeServer\API\Controllers\EventController:list');
+        $app->get('', 'RideTimeServer\API\Controllers\EventController:list');
         /** Get event detail */
-        $app->get('/events/{id}', 'RideTimeServer\API\Controllers\EventController:get');
+        $app->get('/{id}', 'RideTimeServer\API\Controllers\EventController:get');
         /** Create event */
-        $app->post('/events', 'RideTimeServer\API\Controllers\EventController:add');
+        $app->post('', 'RideTimeServer\API\Controllers\EventController:add');
         /** - Membership routes - */
         /** Add event member */
-        $app->post('/events/{id}/invite/{userId}', 'RideTimeServer\API\Controllers\EventController:invite');
+        $app->post('/{id}/invite/{userId}', 'RideTimeServer\API\Controllers\EventController:invite');
         /** Request join / accept invite */
-        $app->post('/events/{id}/join', 'RideTimeServer\API\Controllers\EventController:join');
+        $app->post('/{id}/join', 'RideTimeServer\API\Controllers\EventController:join');
         /** Decline invite / leave event */
-        $app->delete('/events/{id}/invite', 'RideTimeServer\API\Controllers\EventController:leave');
-        $app->delete('/events/{id}/leave', 'RideTimeServer\API\Controllers\EventController:leave');
+        $app->delete('/{id}/invite', 'RideTimeServer\API\Controllers\EventController:leave');
+        $app->delete('/{id}/leave', 'RideTimeServer\API\Controllers\EventController:leave');
         /** Decline request / remove member (moderator only TODO:) */
-        $app->delete('/events/{id}/join/{userId}', 'RideTimeServer\API\Controllers\EventController:remove');
-        $app->delete('/events/{id}/members/{userId}', 'RideTimeServer\API\Controllers\EventController:remove');
+        $app->delete('/{id}/join/{userId}', 'RideTimeServer\API\Controllers\EventController:remove');
+        $app->delete('/{id}/members/{userId}', 'RideTimeServer\API\Controllers\EventController:remove');
         /** Accept request (moderator only TODO:) */
-        $app->put('/events/{id}/join/{userId}', 'RideTimeServer\API\Controllers\EventController:acceptRequest');
+        $app->put('/{id}/join/{userId}', 'RideTimeServer\API\Controllers\EventController:acceptRequest');
     }
 
     protected function initLocationRoutes(App $app)
