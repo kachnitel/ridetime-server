@@ -30,8 +30,7 @@ class Router
 
         $that = $this; // bit JavaScripty
         $this->app->group('/api', function (App $app) use ($that) {
-            // $that->initEventRoutes($app);
-            $that->initLocationRoutes($app);
+            $app->group('/locations', function (App $app) use ($that) { $that->initLocationRoutes($app); });
             $app->group('/events', function (App $app) use ($that) { $that->initEventRoutes($app); });
             $app->group('/users', function (App $app) use ($that) { $that->initUserRoutes($app); });
         })->add($cuMiddleware->getMiddleware(true));
@@ -39,7 +38,6 @@ class Router
         $this->app->group('/dashboard', function (App $app) use ($that) {
             $that->initDashboardRoutes($app);
         })->add($cuMiddleware->getMiddleware(true));
-
 
         $this->app->group('/notifications', function (App $app) use ($that) {
             $that->initNotificationsRoutes($app);
@@ -74,15 +72,15 @@ class Router
     protected function initLocationRoutes(App $app)
     {
         /** List locations */
-        $app->get('/locations', 'RideTimeServer\API\Controllers\LocationController:list');
+        $app->get('', 'RideTimeServer\API\Controllers\LocationController:list');
         /** Nearby locations */
-        $app->get('/locations/nearby', 'RideTimeServer\API\Controllers\LocationController:nearby');
+        $app->get('/nearby', 'RideTimeServer\API\Controllers\LocationController:nearby');
         /** Bounding box */
-        $app->get('/locations/bbox', 'RideTimeServer\API\Controllers\LocationController:bbox');
+        $app->get('/bbox', 'RideTimeServer\API\Controllers\LocationController:bbox');
         /** Search */
-        $app->get('/locations/search', 'RideTimeServer\API\Controllers\LocationController:search');
+        $app->get('/search', 'RideTimeServer\API\Controllers\LocationController:search');
         /** TODO: List location top routes and trails */
-        // $app->get('/locations/{id}/popular', 'RideTimeServer\API\Controllers\LocationController:popular');
+        // $app->get('/{id}/popular', 'RideTimeServer\API\Controllers\LocationController:popular');
         /** TODO: Search location trails and routes */
     }
 
