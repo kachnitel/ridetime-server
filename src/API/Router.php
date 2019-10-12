@@ -50,6 +50,8 @@ class Router
     {
         /** List events */
         $app->get('', 'RideTimeServer\API\Controllers\EventController:list');
+        /** List my invites */
+        $app->get('/invites', 'RideTimeServer\API\Controllers\EventController:listInvites');
         /** Get event detail */
         $app->get('/{id}', 'RideTimeServer\API\Controllers\EventController:get');
         /** Create event */

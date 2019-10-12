@@ -118,6 +118,16 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     }
 
     /**
+     * @return array[Event]
+     */
+    public function listInvites(User $user): array
+    {
+        return $user->getEvents(Event::STATUS_INVITED)
+            ->map(function(Event $event) { return $this->getDetail($event); })
+            ->toArray();
+    }
+
+    /**
      * Returns thumbnails of confirmed users
      *
      * @param Event $event

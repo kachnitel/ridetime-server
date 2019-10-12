@@ -1,13 +1,24 @@
 <?php
 namespace RideTimeServer\API\Controllers;
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Http\Request;
+use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\Database\EventEndpoint;
 use RideTimeServer\Exception\EntityNotFoundException;
 
 class EventController extends BaseController
 {
+    public function listInvites(Request $request, Response $response, array $args): Response
+    {
+        // User rather than ID?
+        $user = $request->getAttribute('currentUser');
+
+        $eventEndpoint = $this->getEndpoint();
+        $result = $eventEndpoint->listInvites($user);
+
+        return $response->withJson($result);
+    }
+
     /**
      * TODO: Notifications
      * TODO: currentUser Must be a member(or other status in the future) to invite
@@ -29,7 +40,9 @@ class EventController extends BaseController
     }
 
     /**
-     * TODO: Notifications to members
+     * Join or accept invite
+     *
+     * TODO: Notifications to existing members
      * should be possible to disable per event/member
      *
      * @param Request $request
