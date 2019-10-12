@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Friendship;
 use RideTimeServer\API\Endpoints\Database\UserEndpoint;
-use RideTimeServer\Notifications;
 
 class DashboardController
 {
@@ -22,6 +21,17 @@ class DashboardController
         $this->container = $container;
     }
 
+    /**
+     * TODO: Invites REVIEW: Seems easier to leave invites in Events controller
+     * raising the question whether dashboard shouldn't just be a single route
+     * "GET /dashboard" returning info about self and pending friendships,
+     * or "GET /users/me" returning this
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function all(Request $request, Response $response, array $args): Response
     {
         /** @var User $user */
@@ -41,80 +51,6 @@ class DashboardController
             'requests' => array_values($fRequests->toArray()),
             'sentRequests' => array_values($sentRequests->toArray())
         ]);
-    }
-
-    public function requestFriend(Request $request, Response $response, array $args): Response
-    {
-        $friendship = $this->getUserEndpoint()->addFriend(
-            $request->getAttribute('currentUser')->getId(),
-            $args['id']
-        );
-
-        $notifications = new Notifications();
-        $notifications->sendNotification(
-            $friendship->getFriend()->getNotificationsTokens()->toArray(),
-            'New friend request',
-            $friendship->getUser()->getName() . ' wants to be your friend!',
-            (object) [
-                'type' => 'friendRequest',
-                'from' => $friendship->getUser()->getId()
-            ],
-            'friendship'
-        );
-
-        return $response->withJson([
-            'friendship' => $friendship->asObject()
-        ]);
-    }
-
-    /**
-     * Accept friendship request from $args['id']
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     * @return Response
-     */
-    public function acceptFriend(Request $request, Response $response, array $args): Response
-    {
-        $friendship = $this->getUserEndpoint()->acceptFriend(
-            $args['id'],
-            $request->getAttribute('currentUser')->getId()
-        );
-
-        $notifications = new Notifications();
-        $notifications->sendNotification(
-            $friendship->getUser()->getNotificationsTokens()->toArray(),
-            'Friend request accepted',
-            $friendship->getUser()->getName() . ' accepted your friend request!',
-            (object) [
-                'type' => 'friendRequestAccepted',
-                'from' => $friendship->getFriend()->getId()
-            ],
-            'friendship'
-        );
-
-        return $response->withStatus(204);
-    }
-
-    /**
-     * Delete friendship between current user and $args['id']
-     * independent on who requested the friendship
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     * @return Response
-     */
-    public function removeFriend(Request $request, Response $response, array $args): Response
-    {
-        $fs = $request->getAttribute('currentUser')->removeFriend(
-            $this->getUserEndpoint()->get($args['id'])
-        );
-        $this->container['entityManager']->remove($fs);
-        $this->container['entityManager']->flush();
-
-        return $response->withStatus(204);
     }
 
     protected function filterPendingRequests(Collection $friendships)

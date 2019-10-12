@@ -32,12 +32,15 @@ class Router
         $this->app->group('/api', function (App $app) use ($that) {
             $that->initEventRoutes($app);
             $that->initLocationRoutes($app);
-            $that->initUserRoutes($app);
-        })->add($cuMiddleware->getMiddleware());
+            $app->group('/users', function (App $app) use ($that) {
+                $that->initUserRoutes($app);
+            });
+        })->add($cuMiddleware->getMiddleware(true));
 
         $this->app->group('/dashboard', function (App $app) use ($that) {
             $that->initDashboardRoutes($app);
         })->add($cuMiddleware->getMiddleware(true));
+
 
         $this->app->group('/notifications', function (App $app) use ($that) {
             $that->initNotificationsRoutes($app);
@@ -85,30 +88,28 @@ class Router
     protected function initUserRoutes(App $app)
     {
         /** List users */
-        $app->get('/users', 'RideTimeServer\API\Controllers\UserController:list');
+        $app->get('', 'RideTimeServer\API\Controllers\UserController:list');
         /** Search users */
-        $app->get('/users/search', 'RideTimeServer\API\Controllers\UserController:search');
+        $app->get('/search', 'RideTimeServer\API\Controllers\UserController:search');
         /** Get user detail */
-        $app->get('/users/{id}', 'RideTimeServer\API\Controllers\UserController:get');
+        $app->get('/{id}', 'RideTimeServer\API\Controllers\UserController:get');
         /** Update user */
-        $app->put('/users/{id}', 'RideTimeServer\API\Controllers\UserController:update');
+        $app->put('/{id}', 'RideTimeServer\API\Controllers\UserController:update');
         /** Update user's picture */
-        $app->post('/users/{id}/picture', 'RideTimeServer\API\Controllers\UserController:uploadPicture');
+        $app->post('/{id}/picture', 'RideTimeServer\API\Controllers\UserController:uploadPicture');
+        /** - Friendship - */
+        /** Request friendship */
+        $app->post('/friends/{id}', 'RideTimeServer\API\Controllers\UserController:requestFriend');
+        /** Accept friendship */
+        $app->put('/friends/{id}/accept', 'RideTimeServer\API\Controllers\UserController:acceptFriend');
+        /** Decline/Delete friendship */
+        $app->delete('/friends/{id}', 'RideTimeServer\API\Controllers\UserController:removeFriend');
     }
 
     protected function initDashboardRoutes(App $app)
     {
         /** Get dashboard */
         $app->get('', 'RideTimeServer\API\Controllers\DashboardController:all');
-        /**
-         * TODO: move friendship to UserController
-         */
-        /** Request friendship */
-        $app->post('/friends/{id}', 'RideTimeServer\API\Controllers\DashboardController:requestFriend');
-        /** Accept friendship */
-        $app->put('/friends/{id}/accept', 'RideTimeServer\API\Controllers\DashboardController:acceptFriend');
-        /** Decline/Delete friendship */
-        $app->delete('/friends/{id}', 'RideTimeServer\API\Controllers\DashboardController:removeFriend');
     }
 
     protected function initNotificationsRoutes(App $app)

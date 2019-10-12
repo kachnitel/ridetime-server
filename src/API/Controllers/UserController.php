@@ -8,6 +8,7 @@ use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
 use RideTimeServer\Entities\User;
 use Slim\Http\UploadedFile;
+use RideTimeServer\Notifications;
 
 class UserController extends BaseController
 {
@@ -110,6 +111,88 @@ class UserController extends BaseController
         );
 
         return $handler->processPicture($uploadedFile, $id);
+    }
+
+    /**
+     * TODO: All friendship to UserCtrlr
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function requestFriend(Request $request, Response $response, array $args): Response
+    {
+        $friendship = $this->getEndpoint()->addFriend(
+            $request->getAttribute('currentUser')->getId(),
+            $args['id']
+        );
+
+        $notifications = new Notifications();
+        $notifications->sendNotification(
+            $friendship->getFriend()->getNotificationsTokens()->toArray(),
+            'New friend request',
+            $friendship->getUser()->getName() . ' wants to be your friend!',
+            (object) [
+                'type' => 'friendRequest',
+                'from' => $friendship->getUser()->getId()
+            ],
+            'friendship'
+        );
+
+        return $response->withJson([
+            'friendship' => $friendship->asObject()
+        ]);
+    }
+
+    /**
+     * Accept friendship request from $args['id']
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function acceptFriend(Request $request, Response $response, array $args): Response
+    {
+        $friendship = $this->getEndpoint()->acceptFriend(
+            $args['id'],
+            $request->getAttribute('currentUser')->getId()
+        );
+
+        $notifications = new Notifications();
+        $notifications->sendNotification(
+            $friendship->getUser()->getNotificationsTokens()->toArray(),
+            'Friend request accepted',
+            $friendship->getUser()->getName() . ' accepted your friend request!',
+            (object) [
+                'type' => 'friendRequestAccepted',
+                'from' => $friendship->getFriend()->getId()
+            ],
+            'friendship'
+        );
+
+        return $response->withStatus(204);
+    }
+
+    /**
+     * Delete friendship between current user and $args['id']
+     * independent on who requested the friendship
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function removeFriend(Request $request, Response $response, array $args): Response
+    {
+        $fs = $request->getAttribute('currentUser')->removeFriend(
+            $this->getEndpoint()->get($args['id'])
+        );
+        $this->container['entityManager']->remove($fs);
+        $this->container['entityManager']->flush();
+
+        return $response->withStatus(204);
     }
 
     /**
