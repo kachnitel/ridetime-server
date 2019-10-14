@@ -231,7 +231,7 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
     {
         return $user->getEvents(Event::STATUS_CONFIRMED)->map(function(Event $event) {
             return $event->getId();
-        })->toArray();;
+        })->getValues();
     }
 
     /**

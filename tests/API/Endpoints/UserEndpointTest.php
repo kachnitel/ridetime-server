@@ -104,6 +104,31 @@ class UserEndpointTest extends APITestCase
         );
     }
 
+    /**
+     * Ensure IDs are a sequential array to ensure correct format in JSON
+     *
+     * @return void
+     */
+    public function testGetUserEventIdsFormat()
+    {
+        $user = $this->generateUser();
+        $event1 = $this->generateEvent(1);
+        $event2 = $this->generateEvent(2);
+        $event3 = $this->generateEvent(3);
+
+        $user->addEvent($event1->join($user));
+        $user->addEvent($middle = $event2->join($user));
+        $user->addEvent($event3->join($user));
+
+        $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));
+
+        // Remove event from the middle to break array order
+        $user->removeEvent($middle);
+
+        $eventIDs = $endpoint->getDetail($user)->events;
+        $this->assertEquals(array_keys($eventIDs), array_keys(array_slice($eventIDs, 0)));
+    }
+
     // TODO:
     // Need to test against actual DB
     // as per Doctrine recommendations
