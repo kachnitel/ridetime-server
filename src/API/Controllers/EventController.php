@@ -5,8 +5,10 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\Database\EventEndpoint;
 use RideTimeServer\API\Endpoints\Database\UserEndpoint;
+use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Exception\EntityNotFoundException;
 use RideTimeServer\Notifications;
+use RideTimeServer\Entities\User;
 
 class EventController extends BaseController
 {
@@ -22,7 +24,6 @@ class EventController extends BaseController
     }
 
     /**
-     * TODO: Notifications
      * TODO: currentUser Must be a member(or other status in the future) to invite
      *
      * @param Request $request
@@ -44,9 +45,6 @@ class EventController extends BaseController
 
         $result = $this->getEndpoint()->invite($eventId, $userId);
 
-        /**
-         *  WIP:
-         */
         $notifications = new Notifications();
         $notifications->sendNotification(
             $user->getNotificationsTokens()->toArray(),
@@ -66,7 +64,6 @@ class EventController extends BaseController
     /**
      * Join or accept invite
      *
-     * TODO: Notifications to existing members
      * should be possible to disable per event/member
      *
      * @param Request $request
@@ -77,10 +74,37 @@ class EventController extends BaseController
     public function join(Request $request, Response $response, array $args): Response
     {
         $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
-        $userId = (int) $request->getAttribute('currentUser')->getId();
+        /** @var User $currentUser */
+        $currentUser = $request->getAttribute('currentUser');
+        $event = $this->getEndpoint()->get($eventId);
 
-        $eventEndpoint = $this->getEndpoint();
-        $result = $eventEndpoint->join($eventId, $userId);
+        $result = $this->getEndpoint()->join($eventId, $currentUser->getId());
+
+        // Extract tokens of event members
+        $tokens = [];
+        $event->getMembers()->map(function(EventMember $membership) use (&$tokens, $currentUser) {
+            // Skip own notification tokens
+            if ($membership->getUser() === $currentUser) {
+                return;
+            }
+            array_push(
+                $tokens,
+                ...$membership->getUser()->getNotificationsTokens()
+            );
+        });
+
+        $notifications = new Notifications();
+        $notifications->sendNotification(
+            $tokens,
+            $currentUser->getName() . ' joined you for a ride!',
+            $currentUser->getName() . ' joined ' . $event->getTitle(),
+            (object) [
+                'type' => 'eventMemberJoined',
+                'from' => $currentUser->getId(),
+                'event' => $this->getEndpoint()->getDetail($event)
+            ],
+            'eventMember'
+        );
 
         return $response->withStatus(201)->withJson(['status' => $result]);
     }
