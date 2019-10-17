@@ -4,7 +4,9 @@ namespace RideTimeServer\API\Controllers;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\Database\EventEndpoint;
+use RideTimeServer\API\Endpoints\Database\UserEndpoint;
 use RideTimeServer\Exception\EntityNotFoundException;
+use RideTimeServer\Notifications;
 
 class EventController extends BaseController
 {
@@ -32,9 +34,31 @@ class EventController extends BaseController
     {
         $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
         $userId = (int) filter_var($args['userId'], FILTER_SANITIZE_NUMBER_INT);
+        $currentUser = $request->getAttribute('currentUser');
+        $event = $this->getEndpoint()->get($eventId);
+        $userEndpoint = new UserEndpoint(
+            $this->container->entityManager,
+            $this->container->logger
+        );
+        $user = $userEndpoint->get($userId);
 
-        $eventEndpoint = $this->getEndpoint();
-        $result = $eventEndpoint->invite($eventId, $userId);
+        $result = $this->getEndpoint()->invite($eventId, $userId);
+
+        /**
+         *  WIP:
+         */
+        $notifications = new Notifications();
+        $notifications->sendNotification(
+            $user->getNotificationsTokens()->toArray(),
+            'New invite',
+            $currentUser->getName() . ' invited you to ' . $event->getTitle(),
+            (object) [
+                'type' => 'eventInvite',
+                'from' => $currentUser->getId(),
+                'event' => $this->getEndpoint()->getDetail($event)
+            ],
+            'eventMember'
+        );
 
         return $response->withStatus(201)->withJson(['status' => $result]);
     }
