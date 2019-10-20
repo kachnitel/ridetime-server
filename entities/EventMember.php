@@ -114,10 +114,10 @@ class EventMember implements EntityInterface
      */
     public function __toString()
     {
-        return json_encode($this->asObject());
+        return json_encode($this->getDetail());
     }
 
-    public function asObject()
+    public function getDetail(): object
     {
         return (object) [
             'userId' => $this->user->getId(),

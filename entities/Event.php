@@ -352,4 +352,50 @@ class Event implements EntityInterface
 
         return $this;
     }
+
+    /**
+     * Get event detail
+     *
+     * @return object
+     */
+    public function getDetail(): object
+    {
+        return (object) [
+            'id' => $this->getId(),
+            'title' => $this->getTitle(),
+            'description' => $this->getDescription(),
+            'members' => $this->getEventMembers(),
+            'difficulty' => $this->getDifficulty(),
+            'location' => (object) [ // TODO: thumbnail
+                'id' => $this->getLocation()->getId(),
+                'name' => $this->getLocation()->getName(),
+                'gps' => [
+                    $this->getLocation()->getGpsLat(),
+                    $this->getLocation()->getGpsLon()
+                ]
+            ],
+            'terrain' => $this->getTerrain(),
+            'route' => $this->getRoute(),
+            'datetime' => $this->getDate()->getTimestamp()
+        ];
+    }
+
+    /**
+     * Returns thumbnails of confirmed users
+     *
+     * @return array
+     */
+    protected function getEventMembers(): array
+    {
+        $members = [];
+        /** @var \RideTimeServer\Entities\EventMember $member */
+        foreach ($this->getMembers() as $member) {
+            if ($member->getStatus() !== Event::STATUS_CONFIRMED) {
+                continue;
+            }
+            $members[] = $member->getUser()->getThumbnail();
+        }
+
+        return $members;
+    }
 }

@@ -53,7 +53,7 @@ class EventController extends BaseController
             (object) [
                 'type' => 'eventInvite',
                 'from' => $currentUser->getId(),
-                'event' => $this->getEndpoint()->getDetail($event)
+                'event' => $event->getDetail()
             ],
             'eventMember'
         );
@@ -101,7 +101,7 @@ class EventController extends BaseController
             (object) [
                 'type' => 'eventMemberJoined',
                 'from' => $currentUser->getId(),
-                'event' => $this->getEndpoint()->getDetail($event)
+                'event' => $event->getDetail()
             ],
             'eventMember'
         );

@@ -30,7 +30,7 @@ abstract class BaseController
 
         $endpoint = $this->getEndpoint();
 
-        return $response->withJson($endpoint->getDetail($endpoint->get($entityId)));
+        return $response->withJson($endpoint->get($entityId)->getDetail());
     }
 
     /**

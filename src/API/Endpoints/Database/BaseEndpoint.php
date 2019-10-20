@@ -84,7 +84,6 @@ abstract class BaseEndpoint
      */
     protected function listEntities(
         string $entityClass,
-        callable $entityExtractor,
         Criteria $searchCriteria
     ): array
     {
@@ -98,8 +97,9 @@ abstract class BaseEndpoint
         }
 
         $result = [];
+        /** @var EntityInterface $entity */
         foreach ($entities as $entity) {
-            $result[] = $entityExtractor($entity);
+            $result[] = $entity->getDetail();
         }
 
         return $result;

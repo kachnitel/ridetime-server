@@ -18,7 +18,7 @@ class UserEndpointTest extends APITestCase
         $user->setHometown('Town, BC');
         $user->setEmail('a@b.com');
 
-        $detail = $endpoint->getDetail($user);
+        $detail = $user->getDetail();
 
         $this->assertEquals('John Doe', $detail->name);
         $this->assertEquals('Town, BC', $detail->hometown);
@@ -71,12 +71,12 @@ class UserEndpointTest extends APITestCase
             'authId' => 123
         ]]);
 
-        $this->assertEquals([], $endpoint->getDetail($user)->locations);
+        $this->assertEquals([], $user->getDetail()->locations);
 
         $location = new Location();
         $location->setId(1);
         $user->addLocation($location);
-        $this->assertEquals([1], $endpoint->getDetail($user)->locations);
+        $this->assertEquals([1], $user->getDetail()->locations);
     }
 
     /**
@@ -93,14 +93,14 @@ class UserEndpointTest extends APITestCase
 
         $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));
 
-        $this->assertEquals([], $endpoint->getDetail($user)->friends);
+        $this->assertEquals([], $user->getDetail()->friends);
 
         $friend1->getFriendshipsWithMe()[0]->accept();
         $user->getFriendshipsWithMe()[0]->accept();
 
         $this->assertEqualsCanonicalizing(
             [$friend1->getId(), $friend2->getId()],
-            $endpoint->getDetail($user)->friends
+            $user->getDetail()->friends
         );
     }
 
@@ -125,7 +125,7 @@ class UserEndpointTest extends APITestCase
         // Remove event from the middle to break array order
         $user->removeEvent($middle);
 
-        $eventIDs = $endpoint->getDetail($user)->events;
+        $eventIDs = $user->getDetail()->events;
         $this->assertEquals(array_keys($eventIDs), array_keys(array_slice($eventIDs, 0)));
     }
 

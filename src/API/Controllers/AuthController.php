@@ -51,7 +51,7 @@ class AuthController extends BaseController
 
             throw $e;
         }
-        $result = $this->getEndpoint()->getDetail($user);
+        $result = $user->getDetail();
 
         return $response->withJson($result);
     }

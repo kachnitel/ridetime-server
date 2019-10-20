@@ -10,6 +10,24 @@ use \Doctrine\Common\Collections\ArrayCollection;
 class Location implements EntityInterface
 {
     /**
+     * Get location detail
+     *
+     * @return object
+     */
+    public function getDetail(): object
+    {
+        return (object) [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'coords' => [
+                $this->getGpsLat(),
+                $this->getGpsLon()
+            ],
+            'difficulties' => $this->getDifficulties()
+        ];
+    }
+
+    /**
      * @Id
      * @Column(type="integer", unique=true)
      *

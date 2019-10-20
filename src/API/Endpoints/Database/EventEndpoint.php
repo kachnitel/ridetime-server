@@ -20,7 +20,7 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         $event = $this->createEvent($data);
         $this->saveEntity($event);
 
-        return $this->getDetail($event);
+        return $event->getDetail();
     }
 
     /**
@@ -63,34 +63,6 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     }
 
     /**
-     * Get event detail
-     *
-     * @param Event $event
-     * @return object
-     */
-    public function getDetail(Event $event): object
-    {
-        return (object) [
-            'id' => $event->getId(),
-            'title' => $event->getTitle(),
-            'description' => $event->getDescription(),
-            'members' => $this->getEventMembers($event),
-            'difficulty' => $event->getDifficulty(),
-            'location' => (object) [
-                'id' => $event->getLocation()->getId(),
-                'name' => $event->getLocation()->getName(),
-                'gps' => [
-                    $event->getLocation()->getGpsLat(),
-                    $event->getLocation()->getGpsLon()
-                ]
-            ],
-            'terrain' => $event->getTerrain(),
-            'route' => $event->getRoute(),
-            'datetime' => $event->getDate()->getTimestamp()
-        ];
-    }
-
-    /**
      * @param integer $eventId
      * @return Event
      */
@@ -114,7 +86,7 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
             ->setFirstResult(0)
             ->setMaxResults(20);
 
-        return $this->listEntities(Event::class, [$this, 'getDetail'], $criteria);
+        return $this->listEntities(Event::class, $criteria);
     }
 
     /**
@@ -123,34 +95,8 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     public function listInvites(User $user): array
     {
         return $user->getEvents(Event::STATUS_INVITED)
-            ->map(function(Event $event) { return $this->getDetail($event); })
+            ->map(function(Event $event) { return $event->getDetail(); })
             ->getValues();
-    }
-
-    /**
-     * Returns thumbnails of confirmed users
-     *
-     * @param Event $event
-     * @return array
-     */
-    protected function getEventMembers(Event $event): array
-    {
-        $members = [];
-        /** @var \RideTimeServer\Entities\EventMember $member */
-        foreach ($event->getMembers() as $member) {
-            if ($member->getStatus() !== Event::STATUS_CONFIRMED) {
-                continue;
-            }
-            /** @var \RideTimeServer\Entities\User $user */
-            $user = $member->getUser();
-            $members[] = (object) [
-                'id' => $user->getId(),
-                'name' => $user->getName(),
-                'picture' => $user->getPicture()
-            ];
-        }
-
-        return $members;
     }
 
     public function join(int $eventId, int $userId): string

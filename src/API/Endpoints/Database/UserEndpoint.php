@@ -36,7 +36,7 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
             $criteria->where(Criteria::expr()->in('id', $ids));
         }
 
-        return $this->listEntities(User::class, [$this, 'getDetail'], $criteria);
+        return $this->listEntities(User::class, $criteria);
     }
 
     public function search(string $field, string $text): array
@@ -48,7 +48,7 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
 
         $results = [];
         foreach ($queryBuilder->getQuery()->getResult() as $item) {
-            $results[] = $this->getDetail($item);
+            $results[] = $item->getDetail();
         }
         return $results;
     }
@@ -63,7 +63,7 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
         $user = $this->createUser($data);
         $this->saveEntity($user);
 
-        return $this->getDetail($user);
+        return $user->getDetail();
     }
 
     /**
@@ -196,79 +196,6 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
         }
 
         return $user;
-    }
-
-    /**
-     * Get user detail
-     *
-     * @param User $user
-     * @return object
-     */
-    public function getDetail(User $user): object
-    {
-        return (object) [
-            'id' => $user->getId(),
-            'name' => $user->getName(),
-            'hometown' => $user->getHometown(),
-            'events' => $this->getUserEventIds($user),
-            'friends' => $this->getFriends($user),
-            'level' => $user->getLevel(),
-            'bike' => $user->getBike(),
-            'favourites' => $user->getFavourites(),
-            'picture' => $user->getPicture(),
-            'email' => $user->getEmail(),
-            'locations' => $this->getLocationIds($user)
-        ];
-    }
-
-    /**
-     * Find confirmed events for user
-     *
-     * @param User $user
-     * @return int[]
-     */
-    protected function getUserEventIds(User $user): array
-    {
-        return $user->getEvents(Event::STATUS_CONFIRMED)->map(function(Event $event) {
-            return $event->getId();
-        })->getValues();
-    }
-
-    /**
-     * Get friends list for an user
-     *
-     * @param User $user
-     * @return User[]
-     */
-    protected function getFriends(User $user): array
-    {
-        $friends = [];
-        $filter = function(Friendship $friendship) {
-            return $friendship->getStatus() === 1;
-        };
-
-        /** @var Friendship $friendship */
-        foreach ($user->getFriendships()->filter($filter) as $friendship) {
-            $friends[] = $friendship->getFriend()->getId();
-        }
-
-        /** @var Friendship $friendship */
-        foreach ($user->getFriendshipsWithMe()->filter($filter) as $friendship) {
-            $friends[] = $friendship->getUser()->getId();
-        }
-
-        return $friends;
-    }
-
-    /**
-     * @param User $user
-     * @return int[]
-     */
-    protected function getLocationIds(User $user): array
-    {
-        return $user->getLocations()->map(function(Location $location) {
-            return $location->getId();
-        })->toArray();
     }
 
     /**

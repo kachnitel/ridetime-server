@@ -60,4 +60,12 @@ class NotificationsToken implements EntityInterface
     {
         return $this->token;
     }
+
+    public function getDetail(): object
+    {
+        return (object) [
+            'userId' => $this->getUser()->getId(),
+            'token' => $this->getToken()
+        ];
+    }
 }

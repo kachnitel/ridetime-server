@@ -7,6 +7,9 @@ namespace RideTimeServer\Entities;
  */
 class Friendship implements EntityInterface
 {
+    const STATUS_PENDING = 0;
+    const STATUS_ACCEPTED = 1;
+
     /**
      * Requesting user
      *
@@ -112,10 +115,10 @@ class Friendship implements EntityInterface
      */
     public function __toString()
     {
-        return json_encode($this->asObject());
+        return json_encode($this->getDetail());
     }
 
-    public function asObject()
+    public function getDetail(): object
     {
         return (object) [
             'userId' => $this->user->getId(),

@@ -7,25 +7,6 @@ use RideTimeServer\API\Endpoints\EntityEndpointInterface;
 
 class LocationEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
-        /**
-     * Get location detail
-     *
-     * @param Location $location
-     * @return object
-     */
-    public function getDetail(Location $location): object
-    {
-        return (object) [
-            'id' => $location->getId(),
-            'name' => $location->getName(),
-            'coords' => [
-                $location->getGpsLat(),
-                $location->getGpsLon()
-            ],
-            'difficulties' => $location->getDifficulties()
-        ];
-    }
-
     /**
      * @param integer $locationId
      * @return Location
@@ -48,7 +29,7 @@ class LocationEndpoint extends BaseEndpoint implements EntityEndpointInterface
             $criteria->where(Criteria::expr()->in('id', $ids));
         }
 
-        return $this->listEntities(Location::class, [$this, 'getDetail'], $criteria);
+        return $this->listEntities(Location::class, $criteria);
     }
 
     public function addMultiple(array $items)

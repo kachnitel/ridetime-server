@@ -52,7 +52,7 @@ class UserController extends BaseController
         $result = $endpoint->update($user, $data);
 
         // 200, there's no updated HTTP code
-        return $response->withJson($endpoint->getDetail($result));
+        return $response->withJson($result->getDetail());
     }
 
     protected function processUserData(Request $request, User $user): array
@@ -90,7 +90,7 @@ class UserController extends BaseController
             ['picture' => $picture]
         );
 
-        return $response->withJson($endpoint->getDetail($result));
+        return $response->withJson($result->getDetail());
     }
 
     protected function handleUploadPicture(UploadedFile $uploadedFile, int $id): ?string
@@ -141,7 +141,7 @@ class UserController extends BaseController
         );
 
         return $response->withJson([
-            'friendship' => $friendship->asObject()
+            'friendship' => $friendship->getDetail()
         ]);
     }
 

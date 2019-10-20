@@ -602,4 +602,83 @@ class User implements EntityInterface
     {
         $this->notificationsTokens[] = $token;
     }
+
+    public function getThumbnail(): object
+    {
+        return (object) [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'picture' => $this->getPicture()
+        ];
+    }
+
+    /**
+     * Get user detail
+     *
+     * @return object
+     */
+    public function getDetail(): object
+    {
+        return (object) [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'hometown' => $this->getHometown(),
+            'events' => $this->getUserEventIds(), // REVIEW: thumbnail?
+            'friends' => $this->getFriendIds(), // TODO: thumbnail
+            'level' => $this->getLevel(),
+            'bike' => $this->getBike(),
+            'favourites' => $this->getFavourites(),
+            'picture' => $this->getPicture(),
+            'email' => $this->getEmail(),
+            'locations' => $this->getLocationIds() // REVIEW: thumbnail?
+        ];
+    }
+
+    /**
+     * Find confirmed events for user
+     *
+     * @return int[]
+     */
+    protected function getUserEventIds(): array
+    {
+        return $this->getEvents(Event::STATUS_CONFIRMED)->map(function(Event $event) {
+            return $event->getId();
+        })->getValues();
+    }
+
+    /**
+     * Get friends list for an user
+     * Combines friendships and friendshipsWithMe
+     *
+     * @return User[]
+     */
+    protected function getFriendIds(): array
+    {
+        $friends = [];
+        $filter = function(Friendship $friendship) {
+            return $friendship->getStatus() === Friendship::STATUS_ACCEPTED;
+        };
+
+        /** @var Friendship $friendship */
+        foreach ($this->getFriendships()->filter($filter) as $friendship) {
+            $friends[] = $friendship->getFriend()->getId();
+        }
+
+        /** @var Friendship $friendship */
+        foreach ($this->getFriendshipsWithMe()->filter($filter) as $friendship) {
+            $friends[] = $friendship->getUser()->getId();
+        }
+
+        return $friends;
+    }
+
+    /**
+     * @return int[]
+     */
+    protected function getLocationIds(): array
+    {
+        return $this->getLocations()->map(function(Location $location) {
+            return $location->getId();
+        })->toArray();
+    }
 }
