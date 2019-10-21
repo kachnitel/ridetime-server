@@ -5,8 +5,6 @@ use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\EntityNotFoundException;
 use Doctrine\Common\Collections\Criteria;
 use RideTimeServer\Exception\RTException;
-use RideTimeServer\Entities\Location;
-use RideTimeServer\Entities\Event;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\Entities\Friendship;
 use RideTimeServer\API\Endpoints\EntityEndpointInterface;
