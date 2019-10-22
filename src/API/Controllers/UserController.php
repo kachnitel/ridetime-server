@@ -164,7 +164,7 @@ class UserController extends BaseController
         $notifications->sendNotification(
             $friendship->getUser()->getNotificationsTokens()->toArray(),
             'Friend request accepted',
-            $friendship->getUser()->getName() . ' accepted your friend request!',
+            $friendship->getFriend()->getName() . ' accepted your friend request!',
             (object) [
                 'type' => 'friendRequestAccepted',
                 'from' => $friendship->getFriend()->getId()
