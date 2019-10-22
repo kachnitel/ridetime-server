@@ -603,6 +603,14 @@ class User implements EntityInterface
         $this->notificationsTokens[] = $token;
     }
 
+    /**
+     * May be used to get entity "thumbnail"
+     * 21/10/2019 looks like IDs only and populating when needed is the way
+     * although it won't be as fast on the client
+     * @deprecated
+     *
+     * @return object
+     */
     public function getThumbnail(): object
     {
         return (object) [
@@ -623,14 +631,14 @@ class User implements EntityInterface
             'id' => $this->getId(),
             'name' => $this->getName(),
             'hometown' => $this->getHometown(),
-            'events' => $this->getUserEventIds(), // REVIEW: thumbnail?
-            'friends' => $this->getFriendIds(), // TODO: thumbnail
+            'events' => $this->getUserEventIds(),
+            'friends' => $this->getFriendIds(),
             'level' => $this->getLevel(),
             'bike' => $this->getBike(),
             'favourites' => $this->getFavourites(),
             'picture' => $this->getPicture(),
             'email' => $this->getEmail(),
-            'locations' => $this->getLocationIds() // REVIEW: thumbnail?
+            'locations' => $this->getLocationIds()
         ];
     }
 
