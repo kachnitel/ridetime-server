@@ -14,7 +14,6 @@ class EventController extends BaseController
 {
     public function listInvites(Request $request, Response $response, array $args): Response
     {
-        // User rather than ID?
         $user = $request->getAttribute('currentUser');
 
         $eventEndpoint = $this->getEndpoint();
@@ -168,6 +167,12 @@ class EventController extends BaseController
         $result = $eventEndpoint->acceptRequest($eventId, $userId);
 
         return $response->withStatus(200)->withJson(['status' => $result]);
+    }
+
+    public function filter(Request $request, Response $response, array $args): Response
+    {
+        $params = $request->getQueryParams();
+        return $response->withJson($this->getEndpoint()->filter($params));
     }
 
     /**

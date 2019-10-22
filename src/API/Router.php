@@ -48,6 +48,8 @@ class Router
     {
         /** List events */
         $app->get('', 'RideTimeServer\API\Controllers\EventController:list');
+        /** TODO: Filter events REVIEW: Heavily based off of list - look into merging $ids param into filter */
+        $app->get('/filter', 'RideTimeServer\API\Controllers\EventController:filter');
         /** List my invites */
         $app->get('/invites', 'RideTimeServer\API\Controllers\EventController:listInvites');
         /** Get event detail */

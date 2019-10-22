@@ -90,6 +90,31 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     }
 
     /**
+     * TODO: WIP - add more filters, loop through (allowed) fields and addWhere for each
+     *
+     * @param array $filters
+     * @return array
+     */
+    public function filter(array $filters): array
+    {
+        $criteria = Criteria::create()
+            ->orderBy(array('date' => Criteria::ASC))
+            ->setFirstResult(0)
+            ->setMaxResults(20);
+
+        if (isset($filters['location'])) {
+            $locations = [];
+            $locationEndpoint = new LocationEndpoint($this->entityManager, $this->logger);
+            foreach ($filters['location'] as $locationId) {
+                $locations[] = $locationEndpoint->get($locationId);
+            }
+            $criteria = $criteria->andWhere(Criteria::expr()->in('location', $locations));
+        }
+
+        return $this->listEntities(Event::class, $criteria);
+    }
+
+    /**
      * @return array[Event]
      */
     public function listInvites(User $user): array
