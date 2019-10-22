@@ -28,9 +28,7 @@ abstract class BaseController
     {
         $entityId = $this->inputFilterId($args['id']);
 
-        $endpoint = $this->getEndpoint();
-
-        return $response->withJson($endpoint->get($entityId)->getDetail());
+        return $response->withJson($this->getEndpoint()->get($entityId)->getDetail());
     }
 
     /**
@@ -44,20 +42,17 @@ abstract class BaseController
         // TODO: Validate input!
         $data = $request->getParsedBody();
 
-        $endpoint = $this->getEndpoint();
-        $entity = $endpoint->add($data);
+        $entity = $this->getEndpoint()->add($data);
 
         return $response->withJson($entity)->withStatus(201);
     }
 
     public function list(Request $request, Response $response, array $args): Response
     {
-        $endpoint = $this->getEndpoint();
-
         $ids = $request->getQueryParam('ids')
             ? array_map(function ($id) { return (int) $id; }, $request->getQueryParam('ids'))
             : null;
-        $result = $endpoint->list($ids);
+        $result = $this->getEndpoint()->list($ids);
 
         return $response->withJson($result);
     }

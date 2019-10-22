@@ -16,8 +16,7 @@ class EventController extends BaseController
     {
         $user = $request->getAttribute('currentUser');
 
-        $eventEndpoint = $this->getEndpoint();
-        $result = $eventEndpoint->listInvites($user);
+        $result = $this->getEndpoint()->listInvites($user);
 
         return $response->withJson($result);
     }
@@ -118,13 +117,12 @@ class EventController extends BaseController
      */
     public function leave(Request $request, Response $response, array $args): Response
     {
-        $eventId = $this->inputFilterId($args['id']);
-        $userId = (int) $request->getAttribute('currentUser')->getId();
-
-        $eventEndpoint = $this->getEndpoint();
         // TODO: Test and review: should be handled by error handler
         try {
-            $result = $eventEndpoint->removeMember($eventId, $userId);
+            $result = $this->getEndpoint()->removeMember(
+                $$this->inputFilterId($args['id']),
+                (int) $request->getAttribute('currentUser')->getId()
+            );
         } catch (EntityNotFoundException $exception) {
             return $response->withStatus(404)->withJson([
                 'status' => 'error',
@@ -147,11 +145,11 @@ class EventController extends BaseController
     {
         // TODO: must be member of event
         // $currentUserId = (int) $request->getAttribute('currentUser')->getId();
-        $eventId = $this->inputFilterId($args['id']);
-        $userId = $this->inputFilterId($args['userId']);
 
-        $eventEndpoint = $this->getEndpoint();
-        $result = $eventEndpoint->removeMember($eventId, $userId);
+        $result = $this->getEndpoint()->removeMember(
+            $this->inputFilterId($args['id']),
+            $this->inputFilterId($args['userId'])
+        );
 
         return $response->withStatus(200)->withJson(['status' => $result]);
     }
@@ -160,11 +158,11 @@ class EventController extends BaseController
     {
         // TODO: must be member of event
         // $currentUserId = (int) $request->getAttribute('currentUser')->getId();
-        $eventId = $this->inputFilterId($args['id']);
-        $userId = $this->inputFilterId($args['userId']);
 
-        $eventEndpoint = $this->getEndpoint();
-        $result = $eventEndpoint->acceptRequest($eventId, $userId);
+        $result = $this->getEndpoint()->acceptRequest(
+            $this->inputFilterId($args['id']),
+            $this->inputFilterId($args['userId'])
+        );
 
         return $response->withStatus(200)->withJson(['status' => $result]);
     }
