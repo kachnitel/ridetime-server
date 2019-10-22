@@ -32,8 +32,8 @@ class EventController extends BaseController
      */
     public function invite(Request $request, Response $response, array $args): Response
     {
-        $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
-        $userId = (int) filter_var($args['userId'], FILTER_SANITIZE_NUMBER_INT);
+        $eventId = $this->inputFilterId($args['id']);
+        $userId = $this->inputFilterId($args['userId']);
         $currentUser = $request->getAttribute('currentUser');
         $event = $this->getEndpoint()->get($eventId);
         $userEndpoint = new UserEndpoint(
@@ -72,7 +72,7 @@ class EventController extends BaseController
      */
     public function join(Request $request, Response $response, array $args): Response
     {
-        $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
+        $eventId = $this->inputFilterId($args['id']);
         /** @var User $currentUser */
         $currentUser = $request->getAttribute('currentUser');
         $event = $this->getEndpoint()->get($eventId);
@@ -118,7 +118,7 @@ class EventController extends BaseController
      */
     public function leave(Request $request, Response $response, array $args): Response
     {
-        $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
+        $eventId = $this->inputFilterId($args['id']);
         $userId = (int) $request->getAttribute('currentUser')->getId();
 
         $eventEndpoint = $this->getEndpoint();
@@ -147,8 +147,8 @@ class EventController extends BaseController
     {
         // TODO: must be member of event
         // $currentUserId = (int) $request->getAttribute('currentUser')->getId();
-        $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
-        $userId = (int) filter_var($args['userId'], FILTER_SANITIZE_NUMBER_INT);
+        $eventId = $this->inputFilterId($args['id']);
+        $userId = $this->inputFilterId($args['userId']);
 
         $eventEndpoint = $this->getEndpoint();
         $result = $eventEndpoint->removeMember($eventId, $userId);
@@ -160,8 +160,8 @@ class EventController extends BaseController
     {
         // TODO: must be member of event
         // $currentUserId = (int) $request->getAttribute('currentUser')->getId();
-        $eventId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
-        $userId = (int) filter_var($args['userId'], FILTER_SANITIZE_NUMBER_INT);
+        $eventId = $this->inputFilterId($args['id']);
+        $userId = $this->inputFilterId($args['userId']);
 
         $eventEndpoint = $this->getEndpoint();
         $result = $eventEndpoint->acceptRequest($eventId, $userId);

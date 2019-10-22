@@ -26,7 +26,7 @@ abstract class BaseController
      */
     public function get(Request $request, Response $response, array $args): Response
     {
-        $entityId = (int) filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
+        $entityId = $this->inputFilterId($args['id']);
 
         $endpoint = $this->getEndpoint();
 
@@ -68,4 +68,9 @@ abstract class BaseController
      * @return EndpointInterface
      */
     abstract protected function getEndpoint();
+
+    protected function inputFilterId($id): int
+    {
+        return (int) filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+    }
 }
