@@ -116,7 +116,33 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
             $criteria = $criteria->andWhere(Criteria::expr()->in('difficulty', $values));
         }
 
+        if (isset($filters['dateStart'])) {
+            $this->dateFilter($criteria, $filters['dateStart'], true);
+        }
+
+        if (isset($filters['dateEnd'])) {
+            $this->dateFilter($criteria, $filters['dateEnd'], false);
+        }
+
         return $this->listEntities(Event::class, $criteria);
+    }
+
+    /**
+     * Filter by date
+     *
+     * @param [string|int] $date
+     * @param boolean $gte Whether to search for timestamp grater than $date (default **true**)
+     * @return void
+     */
+    protected function dateFilter(Criteria &$criteria, $date, bool $gte = true)
+    {
+        $dtObject = is_numeric($date)
+        ? (new \DateTime())->setTimestamp($date)
+        : new \DateTime($date);
+        $criteria = $criteria->andWhere($gte
+            ? Criteria::expr()->gte('date', $dtObject)
+            : Criteria::expr()->lte('date', $dtObject)
+        );
     }
 
     /**
