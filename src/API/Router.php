@@ -50,25 +50,25 @@ class Router
         $app->get('', 'RideTimeServer\API\Controllers\EventController:list');
         /** TODO: Filter events REVIEW: Heavily based off of list - look into merging $ids param into filter */
         $app->get('/filter', 'RideTimeServer\API\Controllers\EventController:filter');
-        /** List my invites */
-        $app->get('/invites', 'RideTimeServer\API\Controllers\EventController:listInvites');
         /** Get event detail */
-        $app->get('/{id}', 'RideTimeServer\API\Controllers\EventController:get');
+        $app->get('/{id:[0-9]+}', 'RideTimeServer\API\Controllers\EventController:get');
         /** Create event */
         $app->post('', 'RideTimeServer\API\Controllers\EventController:add');
         /** - Membership routes - */
+        /** List my invites */
+        $app->get('/invites', 'RideTimeServer\API\Controllers\EventController:listInvites');
         /** Add event member */
-        $app->post('/{id}/invite/{userId}', 'RideTimeServer\API\Controllers\EventController:invite');
+        $app->post('/{id:[0-9]+}/invite/{userId:[0-9]+}', 'RideTimeServer\API\Controllers\EventController:invite');
         /** Request join / accept invite */
-        $app->post('/{id}/join', 'RideTimeServer\API\Controllers\EventController:join');
+        $app->post('/{id:[0-9]+}/join', 'RideTimeServer\API\Controllers\EventController:join');
         /** Decline invite / leave event */
-        $app->delete('/{id}/invite', 'RideTimeServer\API\Controllers\EventController:leave');
-        $app->delete('/{id}/leave', 'RideTimeServer\API\Controllers\EventController:leave');
+        $app->delete('/{id:[0-9]+}/invite', 'RideTimeServer\API\Controllers\EventController:leave');
+        $app->delete('/{id:[0-9]+}/leave', 'RideTimeServer\API\Controllers\EventController:leave');
         /** Decline request / remove member (moderator only TODO:) */
-        $app->delete('/{id}/join/{userId}', 'RideTimeServer\API\Controllers\EventController:remove');
-        $app->delete('/{id}/members/{userId}', 'RideTimeServer\API\Controllers\EventController:remove');
+        $app->delete('/{id:[0-9]+}/join/{userId:[0-9]+}', 'RideTimeServer\API\Controllers\EventController:remove');
+        $app->delete('/{id:[0-9]+}/members/{userId:[0-9]+}', 'RideTimeServer\API\Controllers\EventController:remove');
         /** Accept request (moderator only TODO:) */
-        $app->put('/{id}/join/{userId}', 'RideTimeServer\API\Controllers\EventController:acceptRequest');
+        $app->put('/{id:[0-9]+}/join/{userId:[0-9]+}', 'RideTimeServer\API\Controllers\EventController:acceptRequest');
     }
 
     protected function initLocationRoutes(App $app)
@@ -82,7 +82,7 @@ class Router
         /** Search */
         $app->get('/search', 'RideTimeServer\API\Controllers\LocationController:search');
         /** TODO: List location top routes and trails */
-        // $app->get('/{id}/popular', 'RideTimeServer\API\Controllers\LocationController:popular');
+        // $app->get('/{id:[0-9]+}/popular', 'RideTimeServer\API\Controllers\LocationController:popular');
         /** TODO: Search location trails and routes */
     }
 
@@ -93,18 +93,18 @@ class Router
         /** Search users */
         $app->get('/search', 'RideTimeServer\API\Controllers\UserController:search');
         /** Get user detail */
-        $app->get('/{id}', 'RideTimeServer\API\Controllers\UserController:get');
+        $app->get('/{id:[0-9]+}', 'RideTimeServer\API\Controllers\UserController:get');
         /** Update user */
-        $app->put('/{id}', 'RideTimeServer\API\Controllers\UserController:update');
+        $app->put('/{id:[0-9]+}', 'RideTimeServer\API\Controllers\UserController:update');
         /** Update user's picture */
-        $app->post('/{id}/picture', 'RideTimeServer\API\Controllers\UserController:uploadPicture');
+        $app->post('/{id:[0-9]+}/picture', 'RideTimeServer\API\Controllers\UserController:uploadPicture');
         /** - Friendship - */
         /** Request friendship */
-        $app->post('/friends/{id}', 'RideTimeServer\API\Controllers\UserController:requestFriend');
+        $app->post('/friends/{id:[0-9]+}', 'RideTimeServer\API\Controllers\UserController:requestFriend');
         /** Accept friendship */
-        $app->put('/friends/{id}/accept', 'RideTimeServer\API\Controllers\UserController:acceptFriend');
+        $app->put('/friends/{id:[0-9]+}/accept', 'RideTimeServer\API\Controllers\UserController:acceptFriend');
         /** Decline/Delete friendship */
-        $app->delete('/friends/{id}', 'RideTimeServer\API\Controllers\UserController:removeFriend');
+        $app->delete('/friends/{id:[0-9]+}', 'RideTimeServer\API\Controllers\UserController:removeFriend');
     }
 
     protected function initDashboardRoutes(App $app)
