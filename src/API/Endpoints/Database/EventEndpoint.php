@@ -90,7 +90,7 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     }
 
     /**
-     * TODO: WIP - add more filters, loop through (allowed) fields and addWhere for each
+     * TODO: WIP - add more filters(date!), loop through (allowed) fields and addWhere for each
      *
      * @param array $filters
      * @return array
@@ -109,6 +109,11 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
                 $locations[] = $locationEndpoint->get($locationId);
             }
             $criteria = $criteria->andWhere(Criteria::expr()->in('location', $locations));
+        }
+
+        if (isset($filters['difficulty'])) {
+            $values = array_map(function ($value) { return (int) $value; }, $filters['difficulty']);
+            $criteria = $criteria->andWhere(Criteria::expr()->in('difficulty', $values));
         }
 
         return $this->listEntities(Event::class, $criteria);
