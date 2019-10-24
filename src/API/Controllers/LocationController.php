@@ -1,10 +1,9 @@
 <?php
 namespace RideTimeServer\API\Controllers;
 
-use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
-use Psr\Http\Message\ServerRequestInterface as Request;
-// use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Http\Request;
 use Slim\Http\Response;
+use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
 use RideTimeServer\API\Endpoints\RestApi\TrailforksEndpoint;
 
 class LocationController extends BaseController
