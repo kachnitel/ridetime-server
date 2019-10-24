@@ -2,7 +2,7 @@
 namespace RideTimeServer\API\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\Database\UserEndpoint;
 use RideTimeServer\API\PictureHandler;
 use RideTimeServer\Exception\UserException;
@@ -39,7 +39,14 @@ class AuthController extends BaseController
         $data = $request->getParsedBody();
         $userEmail = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
 
-        $user = $this->getEndpoint()->findBy('email', $userEmail);
+        try {
+            $user = $this->getEndpoint()->findBy('email', $userEmail);
+        } catch (EntityNotFoundException $eNotFound) {
+            return $response->withJson((object) [
+                'success' => false,
+                'errorCode' => 404
+            ]);
+        }
         // Verify user from token
         if ($authUserId !== $user->getAuthId()) {
             $e = new UserException('Authentication ID mismatch', 400);
@@ -51,7 +58,10 @@ class AuthController extends BaseController
 
             throw $e;
         }
-        $result = $user->getDetail();
+        $result = (object) [
+            'success' => true,
+            'user' => $user->getDetail()
+        ];
 
         return $response->withJson($result);
     }
