@@ -25,14 +25,15 @@ class Router
         $this->app->post('/signin', Controllers\AuthController::class . ':signIn');
         $this->app->post('/signup', Controllers\AuthController::class . ':signUp');
 
-        $app = $this->app;
-        $cuMiddleware = new CurrentUserMiddleware($app->getContainer());
+        $cuMiddleware = new CurrentUserMiddleware($this->app->getContainer());
 
-        $this->app->group('/api', function (App $app) {
+        $this->app->group('/api', function (App $app) use ($cuMiddleware) {
+            $app->group('', function (App $app) {
+                $app->group('/events', function (App $app) { self::initEventRoutes($app); });
+                $app->group('/users', function (App $app) { self::initUserRoutes($app); });
+            })->add($cuMiddleware->getMiddleware(true));
             $app->group('/locations', function (App $app) { self::initLocationRoutes($app); });
-            $app->group('/events', function (App $app) { self::initEventRoutes($app); });
-            $app->group('/users', function (App $app) { self::initUserRoutes($app); });
-        })->add($cuMiddleware->getMiddleware(true));
+        });
 
         $this->app->group('/dashboard', function (App $app) {
             self::initDashboardRoutes($app);
