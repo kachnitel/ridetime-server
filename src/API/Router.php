@@ -28,23 +28,22 @@ class Router
         $app = $this->app;
         $cuMiddleware = new CurrentUserMiddleware($app->getContainer());
 
-        $that = $this; // bit JavaScripty
-        $this->app->group('/api', function (App $app) use ($that) {
-            $app->group('/locations', function (App $app) use ($that) { $that->initLocationRoutes($app); });
-            $app->group('/events', function (App $app) use ($that) { $that->initEventRoutes($app); });
-            $app->group('/users', function (App $app) use ($that) { $that->initUserRoutes($app); });
+        $this->app->group('/api', function (App $app) {
+            $app->group('/locations', function (App $app) { self::initLocationRoutes($app); });
+            $app->group('/events', function (App $app) { self::initEventRoutes($app); });
+            $app->group('/users', function (App $app) { self::initUserRoutes($app); });
         })->add($cuMiddleware->getMiddleware(true));
 
-        $this->app->group('/dashboard', function (App $app) use ($that) {
-            $that->initDashboardRoutes($app);
+        $this->app->group('/dashboard', function (App $app) {
+            self::initDashboardRoutes($app);
         })->add($cuMiddleware->getMiddleware(true));
 
-        $this->app->group('/notifications', function (App $app) use ($that) {
-            $that->initNotificationsRoutes($app);
+        $this->app->group('/notifications', function (App $app) {
+            self::initNotificationsRoutes($app);
         })->add($cuMiddleware->getMiddleware(true));
     }
 
-    protected function initEventRoutes(App $app)
+    public static function initEventRoutes(App $app)
     {
         /** List events */
         $app->get('', Controllers\EventController::class . ':list');
@@ -71,7 +70,7 @@ class Router
         $app->put('/{id:[0-9]+}/join/{userId:[0-9]+}', Controllers\EventController::class . ':acceptRequest');
     }
 
-    protected function initLocationRoutes(App $app)
+    public static function initLocationRoutes(App $app)
     {
         /** List locations */
         $app->get('', Controllers\LocationController::class . ':list');
@@ -86,7 +85,7 @@ class Router
         /** TODO: Search location trails and routes */
     }
 
-    protected function initUserRoutes(App $app)
+    public static function initUserRoutes(App $app)
     {
         /** List users */
         $app->get('', Controllers\UserController::class . ':list');
@@ -107,13 +106,13 @@ class Router
         $app->delete('/friends/{id:[0-9]+}', Controllers\UserController::class . ':removeFriend');
     }
 
-    protected function initDashboardRoutes(App $app)
+    public static function initDashboardRoutes(App $app)
     {
         /** Get dashboard */
         $app->get('', Controllers\DashboardController::class . ':all');
     }
 
-    protected function initNotificationsRoutes(App $app)
+    public static function initNotificationsRoutes(App $app)
     {
         /** Set notifications token */
         $app->put('/token', Controllers\NotificationsController::class . ':setToken');
