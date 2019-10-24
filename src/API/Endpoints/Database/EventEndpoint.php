@@ -137,8 +137,8 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     protected function dateFilter(Criteria &$criteria, $date, bool $gte = true)
     {
         $dtObject = is_numeric($date)
-        ? (new \DateTime())->setTimestamp($date)
-        : new \DateTime($date);
+            ? (new \DateTime())->setTimestamp($date)
+            : new \DateTime($date);
         $criteria = $criteria->andWhere($gte
             ? Criteria::expr()->gte('date', $dtObject)
             : Criteria::expr()->lte('date', $dtObject)
