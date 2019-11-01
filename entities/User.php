@@ -607,7 +607,9 @@ class User implements EntityInterface
      * May be used to get entity "thumbnail"
      * 21/10/2019 looks like IDs only and populating when needed is the way
      * although it won't be as fast on the client
-     * @deprecated
+     * @deprecated?
+     * 31/10/2019 but I **want** fast on the client
+     * Let's keep the chat to issue [#51](https://github.com/kachnitel/RideTime/issues/51)
      *
      * @return object
      */

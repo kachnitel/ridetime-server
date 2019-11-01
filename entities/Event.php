@@ -393,7 +393,8 @@ class Event implements EntityInterface
             if ($member->getStatus() !== Event::STATUS_CONFIRMED) {
                 continue;
             }
-            $members[] = $member->getUser()->getThumbnail();
+            // $members[] = $member->getUser()->getThumbnail();
+            $members[] = $member->getUser()->getId();
         }
 
         return $members;
