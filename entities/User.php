@@ -607,7 +607,7 @@ class User implements PrimaryEntityInterface
      * May be used to get entity "thumbnail"
      * 21/10/2019 looks like IDs only and populating when needed is the way
      * although it won't be as fast on the client
-     * @deprecated?
+     * @deprecated
      * 31/10/2019 but I **want** fast on the client
      * Let's keep the chat to issue [#51](https://github.com/kachnitel/RideTime/issues/51)
      *
@@ -633,14 +633,23 @@ class User implements PrimaryEntityInterface
             'id' => $this->getId(),
             'name' => $this->getName(),
             'hometown' => $this->getHometown(),
-            'events' => $this->getUserEventIds(),
-            'friends' => $this->getFriendIds(),
+            'events' => $this->extractIds($this->getUserEvents()),
+            'friends' => $this->extractIds($this->getUserFriends()),
             'level' => $this->getLevel(),
             'bike' => $this->getBike(),
             'favourites' => $this->getFavourites(),
             'picture' => $this->getPicture(),
             'email' => $this->getEmail(),
-            'locations' => $this->getLocationIds()
+            'locations' => $this->extractIds($this->getUserLocations())
+        ];
+    }
+
+    public function getRelated(): object
+    {
+        return (object) [
+            'event' => $this->extractDetails($this->getUserEvents()),
+            'user' => $this->extractDetails($this->getUserFriends()),
+            'location' => $this->extractDetails($this->getUserLocations())
         ];
     }
 
@@ -649,10 +658,10 @@ class User implements PrimaryEntityInterface
      *
      * @return int[]
      */
-    protected function getUserEventIds(): array
+    protected function getUserEvents(): array
     {
         return $this->getEvents(Event::STATUS_CONFIRMED)->map(function(Event $event) {
-            return $event->getId();
+            return $event;
         })->getValues();
     }
 
@@ -660,9 +669,10 @@ class User implements PrimaryEntityInterface
      * Get friends list for an user
      * Combines friendships and friendshipsWithMe
      *
+     *
      * @return User[]
      */
-    protected function getFriendIds(): array
+    protected function getUserFriends(): array
     {
         $friends = [];
         $filter = function(Friendship $friendship) {
@@ -671,12 +681,12 @@ class User implements PrimaryEntityInterface
 
         /** @var Friendship $friendship */
         foreach ($this->getFriendships()->filter($filter) as $friendship) {
-            $friends[] = $friendship->getFriend()->getId();
+            $friends[] = $friendship->getFriend();
         }
 
         /** @var Friendship $friendship */
         foreach ($this->getFriendshipsWithMe()->filter($filter) as $friendship) {
-            $friends[] = $friendship->getUser()->getId();
+            $friends[] = $friendship->getUser();
         }
 
         return $friends;
@@ -685,10 +695,30 @@ class User implements PrimaryEntityInterface
     /**
      * @return int[]
      */
-    protected function getLocationIds(): array
+    protected function getUserLocations(): array
     {
-        return $this->getLocations()->map(function(Location $location) {
-            return $location->getId();
-        })->toArray();
+        return $this->getLocations()->getValues();
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param PrimaryEntityInterface[] $entities
+     * @return int[]
+     */
+    protected function extractIds(array $entities): array
+    {
+        return array_map(
+            function(PrimaryEntityInterface $item) {return $item->getId();},
+            $entities
+        );
+    }
+
+    protected function extractDetails(array $entities): array
+    {
+        return array_map(
+            function(PrimaryEntityInterface $item) {return $item->getDetail();},
+            $entities
+        );
     }
 }

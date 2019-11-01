@@ -27,8 +27,12 @@ abstract class BaseController
     public function get(Request $request, Response $response, array $args): Response
     {
         $entityId = $this->inputFilterId($args['id']);
+        $entity = $this->getEndpoint()->get($entityId);
 
-        return $response->withJson($this->getEndpoint()->get($entityId)->getDetail());
+        return $response->withJson((object) [
+            'result' => $entity->getDetail(),
+            'relatedEntities' => method_exists($entity, 'getRelated') ? $entity->getRelated() : null
+        ]);
     }
 
     /**
