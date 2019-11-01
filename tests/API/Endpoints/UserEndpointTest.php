@@ -13,7 +13,7 @@ class UserEndpointTest extends APITestCase
     {
         $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));
 
-        $user = new User();
+        $user = $this->generateUser();
         $user->setName('John Doe');
         $user->setHometown('Town, BC');
         $user->setEmail('a@b.com');
@@ -65,11 +65,10 @@ class UserEndpointTest extends APITestCase
         $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));
 
         /** @var User $user */
-        $user = $this->callMethod($endpoint, 'createUser', [[
-            'name' => 'Joe',
-            'email' => 'e@mail.ca',
-            'authId' => 123
-        ]]);
+        $user = $this->generateUser();
+        $user->setName('Joe');
+        $user->setEmail('e@mail.ca');
+        $user->setAuthId('123a');
 
         $this->assertEquals([], $user->getDetail()->locations);
 
@@ -84,7 +83,7 @@ class UserEndpointTest extends APITestCase
      */
     public function testUserReturnsConfirmedFriends()
     {
-        $user = new User();
+        $user = $this->generateUser();
         $friend1 = $this->generateUser(1);
         $friend2 = $this->generateUser(2);
 

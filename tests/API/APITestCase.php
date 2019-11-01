@@ -120,7 +120,7 @@ class APITestCase extends RTTestCase
         // Set private id
         $property = $reflection->getProperty('id');
         $property->setAccessible(true);
-        $property->setValue($entity, $id ?? uniqid());
+        $property->setValue($entity, $id ?? rand(1,100));
 
         return $entity;
     }

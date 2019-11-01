@@ -1,12 +1,12 @@
 <?php
 namespace RideTimeServer\Tests\Entities;
 
-use PHPUnit\Framework\TestCase;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Friendship;
 use RideTimeServer\Exception\UserException;
+use RideTimeServer\Tests\API\APITestCase;
 
-class UserTest extends TestCase
+class UserTest extends APITestCase
 {
     public function testAddFriend()
     {
@@ -18,7 +18,7 @@ class UserTest extends TestCase
         $this->assertInstanceOf(Friendship::class, $user->getFriendships()[0]);
         /** @var Friendship $friendship */
         $friendship = $user->getFriendships()[0];
-        $this->assertSame($user, $friendship->getUser());
+        $this->assertSame($user, $friendship->getUser());new User();
         $this->assertSame($friend, $friendship->getFriend());
         $this->assertEquals(0, $friendship->getStatus());
         $this->assertContains($friendship, $friend->getFriendshipsWithMe());
@@ -41,8 +41,8 @@ class UserTest extends TestCase
 
     public function testAcceptFriend404()
     {
-        $user = new User();
-        $friend = new User();
+        $user = $this->generateUser();
+        $friend = $this->generateUser();
 
         $this->expectException(UserException::class);
         $user->acceptFriend($friend);
