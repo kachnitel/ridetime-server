@@ -9,7 +9,7 @@ use RideTimeServer\Exception\RTException;
  * @Entity
  * @Table(name="user")
  */
-class User implements EntityInterface
+class User implements PrimaryEntityInterface
 {
     /**
      * @Id
@@ -139,7 +139,7 @@ class User implements EntityInterface
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

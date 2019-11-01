@@ -7,7 +7,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * @Entity
  * @Table(name="location")
  */
-class Location implements EntityInterface
+class Location implements PrimaryEntityInterface
 {
     /**
      * Get location detail

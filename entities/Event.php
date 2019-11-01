@@ -9,7 +9,7 @@ use \Doctrine\ORM\PersistentCollection;
  * @Entity
  * @Table(name="event")
  */
-class Event implements EntityInterface
+class Event implements PrimaryEntityInterface
 {
     const STATUS_CONFIRMED = "confirmed";
     const STATUS_INVITED = "invited";
@@ -94,7 +94,7 @@ class Event implements EntityInterface
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return (int) $this->id;
     }
@@ -366,7 +366,7 @@ class Event implements EntityInterface
             'description' => $this->getDescription(),
             'members' => $this->getEventMembers(),
             'difficulty' => $this->getDifficulty(),
-            'location' => (object) [ // TODO: thumbnail
+            'location' => (object) [ // TODO: thumbnail/detail/ID(WIP!)
                 'id' => $this->getLocation()->getId(),
                 'name' => $this->getLocation()->getName(),
                 'gps' => [
