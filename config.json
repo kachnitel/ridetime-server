@@ -1,5 +1,8 @@
 {
-  "logPath": "/var/log/ridetime/app.log",
+  "log": {
+    "path": "/var/log/ridetime/app.log",
+    "level": "200"
+  },
   "appName": "ridetime",
   "slim": {
     "displayErrorDetails": true,
