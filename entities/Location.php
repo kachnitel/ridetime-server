@@ -2,12 +2,13 @@
 namespace RideTimeServer\Entities;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+use RideTimeServer\Exception\RTException;
 
 /**
  * @Entity
  * @Table(name="location")
  */
-class Location implements PrimaryEntityInterface
+class Location extends PrimaryEntity implements PrimaryEntityInterface
 {
     /**
      * Get location detail
@@ -25,6 +26,12 @@ class Location implements PrimaryEntityInterface
             ],
             'difficulties' => $this->getDifficulties()
         ];
+    }
+
+    public function getRelated(): object
+    {
+        throw new RTException("Location::getRelated not implemented", 501);
+        return new \Object();
     }
 
     /**

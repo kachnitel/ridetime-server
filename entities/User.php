@@ -9,7 +9,7 @@ use RideTimeServer\Exception\RTException;
  * @Entity
  * @Table(name="user")
  */
-class User implements PrimaryEntityInterface
+class User extends PrimaryEntity implements PrimaryEntityInterface
 {
     /**
      * @Id
@@ -698,27 +698,5 @@ class User implements PrimaryEntityInterface
     protected function getUserLocations(): array
     {
         return $this->getLocations()->getValues();
-    }
-
-    /**
-     * Undocumented function
-     *
-     * @param PrimaryEntityInterface[] $entities
-     * @return int[]
-     */
-    protected function extractIds(array $entities): array
-    {
-        return array_map(
-            function(PrimaryEntityInterface $item) {return $item->getId();},
-            $entities
-        );
-    }
-
-    protected function extractDetails(array $entities): array
-    {
-        return array_map(
-            function(PrimaryEntityInterface $item) {return $item->getDetail();},
-            $entities
-        );
     }
 }

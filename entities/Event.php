@@ -9,7 +9,7 @@ use \Doctrine\ORM\PersistentCollection;
  * @Entity
  * @Table(name="event")
  */
-class Event implements PrimaryEntityInterface
+class Event extends PrimaryEntity implements PrimaryEntityInterface
 {
     const STATUS_CONFIRMED = "confirmed";
     const STATUS_INVITED = "invited";
@@ -364,19 +364,20 @@ class Event implements PrimaryEntityInterface
             'id' => $this->getId(),
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
-            'members' => $this->getEventMembers(),
+            'members' => $this->extractIds($this->getEventMembers()),
             'difficulty' => $this->getDifficulty(),
-            'location' => (object) [ // TODO: thumbnail/detail/ID(WIP!)
-                'id' => $this->getLocation()->getId(),
-                'name' => $this->getLocation()->getName(),
-                'gps' => [
-                    $this->getLocation()->getGpsLat(),
-                    $this->getLocation()->getGpsLon()
-                ]
-            ],
+            'location' => $this->getLocation()->getId(),
             'terrain' => $this->getTerrain(),
             'route' => $this->getRoute(),
             'datetime' => $this->getDate()->getTimestamp()
+        ];
+    }
+
+    public function getRelated(): object
+    {
+        return (object) [
+            'user' => $this->extractDetails($this->getEventMembers()),
+            'location' => $this->extractDetails([$this->getLocation()])
         ];
     }
 
@@ -393,8 +394,7 @@ class Event implements PrimaryEntityInterface
             if ($member->getStatus() !== Event::STATUS_CONFIRMED) {
                 continue;
             }
-            // $members[] = $member->getUser()->getThumbnail();
-            $members[] = $member->getUser()->getId();
+            $members[] = $member->getUser();
         }
 
         return $members;
