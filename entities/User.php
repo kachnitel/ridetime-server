@@ -604,25 +604,6 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
     }
 
     /**
-     * May be used to get entity "thumbnail"
-     * 21/10/2019 looks like IDs only and populating when needed is the way
-     * although it won't be as fast on the client
-     * @deprecated
-     * 31/10/2019 but I **want** fast on the client
-     * Let's keep the chat to issue [#51](https://github.com/kachnitel/RideTime/issues/51)
-     *
-     * @return object
-     */
-    public function getThumbnail(): object
-    {
-        return (object) [
-            'id' => $this->getId(),
-            'name' => $this->getName(),
-            'picture' => $this->getPicture()
-        ];
-    }
-
-    /**
      * Get user detail
      *
      * @return object
