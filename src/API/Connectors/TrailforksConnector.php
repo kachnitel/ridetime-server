@@ -63,13 +63,20 @@ class TrailforksConnector
         return $this->locations($filter, $fields);
     }
 
+    /**
+     * Search locations by name
+     *
+     * @param string $search
+     * @param array $fields
+     * @return array
+     */
     public function searchLocations(string $search, $fields = [])
     {
         $filter = "search::{$search}";
         return $this->locations($filter, $fields);
     }
 
-    public function locations(string $filter, array $fields)
+    public function locations(string $filter, array $fields): array
     {
         $filter .= ';bottom::ridingarea';
         $query = [
