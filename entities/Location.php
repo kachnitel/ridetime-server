@@ -80,8 +80,16 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
      */
     private $events;
 
+    /**
+     * @OneToMany(targetEntity="Trail", mappedBy="location")
+     *
+     * @var ArrayCollection|Trail[]
+     */
+    private $trails;
+
     public function __construct() {
         $this->events = new ArrayCollection();
+        $this->trails = new ArrayCollection();
     }
 
     /**
@@ -219,7 +227,6 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
      */
     public function addEvent(Event $event)
     {
-        // $event->addEvent($this);
         $this->events[] = $event;
 
         return $this;
@@ -235,5 +242,24 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
     public function removeEvent(Event $event)
     {
         return $this->events->removeElement($event);
+    }
+
+    /**
+     * @return ArrayCollection|Trail[]
+     */
+    public function getTrails(): ArrayCollection
+    {
+        return $this->trails;
+    }
+
+    /**
+     * @param Trail $trail
+     * @return self
+     */
+    public function addTrail(Trail $trail)
+    {
+        $this->trails[] = $trail;
+
+        return $this;
     }
 }
