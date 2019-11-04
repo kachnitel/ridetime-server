@@ -125,7 +125,7 @@ class TrailforksEndpoint
                 'id' => $item->trailid,
                 'title' => $item->title,
                 'description' => $item->description,
-                'difficulty' => $item->difficulty,
+                'difficulty' => $item->difficulty - 3, // TF uses different diff. ratings
                 'profile' => $item->stats,
                 'location' => $item->rid
             ];
