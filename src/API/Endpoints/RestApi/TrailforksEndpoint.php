@@ -78,6 +78,13 @@ class TrailforksEndpoint
         });
     }
 
+    /**
+     * TODO: match Location::getDetail
+     * - using actual Location object that only gets stored after in Controller::cacheResult
+     *
+     * @param object $location
+     * @return object
+     */
     protected function getLocationDetail(object $location): object
     {
         return (object) [
@@ -97,5 +104,35 @@ class TrailforksEndpoint
             'shuttle' => (bool) $location->shuttle,
             'bikepark' => (bool) $location->bikepark
         ];
+    }
+
+    public function getLocationTrails(int $locationId): array
+    {
+        $results = $this->connector->getLocationTrails($locationId, [
+            'trailid',
+            'title',
+            'difficulty',
+            'stats',
+            'description',
+            'rid'
+        ]);
+
+        $trails = [];
+        foreach ($results as $item) {
+            // REVIEW: Same as getLocationDetail, use actual Trail entity?
+            // Perhaps handled while caching results in ctrlr
+            $trail = (object) [
+                'id' => $item->trailid,
+                'title' => $item->title,
+                'description' => $item->description,
+                'difficulty' => $item->difficulty,
+                'profile' => $item->stats,
+                'location' => $item->rid
+            ];
+
+            $trails[] = $trail;
+        }
+
+        return $trails;
     }
 }
