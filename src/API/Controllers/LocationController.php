@@ -4,13 +4,14 @@ namespace RideTimeServer\API\Controllers;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
+use RideTimeServer\API\Endpoints\Database\TrailEndpoint;
 use RideTimeServer\API\Endpoints\RestApi\TrailforksEndpoint;
 
 class LocationController extends BaseController
 {
     public function nearby(Request $request, Response $response, array $args): Response
     {
-        $tfEndpoint = new TrailforksEndpoint($this->container['trailforks']);
+        $tfEndpoint = $this->getTrailforksEndpoint();
 
         $latLon = [
             $request->getQueryParams()['lat'],
@@ -25,7 +26,7 @@ class LocationController extends BaseController
 
     public function bbox(Request $request, Response $response, array $args): Response
     {
-        $tfEndpoint = new TrailforksEndpoint($this->container['trailforks']);
+        $tfEndpoint = $this->getTrailforksEndpoint();
 
         $bbox = $request->getQueryParams()['coords'];
         $result = $tfEndpoint->locationsBBox($bbox);
@@ -36,12 +37,22 @@ class LocationController extends BaseController
 
     public function search(Request $request, Response $response, array $args): Response
     {
-        $tfEndpoint = new TrailforksEndpoint($this->container['trailforks']);
+        $tfEndpoint = $this->getTrailforksEndpoint();
 
         $result = $tfEndpoint->locationsSearch($request->getQueryParams()['name']);
         $this->cacheResult($result);
 
         return $response->withJson($result);
+    }
+
+    public function trailsByLocation(Request $request, Response $response, array $args): Response
+    {
+        $location = $args['id'];
+
+        $results = $this->getTrailforksEndpoint()->getLocationTrails($location);
+        $this->getTrailEndpoint()->addMultiple($results);
+
+        return $response->withJson($results);
     }
 
     protected function cacheResult(array $result)
@@ -58,5 +69,18 @@ class LocationController extends BaseController
             $this->container->entityManager,
             $this->container->logger
         );
+    }
+
+    protected function getTrailEndpoint(): TrailEndpoint
+    {
+        return new TrailEndpoint(
+            $this->container->entityManager,
+            $this->container->logger
+        );
+    }
+
+    protected function getTrailforksEndpoint(): TrailforksEndpoint
+    {
+        return new TrailforksEndpoint($this->container['trailforks']);
     }
 }
