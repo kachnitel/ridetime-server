@@ -66,7 +66,7 @@ class TrailforksEndpoint
     protected function processLocations(array $results): array
     {
         $filtered = array_values($this->filterHidden($results));
-        $formatted = array_map([$this, 'getLocationDetail'], $filtered);
+        $formatted = array_map([$this, 'getLocationData'], $filtered);
 
         return $formatted;
     }
@@ -79,13 +79,12 @@ class TrailforksEndpoint
     }
 
     /**
-     * TODO: match Location::getDetail
-     * - using actual Location object that only gets stored after in Controller::cacheResult
+     * Convert Trailforks Location API values into RT format
      *
      * @param object $location
      * @return object
      */
-    protected function getLocationDetail(object $location): object
+    protected function getLocationData(object $location): object
     {
         return (object) [
             'id' => (int) $location->rid,
@@ -106,6 +105,12 @@ class TrailforksEndpoint
         ];
     }
 
+    /**
+     * Convert Trailforks trail information to RT format
+     *
+     * @param integer $locationId
+     * @return array
+     */
     public function getLocationTrails(int $locationId): array
     {
         $results = $this->connector->getLocationTrails($locationId, [
@@ -119,8 +124,6 @@ class TrailforksEndpoint
 
         $trails = [];
         foreach ($results as $item) {
-            // REVIEW: Same as getLocationDetail, use actual Trail entity?
-            // Perhaps handled while caching results in ctrlr
             $trail = (object) [
                 'id' => $item->trailid,
                 'title' => $item->title,
