@@ -19,9 +19,9 @@ class LocationController extends BaseController
         ];
         $range = $request->getQueryParams()['range'];
         $result = $tfEndpoint->locationsNearby($latLon, $range);
-        $this->cacheResult($result);
+        $responseJson = $this->cacheResult($result);
 
-        return $response->withJson($result);
+        return $response->withJson($responseJson);
     }
 
     public function bbox(Request $request, Response $response, array $args): Response
@@ -30,9 +30,9 @@ class LocationController extends BaseController
 
         $bbox = $request->getQueryParams()['coords'];
         $result = $tfEndpoint->locationsBBox($bbox);
-        $this->cacheResult($result);
+        $responseJson = $this->cacheResult($result);
 
-        return $response->withJson($result);
+        return $response->withJson($responseJson);
     }
 
     public function search(Request $request, Response $response, array $args): Response
@@ -40,9 +40,9 @@ class LocationController extends BaseController
         $tfEndpoint = $this->getTrailforksEndpoint();
 
         $result = $tfEndpoint->locationsSearch($request->getQueryParams()['name']);
-        $this->cacheResult($result);
+        $responseJson = $this->cacheResult($result);
 
-        return $response->withJson($result);
+        return $response->withJson($responseJson);
     }
 
     public function trailsByLocation(Request $request, Response $response, array $args): Response
@@ -50,14 +50,14 @@ class LocationController extends BaseController
         $location = $args['id'];
 
         $results = $this->getTrailforksEndpoint()->getLocationTrails($location);
-        $this->getTrailEndpoint()->addMultiple($results);
+        $responseJson = $this->getTrailEndpoint()->addMultiple($results);
 
-        return $response->withJson($results);
+        return $response->withJson($responseJson);
     }
 
-    protected function cacheResult(array $result)
+    protected function cacheResult(array $result): array
     {
-        $this->getEndpoint()->addMultiple($result);
+        return $this->getEndpoint()->addMultiple($result);
     }
 
     /**

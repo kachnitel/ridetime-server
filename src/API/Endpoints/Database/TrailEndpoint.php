@@ -48,14 +48,17 @@ class TrailEndpoint extends BaseEndpoint implements EntityEndpointInterface
      * REVIEW: Common parent for 3rd party sourced Entities
      *
      * @param array $items
-     * @return void
+     * @return object[]
      */
-    public function addMultiple(array $items)
+    public function addMultiple(array $items): array
     {
+        $result = [];
         foreach ($items as $item) {
-            $this->upsertTrail($item);
+            $trail = $this->upsertTrail($item);
+            $result[] = $trail->getDetail();
         }
         $this->entityManager->flush();
+        return $result;
     }
 
     protected function upsertTrail(object $data): Trail
