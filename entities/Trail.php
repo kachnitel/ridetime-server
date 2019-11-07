@@ -1,8 +1,6 @@
 <?php
 namespace RideTimeServer\Entities;
 
-use RideTimeServer\Exception\RTException;
-
 /**
  * @Entity
  * @Table(name="trail")
