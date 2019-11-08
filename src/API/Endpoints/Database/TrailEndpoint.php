@@ -57,8 +57,8 @@ class TrailEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterfac
         return $trail;
     }
 
-    protected function getLocation(int $id) : Location
+    protected function getLocation(int $id): Location
     {
-        return (new LocationEndpoint($this->entityManager, $this->logger))->get($id);
+        return $this->entityManager->find(Location::class, $id);
     }
 }
