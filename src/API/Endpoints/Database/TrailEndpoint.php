@@ -47,7 +47,7 @@ class TrailEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterfac
 
     protected function upsert(object $data): Trail
     {
-        $trail = $this->entityManager->find(Trail::class, $data->id) ?? new Trail();
+        $trail = $this->getEntity(Trail::class, $data->id) ?? new Trail();
         $trail->applyProperties($data);
         $trail->setLocation($this->getLocation($data->location));
         $trail->setProfile($data->profile);
@@ -59,6 +59,6 @@ class TrailEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterfac
 
     protected function getLocation(int $id): Location
     {
-        return $this->entityManager->find(Location::class, $id);
+        return $this->getEntity(Location::class, $id);
     }
 }

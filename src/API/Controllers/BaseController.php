@@ -45,8 +45,9 @@ abstract class BaseController
     {
         // TODO: Validate input!
         $data = $request->getParsedBody();
+        $currentUser = $request->getAttribute('currentUser');
 
-        $entity = $this->getEndpoint()->add($data);
+        $entity = $this->getEndpoint()->add($data, $currentUser);
 
         return $response->withJson($entity)->withStatus(201);
     }

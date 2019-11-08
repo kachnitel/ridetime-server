@@ -6,6 +6,8 @@ use Monolog\Logger;
 use RideTimeServer\API\Endpoints\EntityEndpointInterface;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EventMember;
+use RideTimeServer\Entities\Location;
+use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\Entities\User;
 
 class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
@@ -15,9 +17,9 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
      * @param Logger $logger
      * @return object
      */
-    public function add(array $data): object
+    public function add(array $data, User $currentUser): object
     {
-        $event = $this->createEvent($data);
+        $event = $this->create($data, $currentUser);
         $this->saveEntity($event);
 
         return $event->getDetail();
@@ -29,22 +31,16 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
      * @param array $data
      * @return Event
      */
-    protected function createEvent(array $data): Event
+    protected function create(array $data, User $currentUser): PrimaryEntity
     {
-        // Ride must be created by existing user
-        // FIXME: must come from controller/request/current user
-        $user = (new UserEndpoint($this->entityManager, $this->logger))
-            ->get((int) $data['createdBy']);
-
-        $location = (new LocationEndpoint($this->entityManager, $this->logger))
-            ->get($data['location']);
+        $location = $this->getEntity(Location::class, (int) $data['location']);
 
         /** @var Event $event */
         $event = new Event();
         $event->setTitle($data['title']);
         $event->setDescription($data['description']);
         $event->setDate(new \DateTime($data['datetime']));
-        $event->setCreatedBy($user);
+        $event->setCreatedBy($currentUser);
         $event->setDifficulty($data['difficulty']);
         $event->setTerrain($data['terrain']);
         $event->setLocation($location);
@@ -54,7 +50,7 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
 
         $membership = new EventMember();
         $membership->setEvent($event);
-        $membership->setUser($user);
+        $membership->setUser($currentUser);
         $membership->setStatus(Event::STATUS_CONFIRMED);
         // Creating user automatically joins
         $event->addMember($membership);
@@ -229,7 +225,6 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
 
     protected function getUser(int $userId): User
     {
-        return (new UserEndpoint($this->entityManager, $this->logger))
-            ->get($userId);
+        return $this->getEntity(User::class, $userId);
     }
 }

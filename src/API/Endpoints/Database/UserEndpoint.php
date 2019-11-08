@@ -8,6 +8,7 @@ use RideTimeServer\Exception\RTException;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\Entities\Friendship;
 use RideTimeServer\API\Endpoints\EntityEndpointInterface;
+use RideTimeServer\Entities\PrimaryEntity;
 
 class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
@@ -49,19 +50,6 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
             $results[] = $item->getDetail();
         }
         return $results;
-    }
-
-    /**
-     * FIXME: should return User(/Event/...) rather than detail
-     * @param array $data
-     * @return object
-     */
-    public function add(array $data): object
-    {
-        $user = $this->createUser($data);
-        $this->saveEntity($user);
-
-        return $user->getDetail();
     }
 
     /**
@@ -176,9 +164,10 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
      * TODO: Validate input!
      *
      * @param array $data
+     * @param User $currentUser
      * @return User
      */
-    protected function createUser(array $data): User
+    protected function create(array $data, User $currentUser): PrimaryEntity
     {
         foreach (['name', 'email', 'authId'] as $prop) {
             if (empty($data[$prop])) {

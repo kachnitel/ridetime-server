@@ -6,6 +6,9 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\ArrayCollection;
 use Monolog\Logger;
 use RideTimeServer\Entities\EntityInterface;
+use RideTimeServer\Entities\PrimaryEntity;
+use RideTimeServer\Entities\PrimaryEntityInterface;
+use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\EntityNotFoundException;
 use RideTimeServer\Exception\UserException;
 
@@ -104,4 +107,21 @@ abstract class BaseEndpoint
 
         return $result;
     }
+
+    /**
+     * Add an entity to DB. Requires a valid user signed token
+     *
+     * @param array $data
+     * @param User $currentUser
+     * @return object // REVIEW: Return Entity?
+     */
+    public function add(array $data, User $currentUser): object
+    {
+        $entity = $this->create($data, $currentUser);
+        $this->saveEntity($entity);
+
+        return $entity->getDetail();
+    }
+
+    abstract protected function create(array $data, User $currentUser): PrimaryEntity;
 }

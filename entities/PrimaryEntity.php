@@ -1,10 +1,10 @@
 <?php
 namespace RideTimeServer\Entities;
 
-class PrimaryEntity
+abstract class PrimaryEntity implements PrimaryEntityInterface
 {
     /**
-     * Undocumented function
+     * Extract values from related entities
      *
      * @param PrimaryEntityInterface[] $entities
      * @return int[]

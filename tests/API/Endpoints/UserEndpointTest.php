@@ -29,12 +29,12 @@ class UserEndpointTest extends APITestCase
     {
         $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));
 
-        $user = $this->callMethod($endpoint, 'createUser', [[
+        $user = $this->callMethod($endpoint, 'create', [[
             'name' => 'Joe',
             'email' => 'e@mail.ca',
             'hometown' => 'Whistler, BC',
             'authId' => '123'
-        ]]);
+        ], $this->generateUser()]);
 
         $this->assertNull($user->getLevel());
         $this->assertEquals('Joe', $user->getName());
@@ -46,12 +46,12 @@ class UserEndpointTest extends APITestCase
     {
         $endpoint = new UserEndpoint($this->entityManager, new Logger('test'));
 
-        $user = $this->callMethod($endpoint, 'createUser', [[
+        $user = $this->callMethod($endpoint, 'create', [[
             'name' => 'Joe',
             'email' => 'e@mail.ca',
             'hometown' => 'Whistler, BC',
             'authId' => 123
-        ]]);
+        ], $this->generateUser()]);
 
         $endpoint->performUpdate($user, ['name' => 'Joseph'], '123');
 

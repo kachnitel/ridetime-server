@@ -2,6 +2,9 @@
 namespace RideTimeServer\API\Endpoints\Database;
 
 use RideTimeServer\Entities\PrimaryEntity;
+use RideTimeServer\Entities\PrimaryEntityInterface;
+use RideTimeServer\Entities\User;
+use RideTimeServer\Exception\RTException;
 
 abstract class ThirdPartyEndpoint extends BaseEndpoint
 {
@@ -33,4 +36,18 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
      * @return PrimaryEntity
      */
     abstract protected function upsert(object $item);
+
+    /**
+     * TODO: this method could be available in 3p, data coming from app/user
+     *  should also be objects like from APIs
+     *
+     * @param array $data
+     * @param User $currentUser
+     * @return PrimaryEntityInterface
+     */
+    protected function create(array $data, User $currentUser): PrimaryEntity
+    {
+        throw new RTException("Manually creating 3p endpoints not implemented", 501);
+        return $this->upsert((object) $data);
+    }
 }

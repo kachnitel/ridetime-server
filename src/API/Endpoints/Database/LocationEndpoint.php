@@ -33,7 +33,7 @@ class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointI
 
     protected function upsert(object $data): Location
     {
-        $location = $this->entityManager->find(Location::class, $data->id) ?? new Location();
+        $location = $this->getEntity(Location::class, $data->id) ?? new Location();
         $location->setId($data->id);
         $location->setName($data->name);
         $location->setDifficulties($data->difficulties);
