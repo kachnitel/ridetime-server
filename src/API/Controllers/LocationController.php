@@ -52,14 +52,14 @@ class LocationController extends BaseController
         $location = $args['id'];
 
         $results = $this->getTrailforksEndpoint()->getLocationTrails($location);
-        $responseJson = $this->getTrailEndpoint()->addMultiple(Trail::class, $results);
+        $responseJson = $this->getTrailEndpoint()->addMultiple($results);
 
         return $response->withJson($responseJson);
     }
 
     protected function cacheResult(array $result): array
     {
-        return $this->getEndpoint()->addMultiple(Location::class, $result);
+        return $this->getEndpoint()->addMultiple($result);
     }
 
     /**

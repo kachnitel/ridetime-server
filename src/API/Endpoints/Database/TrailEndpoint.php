@@ -9,6 +9,8 @@ use RideTimeServer\Exception\RTException;
 
 class TrailEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterface
 {
+    const ENTITY_CLASS = Trail::class;
+
     /**
      * @param integer $trailId
      * @return Trail

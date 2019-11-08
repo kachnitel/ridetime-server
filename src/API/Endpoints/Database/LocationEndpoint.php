@@ -7,6 +7,8 @@ use RideTimeServer\Entities\PrimaryEntity;
 
 class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointInterface
 {
+    const ENTITY_CLASS = Location::class;
+
     /**
      * @param integer $locationId
      * @return Location

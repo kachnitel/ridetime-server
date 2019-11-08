@@ -17,5 +17,5 @@ interface ThirdPartyEndpointInterface extends EntityEndpointInterface
      * @param array $items
      * @return array
      */
-    public function addMultiple(string $class, array $items): array;
+    public function addMultiple(array $items): array;
 }

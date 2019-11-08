@@ -8,20 +8,20 @@ use RideTimeServer\Exception\RTException;
 
 abstract class ThirdPartyEndpoint extends BaseEndpoint
 {
+    const ENTITY_CLASS = null;
+
     /**
      * TODO: ...before creating RouteEndpoint that uses the same
      * REVIEW: use child class const for the "Entity::class" rather than a string param here?
      *
-     * @param string $class
-     * @param array $items
      * @return object[]
      */
-    public function addMultiple(string $class, array $items): array
+    public function addMultiple(array $items): array
     {
         $result = [];
 
         foreach ($items as $item) {
-            $entity = $this->upsert($class, $item);
+            $entity = $this->upsert($item);
             $result[] = $entity->getDetail();
         }
         $this->entityManager->flush();
@@ -36,9 +36,10 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
      * @param object $data
      * @return PrimaryEntity
      */
-    protected function upsert(string $class, object $data)
+    protected function upsert(object $data)
     {
-        $entity = $this->entityManager->find($class, $data->id) ?? new $class();
+        $entityClass = static::ENTITY_CLASS;
+        $entity = $this->entityManager->find($entityClass, $data->id) ?? new $entityClass();
         $this->populateEntity($entity, $data);
 
         $this->entityManager->persist($entity);
