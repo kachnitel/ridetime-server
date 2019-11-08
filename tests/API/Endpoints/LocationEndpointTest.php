@@ -51,5 +51,6 @@ class LocationEndpointTest extends APITestCase
         $this->assertCount(2, $entities);
         $this->assertEquals($locationData[0]->id, $entities[0]->getId());
         $this->assertEquals($locationData[1]->id, $entities[1]->getId());
+        $this->assertEquals($locations[0], $this->entityManager->find(Location::class, 1)->getDetail());
     }
 }
