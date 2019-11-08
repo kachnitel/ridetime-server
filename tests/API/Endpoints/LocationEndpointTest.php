@@ -43,7 +43,7 @@ class LocationEndpointTest extends APITestCase
             ]
         ];
 
-        $locations = $endpoint->addMultiple($locationData);
+        $locations = $endpoint->addMultiple(Location::class, $locationData);
 
         /** @var Location[] $entities */
         $entities = $this->entityManager->getRepository(Location::class)->findAll();

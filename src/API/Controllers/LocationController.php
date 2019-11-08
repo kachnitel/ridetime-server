@@ -6,6 +6,8 @@ use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
 use RideTimeServer\API\Endpoints\Database\TrailEndpoint;
 use RideTimeServer\API\Endpoints\RestApi\TrailforksEndpoint;
+use RideTimeServer\Entities\Location;
+use RideTimeServer\Entities\Trail;
 
 class LocationController extends BaseController
 {
@@ -50,14 +52,14 @@ class LocationController extends BaseController
         $location = $args['id'];
 
         $results = $this->getTrailforksEndpoint()->getLocationTrails($location);
-        $responseJson = $this->getTrailEndpoint()->addMultiple($results);
+        $responseJson = $this->getTrailEndpoint()->addMultiple(Trail::class, $results);
 
         return $response->withJson($responseJson);
     }
 
     protected function cacheResult(array $result): array
     {
-        return $this->getEndpoint()->addMultiple($result);
+        return $this->getEndpoint()->addMultiple(Location::class, $result);
     }
 
     /**

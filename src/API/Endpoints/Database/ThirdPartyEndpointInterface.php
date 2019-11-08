@@ -13,8 +13,9 @@ interface ThirdPartyEndpointInterface extends EntityEndpointInterface
      * - store in DB
      * - return RT Entity based details
      *
+     * @param string $class
      * @param array $items
      * @return array
      */
-    public function addMultiple(array $items): array;
+    public function addMultiple(string $class, array $items): array;
 }

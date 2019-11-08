@@ -3,6 +3,7 @@ namespace RideTimeServer\API\Endpoints\Database;
 
 use RideTimeServer\API\Endpoints\EntityEndpointInterface;
 use RideTimeServer\Entities\Location;
+use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\Entities\Trail;
 use RideTimeServer\Exception\RTException;
 
@@ -26,7 +27,7 @@ class TrailEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterfac
     /**
      * Find a Trail by $attribute
      * TODO: UserEndpoint duplicate exc. findBy vs findOneBy
-     * REVIEW: Unused at this point - remove / move to parent?
+     * REVIEW: Unused at this point - remove / move to parent? Could be used for non-api filters
      *
      * @param string $attribute
      * @param string $value
@@ -45,20 +46,19 @@ class TrailEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterfac
         return $result;
     }
 
-    protected function upsert(object $data): Trail
+    /**
+     * @param Trail $trail
+     * @param object $data
+     * @return PrimaryEntity
+     */
+    protected function populateEntity($trail, object $data): PrimaryEntity
     {
-        $trail = $this->getEntity(Trail::class, $data->id) ?? new Trail();
         $trail->applyProperties($data);
-        $trail->setLocation($this->getLocation($data->location));
         $trail->setProfile($data->profile);
 
-        $this->entityManager->persist($trail);
+        $location = $this->getEntity(Location::class, $data->location);
+        $trail->setLocation($location);
 
         return $trail;
-    }
-
-    protected function getLocation(int $id): Location
-    {
-        return $this->getEntity(Location::class, $id);
     }
 }
