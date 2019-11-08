@@ -6,7 +6,7 @@ use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Trail;
 use RideTimeServer\Exception\RTException;
 
-class TrailEndpoint extends BaseEndpoint implements EntityEndpointInterface
+class TrailEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterface
 {
     /**
      * @param integer $trailId
@@ -26,6 +26,7 @@ class TrailEndpoint extends BaseEndpoint implements EntityEndpointInterface
     /**
      * Find a Trail by $attribute
      * TODO: UserEndpoint duplicate exc. findBy vs findOneBy
+     * REVIEW: Unused at this point - remove / move to parent?
      *
      * @param string $attribute
      * @param string $value
@@ -44,24 +45,7 @@ class TrailEndpoint extends BaseEndpoint implements EntityEndpointInterface
         return $result;
     }
 
-    /**
-     * REVIEW: Common parent for 3rd party sourced Entities
-     *
-     * @param array $items
-     * @return object[]
-     */
-    public function addMultiple(array $items): array
-    {
-        $result = [];
-        foreach ($items as $item) {
-            $trail = $this->upsertTrail($item);
-            $result[] = $trail->getDetail();
-        }
-        $this->entityManager->flush();
-        return $result;
-    }
-
-    protected function upsertTrail(object $data): Trail
+    protected function upsert(object $data): Trail
     {
         $trail = $this->entityManager->find(Trail::class, $data->id) ?? new Trail();
         $trail->applyProperties($data);

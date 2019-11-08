@@ -4,7 +4,7 @@ namespace RideTimeServer\API\Endpoints\Database;
 use RideTimeServer\Entities\Location;
 use Doctrine\Common\Collections\Criteria;
 
-class LocationEndpoint extends BaseEndpoint implements ThirdPartyEndpointInterface
+class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointInterface
 {
     /**
      * @param integer $locationId
@@ -31,24 +31,7 @@ class LocationEndpoint extends BaseEndpoint implements ThirdPartyEndpointInterfa
         return $this->listEntities(Location::class, $criteria);
     }
 
-    /**
-     * @param array $items
-     * @return object[]
-     */
-    public function addMultiple(array $items): array
-    {
-        $result = [];
-
-        foreach ($items as $item) {
-            $location = $this->upsertLocation($item);
-            $result[] = $location->getDetail();
-        }
-        $this->entityManager->flush();
-
-        return $result;
-    }
-
-    protected function upsertLocation(object $data): Location
+    protected function upsert(object $data): Location
     {
         $location = $this->entityManager->find(Location::class, $data->id) ?? new Location();
         $location->setId($data->id);
