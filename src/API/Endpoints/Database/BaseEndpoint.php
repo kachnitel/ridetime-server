@@ -127,24 +127,14 @@ abstract class BaseEndpoint
 
     /**
      * Find an entity of type set by static::ENTITY_CLASS by $attribute
-     * TODO: UserEndpoint duplicate exc. findBy vs findOneBy
-     * REVIEW: Unused at this point - remove / move to parent? Could be used for non-api filters
      *
      * @param string $attribute
      * @param string $value
-     * @return Trail[]
+     * @return EntityInterface[]
      */
     public function findBy(string $attribute, string $value): array
     {
-        try {
-            $result = $this->entityManager->getRepository(static::ENTITY_CLASS)->findBy([$attribute => $value]);
-        } catch (\Doctrine\ORM\ORMException $e) {
-            throw new RTException("Error looking up " . static::ENTITY_CLASS . " by {$attribute} = {$value}", 0, $e);
-        }
-        if (empty($result)) {
-            throw new EntityNotFoundException(static::ENTITY_CLASS . " with {$attribute} = {$value} not found", 404);
-        }
-        return $result;
+        return $this->doFindBy([$attribute => $value]);
     }
 
     /**
@@ -156,13 +146,19 @@ abstract class BaseEndpoint
      */
     public function findOneBy(string $attribute, string $value): EntityInterface
     {
+                return $this->doFindBy([$attribute => $value], true);
+    }
+
+    protected function doFindBy(array $criteria, bool $findOne = false)
+    {
+        $method = $findOne ? 'findOneBy' : 'findBy';
         try {
-            $result = $this->entityManager->getRepository(static::ENTITY_CLASS)->findOneBy([$attribute => $value]);
+            $result = $this->entityManager->getRepository(static::ENTITY_CLASS)->{$method}($criteria);
         } catch (\Doctrine\ORM\ORMException $e) {
-            throw new RTException("Error looking up " . static::ENTITY_CLASS . " by {$attribute} = {$value}", 0, $e);
+            throw new RTException("Error looking up " . static::ENTITY_CLASS . " by {$criteria[0]} = {$criteria[1]}", 0, $e);
         }
         if (empty($result)) {
-            throw new EntityNotFoundException(static::ENTITY_CLASS . " with {$attribute} = {$value} not found", 404);
+            throw new EntityNotFoundException(static::ENTITY_CLASS . " with {$criteria[0]} = {$criteria[1]} not found", 404);
         }
         return $result;
     }
