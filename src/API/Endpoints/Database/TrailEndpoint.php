@@ -27,28 +27,6 @@ class TrailEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterfac
     }
 
     /**
-     * Find a Trail by $attribute
-     * TODO: UserEndpoint duplicate exc. findBy vs findOneBy
-     * REVIEW: Unused at this point - remove / move to parent? Could be used for non-api filters
-     *
-     * @param string $attribute
-     * @param string $value
-     * @return Trail[]
-     */
-    public function findBy(string $attribute, string $value): array
-    {
-        try {
-            $result = $this->entityManager->getRepository(Trail::class)->findBy([$attribute => $value]);
-        } catch (\Doctrine\ORM\ORMException $e) {
-            throw new RTException("Error looking up Trail by {$attribute} = {$value}", 0, $e);
-        }
-        if (empty($result)) {
-            throw new EntityNotFoundException("Trail with {$attribute} = {$value} not found", 404);
-        }
-        return $result;
-    }
-
-    /**
      * @param Trail $trail
      * @param object $data
      * @return PrimaryEntity

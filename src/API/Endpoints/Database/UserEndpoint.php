@@ -12,6 +12,8 @@ use RideTimeServer\Entities\PrimaryEntity;
 
 class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
+    const ENTITY_CLASS = User::class;
+
     /**
      * Load user from database
      *
@@ -69,29 +71,8 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
     }
 
     /**
-     * Find an user by $attribute
-     *
-     * @param string $attribute
-     * @param string $value
-     * @return User
-     */
-    public function findOneBy(string $attribute, string $value): User
-    {
-        try {
-            $result = $this->entityManager->getRepository(User::class)->findOneBy([$attribute => $value]);
-        } catch (\Doctrine\ORM\ORMException $e) {
-            throw new RTException("Error looking up User by {$attribute} = {$value}", 0, $e);
-        }
-        if (empty($result)) {
-            throw new EntityNotFoundException("User with {$attribute} = {$value} not found", 404);
-        }
-        return $result;
-    }
-
-    /**
      * Friendship management
      */
-
 
     /**
      * @param integer $userId Logged in user
