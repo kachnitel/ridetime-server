@@ -40,7 +40,7 @@ class AuthController extends BaseController
         $userEmail = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
 
         try {
-            $user = $this->getEndpoint()->findBy('email', $userEmail);
+            $user = $this->getEndpoint()->findOneBy('email', $userEmail);
         } catch (EntityNotFoundException $eNotFound) {
             return $response->withJson((object) [
                 'success' => false,

@@ -41,7 +41,7 @@ class CurrentUserMiddleware {
 
             $endpoint = new UserEndpoint($container['entityManager'], $logger);
             try {
-                $user = $endpoint->findBy('authId', $token['sub']);
+                $user = $endpoint->findOneBy('authId', $token['sub']);
             } catch (EntityNotFoundException $e) {
                 if ($requireUser) {
                     throw new UserException('Attempting to access resource without valid user', 400);

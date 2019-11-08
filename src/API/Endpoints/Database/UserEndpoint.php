@@ -75,7 +75,7 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
      * @param string $value
      * @return User
      */
-    public function findBy(string $attribute, string $value): User
+    public function findOneBy(string $attribute, string $value): User
     {
         try {
             $result = $this->entityManager->getRepository(User::class)->findOneBy([$attribute => $value]);
