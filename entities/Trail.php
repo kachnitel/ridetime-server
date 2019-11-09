@@ -27,6 +27,7 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
 
         $trail->applyProperties($data);
         $trail->setLocation($location);
+        // FIXME: missing profile - remove method
 
         return $trail;
     }

@@ -146,7 +146,7 @@ abstract class BaseEndpoint
      */
     public function findOneBy(string $attribute, string $value): EntityInterface
     {
-                return $this->doFindBy([$attribute => $value], true);
+        return $this->doFindBy([$attribute => $value], true);
     }
 
     protected function doFindBy(array $criteria, bool $findOne = false)
