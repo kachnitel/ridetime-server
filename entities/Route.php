@@ -3,55 +3,24 @@ namespace RideTimeServer\Entities;
 
 use RideTimeServer\Entities\Traits\LocationTrait;
 use RideTimeServer\Entities\Traits\TerrainProfileTrait;
+use RideTimeServer\Entities\Traits\TrailsTrait;
 
 /**
  * @Entity
- * @Table(name="trail")
+ * @Table(name="route")
  */
-class Trail extends PrimaryEntity implements PrimaryEntityInterface
+class Route extends PrimaryEntity implements PrimaryEntityInterface
 {
     use LocationTrait;
+    use TrailsTrait;
     use TerrainProfileTrait;
 
     const SCALAR_FIELDS = [
         'id',
         'title',
         'description',
-        'difficulty'
+        'cover_photo'
     ];
-
-    /**
-     * @deprecated ? May not be used outside tests
-     *
-     * @param object $data
-     * @param Location $location
-     * @return Trail
-     */
-    public static function create(object $data, Location $location): Trail
-    {
-        $trail = new static;
-
-        $trail->applyProperties($data);
-        $trail->setLocation($location);
-        // FIXME: missing profile - remove method
-
-        return $trail;
-    }
-
-    /**
-     * Applies self::SCALAR_FIELDS listed properties
-     * REVIEW: See User::applyProperties(array)
-     *
-     * @param object $data
-     * @return object
-     */
-    public function applyProperties(object $data)
-    {
-        foreach (self::SCALAR_FIELDS as $property) {
-            $method = $method = 'set' . ucfirst($property);
-            $this->{$method}($data->{$property});
-        }
-    }
 
     /**
      * Get trail detail
@@ -64,16 +33,16 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
             'id' => $this->getId(),
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
-            'difficulty' => $this->getDifficulty(),
             'location' => $this->getLocation()->getId(),
-            'profile' => $this->getProfile()
+            // 'profile' => $this->getProfile()
         ];
     }
 
     public function getRelated(): object
     {
         return (object) [
-            'location' => [$this->getLocation()->getDetail()]
+            'location' => [$this->getLocation()->getDetail()],
+            // 'trail' => ..
         ];
     }
 
@@ -93,13 +62,6 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
     private $title;
 
     /**
-     * @Column(type="integer")
-     *
-     * @var int
-     */
-    private $difficulty;
-
-    /**
      * @Column(type="text")
      *
      * @var string
@@ -107,7 +69,7 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
     private $description;
 
     /**
-     * @ManyToOne(targetEntity="Location", inversedBy="trails")
+     * @ManyToOne(targetEntity="Location", inversedBy="routes")
      *
      * @var Location
      */
@@ -154,30 +116,6 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
     public function setTitle(string $title)
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of difficulty
-     *
-     * @return int
-     */
-    public function getDifficulty()
-    {
-        return $this->difficulty;
-    }
-
-    /**
-     * Set the value of difficulty
-     *
-     * @param int $difficulty
-     *
-     * @return self
-     */
-    public function setDifficulty(int $difficulty)
-    {
-        $this->difficulty = $difficulty;
 
         return $this;
     }

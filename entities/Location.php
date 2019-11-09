@@ -2,6 +2,7 @@
 namespace RideTimeServer\Entities;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+use RideTimeServer\Entities\Traits\TrailsTrait;
 use RideTimeServer\Exception\RTException;
 
 /**
@@ -10,6 +11,8 @@ use RideTimeServer\Exception\RTException;
  */
 class Location extends PrimaryEntity implements PrimaryEntityInterface
 {
+    use TrailsTrait;
+
     /**
      * Get location detail
      *
@@ -242,24 +245,5 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
     public function removeEvent(Event $event)
     {
         return $this->events->removeElement($event);
-    }
-
-    /**
-     * @return ArrayCollection|Trail[]
-     */
-    public function getTrails(): ArrayCollection
-    {
-        return $this->trails;
-    }
-
-    /**
-     * @param Trail $trail
-     * @return self
-     */
-    public function addTrail(Trail $trail)
-    {
-        $this->trails[] = $trail;
-
-        return $this;
     }
 }

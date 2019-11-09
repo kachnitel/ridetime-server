@@ -4,6 +4,7 @@ namespace RideTimeServer\Entities;
 use \Doctrine\Common\Collections\ArrayCollection;
 use \Doctrine\Common\Collections\Collection;
 use \Doctrine\ORM\PersistentCollection;
+use RideTimeServer\Entities\Traits\LocationTrait;
 
 /**
  * @Entity
@@ -11,6 +12,8 @@ use \Doctrine\ORM\PersistentCollection;
  */
 class Event extends PrimaryEntity implements PrimaryEntityInterface
 {
+    use LocationTrait;
+
     const STATUS_CONFIRMED = "confirmed";
     const STATUS_INVITED = "invited";
     const STATUS_REQUESTED = "requested";
@@ -301,30 +304,6 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     public function setRoute($route)
     {
         $this->route = $route;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of location
-     *
-     * @return  Location
-     */
-    public function getLocation(): Location
-    {
-        return $this->location;
-    }
-
-    /**
-     * Set the value of location
-     *
-     * @param  Location  $location
-     *
-     * @return  self
-     */
-    public function setLocation(Location $location)
-    {
-        $this->location = $location;
 
         return $this;
     }
