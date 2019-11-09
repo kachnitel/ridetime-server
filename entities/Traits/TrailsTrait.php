@@ -2,6 +2,7 @@
 namespace RideTimeServer\Entities\Traits;
 
 use RideTimeServer\Entities\Trail;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Add Trail[] list
