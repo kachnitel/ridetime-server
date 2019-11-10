@@ -88,16 +88,37 @@ class TrailforksConnector
         return $this->doRequest('regions', $query)->data;
     }
 
+    public function getTrail(int $id, $fields = [])
+    {
+        $query = [
+            'id' => $id,
+            'fields' => join(',', $fields),
+            'scope' => 'full'
+        ];
+
+        return $this->doRequest('trail', $query)->data;
+    }
+
     public function getLocationTrails(int $locationId, $fields = [])
+    {
+        return $this->getLocationChildren('trails', $locationId, $fields);
+    }
+
+    public function getLocationRoutes(int $locationId, $fields = [])
+    {
+        return $this->getLocationChildren('routes', $locationId, $fields);
+    }
+
+    protected function getLocationChildren(string $type, int $locationId, $fields = [])
     {
         $filter = 'rid::' . $locationId;
         $query = [
             'filter' => $filter,
             'fields' => join(',', $fields),
             'scope' => 'full',
-            'rows' => 20
+            'rows' => 100
         ];
-        return $this->doRequest('trails', $query)->data;
+        return $this->doRequest($type, $query)->data;
     }
 
     protected function doRequest(string $endpoint, array $query)

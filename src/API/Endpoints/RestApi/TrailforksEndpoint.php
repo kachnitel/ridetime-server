@@ -12,6 +12,7 @@ use RideTimeServer\API\Connectors\TrailforksConnector;
 class TrailforksEndpoint
 {
     const REGION_MAP_URL_PREFIX = 'https://ep1.pinkbike.org/files/regionmaps/';
+
     /**
      * @var TrailforksConnector
      */
@@ -34,6 +35,14 @@ class TrailforksEndpoint
             "tc_4", // blue
             "tc_5", // black
             "tc_6"  // double black
+        ],
+        'trail' => [
+            'trailid',
+            'title',
+            'difficulty',
+            'stats',
+            'description',
+            'rid'
         ]
     ];
 
@@ -106,6 +115,18 @@ class TrailforksEndpoint
     }
 
     /**
+     * Get a single trail by ID
+     *
+     * @param integer $id
+     * @return object
+     */
+    public function getTrail(int $id): object
+    {
+        $result = $this->connector->getTrail($id, $this->fields['trail']);
+        return $this->transformTrail($result);
+    }
+
+    /**
      * Convert Trailforks trail information to RT format
      *
      * @param integer $locationId
@@ -113,29 +134,50 @@ class TrailforksEndpoint
      */
     public function getLocationTrails(int $locationId): array
     {
-        $results = $this->connector->getLocationTrails($locationId, [
-            'trailid',
+        $results = $this->connector->getLocationTrails($locationId, $this->fields['trail']);
+
+        return array_map([$this, 'transformTrail'], $results);
+    }
+
+    protected function transformTrail(object $trailData): object
+    {
+        return (object) [
+            'id' => $trailData->trailid,
+            'title' => $trailData->title,
+            'description' => $trailData->description,
+            'difficulty' => $trailData->difficulty - 3, // TF uses different diff. ratings
+            'profile' => $trailData->stats,
+            'location' => $trailData->rid
+        ];
+    }
+
+    public function getLocationRoutes(int $locationId): array
+    {
+        $results = $this->connector->getLocationRoutes($locationId, [
+            'id',
+            'rid',
             'title',
             'difficulty',
-            'stats',
+            // 'biketype',
             'description',
-            'rid'
+            // 'cover_photo',
+            // 'prov_abv',
+            // 'city_title',
+            // 'country_title',
+            'trails',
+            'stats'
         ]);
 
-        $trails = [];
-        foreach ($results as $item) {
-            $trail = (object) [
-                'id' => $item->trailid,
+        return array_map(function(object $item) {
+            return (object) [
+                'id' => $item->id,
                 'title' => $item->title,
                 'description' => $item->description,
                 'difficulty' => $item->difficulty - 3, // TF uses different diff. ratings
                 'profile' => $item->stats,
-                'location' => $item->rid
+                'location' => $item->rid,
+                'trails' => $item->trails
             ];
-
-            $trails[] = $trail;
-        }
-
-        return $trails;
+        }, $results);
     }
 }
