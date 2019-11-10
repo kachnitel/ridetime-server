@@ -71,7 +71,10 @@ abstract class BaseEndpoint
         if (empty($entity)) {
             $path = explode('\\', $entityClass);
             $entityName = array_pop($path);
-            throw new EntityNotFoundException($entityName . ' ID:' . $id . ' not found', 404);
+            $exc =  new EntityNotFoundException($entityName . ' ID:' . $id . ' not found', 404);
+            $exc->setData(['class' => get_class($this), 'stackTrace' => debug_backtrace()]);
+
+            throw $exc;
         }
 
         return $entity;
