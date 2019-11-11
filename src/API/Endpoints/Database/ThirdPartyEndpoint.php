@@ -2,16 +2,17 @@
 namespace RideTimeServer\API\Endpoints\Database;
 
 use Doctrine\ORM\EntityManager;
+use Monolog\Logger;
 use RideTimeServer\API\Endpoints\RestApi\TrailforksEndpoint;
 use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\Entities\PrimaryEntityInterface;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\RTException;
-use \Monolog\Logger;
+use RideTimeServer\Exception\EntityNotFoundException;
 
 abstract class ThirdPartyEndpoint extends BaseEndpoint
 {
-    const ENTITY_CLASS = null;
+    const ENTITY_CLASS = '';
 
     /**
      * @var TrailforksEndpoint
@@ -22,6 +23,26 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
     {
         parent::__construct($entityManager, $logger);
         $this->TfEndpoint = $TfEndpoint;
+    }
+
+    /**
+     * @param integer $entityId
+     * @return PrimaryEntity
+     */
+    public function get(int $entityId): PrimaryEntity
+    {
+        try {
+            return $this->getEntity(static::ENTITY_CLASS, $entityId);
+        } catch (EntityNotFoundException $enf) {
+            $this->logger->warn(
+                'Loading an individual ' . $this->getEntityTypeName() . ' from 3rd party API! ID: ' . $entityId
+            );
+
+            $method = 'get' . $this->getEntityTypeName();
+            return $this->upsert(
+                $this->TfEndpoint->{$method}($entityId)
+            );
+        }
     }
 
     /**
@@ -57,6 +78,16 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
         $this->entityManager->persist($entity);
 
         return $entity;
+    }
+
+    public function getEntityTypeName(string $class = null): string
+    {
+        $className = $class ?: static::ENTITY_CLASS;
+        if (!$className) {
+            throw new RTException('Entity class not set in ' . static::class);
+        }
+        $path = explode('\\', $className);
+        return array_pop($path);
     }
 
     /**

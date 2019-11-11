@@ -10,15 +10,6 @@ class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointI
     const ENTITY_CLASS = Location::class;
 
     /**
-     * @param integer $locationId
-     * @return Location
-     */
-    public function get(int $locationId): Location
-    {
-        return $this->getEntity(Location::class, $locationId);
-    }
-
-    /**
      * @return array[Location]
      */
     public function list(?array $ids): array
@@ -31,7 +22,7 @@ class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointI
             $criteria->where(Criteria::expr()->in('id', $ids));
         }
 
-        return $this->listEntities(Location::class, $criteria);
+        return $this->listEntities(static::ENTITY_CLASS, $criteria);
     }
 
     /**
