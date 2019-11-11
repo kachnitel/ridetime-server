@@ -18,7 +18,7 @@ class TrailforksEndpoint
      */
     protected $connector;
     protected $fields = [
-        'locations' => [
+        'location' => [
             "rid",
             "title",
             "alias",
@@ -54,28 +54,28 @@ class TrailforksEndpoint
     public function locationsBBox(array $bbox): array
     {
         return $this->processLocations(
-            $this->connector->getLocationsBBox($bbox, $this->fields['locations'])
+            $this->connector->getLocationsBBox($bbox, $this->fields['location'])
         );
     }
 
     public function locationsNearby(array $latLon, int $range): array
     {
         return $this->processLocations(
-            $this->connector->getLocationsNearby($latLon, $range, $this->fields['locations'])
+            $this->connector->getLocationsNearby($latLon, $range, $this->fields['location'])
         );
     }
 
     public function locationsSearch(string $search): array
     {
         return $this->processLocations(
-            $this->connector->searchLocations($search, $this->fields['locations'])
+            $this->connector->searchLocations($search, $this->fields['location'])
         );
     }
 
     protected function processLocations(array $results): array
     {
         $filtered = array_values($this->filterHidden($results));
-        $formatted = array_map([$this, 'getLocationData'], $filtered);
+        $formatted = array_map([$this, 'transformLocation'], $filtered);
 
         return $formatted;
     }
@@ -93,7 +93,7 @@ class TrailforksEndpoint
      * @param object $location
      * @return object
      */
-    protected function getLocationData(object $location): object
+    protected function transformLocation(object $location): object
     {
         return (object) [
             'id' => (int) $location->rid,
@@ -112,6 +112,12 @@ class TrailforksEndpoint
             'shuttle' => (bool) $location->shuttle,
             'bikepark' => (bool) $location->bikepark
         ];
+    }
+
+    public function getLocation(int $id): object
+    {
+        $result = $this->connector->getLocation($id, $this->fields['location']);
+        return $this->transformLocation($result);
     }
 
     /**
