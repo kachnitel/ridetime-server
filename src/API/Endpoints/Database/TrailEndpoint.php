@@ -11,15 +11,6 @@ class TrailEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterfac
 {
     const ENTITY_CLASS = Trail::class;
 
-    /**
-     * @param integer $trailId
-     * @return Trail
-     */
-    public function get(int $trailId): Trail
-    {
-        return $this->getEntity(static::ENTITY_CLASS, $trailId);
-    }
-
     public function list(?array $ids): array
     {
         throw new RTException('Trails list method not implemented', 501);
