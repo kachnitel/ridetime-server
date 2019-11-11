@@ -16,10 +16,10 @@ class LocationController extends BaseController
         $tfEndpoint = $this->getTrailforksEndpoint();
 
         $latLon = [
-            $request->getQueryParams()['lat'],
-            $request->getQueryParams()['lon']
+            $request->getQueryParam('lat'),
+            $request->getQueryParam('lon')
         ];
-        $range = $request->getQueryParams()['range'];
+        $range = $request->getQueryParam('range');
         $result = $tfEndpoint->locationsNearby($latLon, $range);
         $responseJson = $this->cacheResult($result);
 
@@ -30,7 +30,7 @@ class LocationController extends BaseController
     {
         $tfEndpoint = $this->getTrailforksEndpoint();
 
-        $bbox = $request->getQueryParams()['coords'];
+        $bbox = $request->getQueryParam('coords');
         $result = $tfEndpoint->locationsBBox($bbox);
         $responseJson = $this->cacheResult($result);
 
@@ -41,7 +41,7 @@ class LocationController extends BaseController
     {
         $tfEndpoint = $this->getTrailforksEndpoint();
 
-        $result = $tfEndpoint->locationsSearch($request->getQueryParams()['name']);
+        $result = $tfEndpoint->locationsSearch($request->getQueryParam('name'));
         $responseJson = $this->cacheResult($result);
 
         return $response->withJson($responseJson);
