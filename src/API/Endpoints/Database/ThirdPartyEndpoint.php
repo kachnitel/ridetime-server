@@ -1,19 +1,31 @@
 <?php
 namespace RideTimeServer\API\Endpoints\Database;
 
+use Doctrine\ORM\EntityManager;
+use RideTimeServer\API\Endpoints\RestApi\TrailforksEndpoint;
 use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\Entities\PrimaryEntityInterface;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\RTException;
+use \Monolog\Logger;
 
 abstract class ThirdPartyEndpoint extends BaseEndpoint
 {
     const ENTITY_CLASS = null;
 
     /**
-     * TODO: ...before creating RouteEndpoint that uses the same
-     * REVIEW: use child class const for the "Entity::class" rather than a string param here?
-     *
+     * @var TrailforksEndpoint
+     */
+    protected $TfEndpoint;
+
+    public function __construct(EntityManager $entityManager, Logger $logger, TrailforksEndpoint $TfEndpoint)
+    {
+        parent::__construct($entityManager, $logger);
+        $this->TfEndpoint = $TfEndpoint;
+    }
+
+    /**
+     * @param object[] $items
      * @return object[]
      */
     public function addMultiple(array $items): array
@@ -36,7 +48,7 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
      * @param object $data
      * @return PrimaryEntity
      */
-    protected function upsert(object $data)
+    public function upsert(object $data)
     {
         $entityClass = static::ENTITY_CLASS;
         $entity = $this->entityManager->find($entityClass, $data->id) ?? new $entityClass();

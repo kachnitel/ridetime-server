@@ -49,10 +49,9 @@ class LocationController extends BaseController
 
     public function trailsByLocation(Request $request, Response $response, array $args): Response
     {
-        $location = $args['id'];
+        $locationId = $args['id'];
 
-        $results = $this->getTrailforksEndpoint()->getLocationTrails($location);
-        $responseJson = $this->getTrailEndpoint()->addMultiple($results);
+        $responseJson = $this->getTrailEndpoint()->listByLocation($locationId);
 
         return $response->withJson($responseJson);
     }
@@ -69,7 +68,8 @@ class LocationController extends BaseController
     {
         return new LocationEndpoint(
             $this->container->entityManager,
-            $this->container->logger
+            $this->container->logger,
+            $this->getTrailforksEndpoint()
         );
     }
 
@@ -77,7 +77,8 @@ class LocationController extends BaseController
     {
         return new TrailEndpoint(
             $this->container->entityManager,
-            $this->container->logger
+            $this->container->logger,
+            $this->getTrailforksEndpoint()
         );
     }
 
