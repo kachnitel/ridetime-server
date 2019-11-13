@@ -71,7 +71,7 @@ abstract class BaseEndpoint
         if (empty($entity)) {
             $path = explode('\\', $entityClass);
             $entityName = array_pop($path);
-            $exc =  new EntityNotFoundException($entityName . ' ID:' . $id . ' not found', 404);
+            $exc = new EntityNotFoundException($entityName . ' ID:' . $id . ' not found', 404);
             $exc->setData(['class' => get_class($this), 'stackTrace' => debug_backtrace()]);
 
             throw $exc;
@@ -81,11 +81,8 @@ abstract class BaseEndpoint
     }
 
     /**
-     * Second argument should accept EntityInterface as a parameter
-     * and return an object to return in the Response
-     *
      * @param string $entityClass
-     * @param callable $entityExtractor
+     * @param Criteria $searchCriteria
      * @return array
      */
     protected function listEntities(
