@@ -6,7 +6,7 @@ use RideTimeServer\Entities\Traits\TerrainProfileTrait;
 use RideTimeServer\Entities\Traits\TrailsTrait;
 
 /**
- * @Entity
+ * @Entity(repositoryClass="RideTimeServer\API\Repositories\RouteRepository")
  * @Table(name="route")
  */
 class Route extends PrimaryEntity implements PrimaryEntityInterface
@@ -19,7 +19,7 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
         'id',
         'title',
         'description',
-        'cover_photo'
+        // 'cover_photo'
     ];
 
     /**
@@ -29,12 +29,17 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
      */
     public function getDetail(): object
     {
+        $trailIds = array_map(function(Trail $trail) {
+            return $trail->getId();
+        }, $this->getTrails()->getValues());
+
         return (object) [
             'id' => $this->getId(),
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
             'location' => $this->getLocation()->getId(),
-            // 'profile' => $this->getProfile()
+            'profile' => $this->getProfile(),
+            'trails' => $trailIds
         ];
     }
 
@@ -44,6 +49,20 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
             'location' => [$this->getLocation()->getDetail()],
             // 'trail' => ..
         ];
+    }
+
+    /**
+     * Applies self::SCALAR_FIELDS listed properties
+     *
+     * @param object $data
+     * @return object
+     */
+    public function applyProperties(object $data)
+    {
+        foreach (self::SCALAR_FIELDS as $property) {
+            $method = $method = 'set' . ucfirst($property);
+            $this->{$method}($data->{$property});
+        }
     }
 
     /**

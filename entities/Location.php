@@ -6,7 +6,7 @@ use RideTimeServer\Entities\Traits\TrailsTrait;
 use RideTimeServer\Exception\RTException;
 
 /**
- * @Entity
+ * @Entity(repositoryClass="RideTimeServer\API\Repositories\LocationRepository")
  * @Table(name="location")
  */
 class Location extends PrimaryEntity implements PrimaryEntityInterface

@@ -2,27 +2,31 @@
 namespace RideTimeServer\API\Endpoints\Database;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Logger;
-use RideTimeServer\API\Endpoints\RestApi\TrailforksEndpoint;
+use RideTimeServer\API\Connectors\TrailforksConnector;
 use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\Entities\PrimaryEntityInterface;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\RTException;
 use RideTimeServer\Exception\EntityNotFoundException;
+use RideTimeServer\API\Repositories\RemoteSourceRepositoryInterface;
+use RideTimeServer\Entities\EntityInterface;
 
 abstract class ThirdPartyEndpoint extends BaseEndpoint
 {
     const ENTITY_CLASS = '';
 
     /**
-     * @var TrailforksEndpoint
+     * @var TrailforksConnector
      */
-    protected $TfEndpoint;
+    protected $tfConnector;
 
-    public function __construct(EntityManager $entityManager, Logger $logger, TrailforksEndpoint $TfEndpoint)
+    public function __construct(EntityManagerInterface $entityManager, Logger $logger, TrailforksConnector $tfConnector)
     {
         parent::__construct($entityManager, $logger);
-        $this->TfEndpoint = $TfEndpoint;
+        $this->tfConnector = $tfConnector;
+        $entityManager->getRepository(static::ENTITY_CLASS)->setConnector($tfConnector);
     }
 
     /**
@@ -31,18 +35,35 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
      */
     public function get(int $entityId): PrimaryEntity
     {
-        try {
-            return $this->getEntity(static::ENTITY_CLASS, $entityId);
-        } catch (EntityNotFoundException $enf) {
-            $this->logger->warn(
-                'Loading an individual ' . $this->getEntityTypeName() . ' from 3rd party API! ID: ' . $entityId
-            );
-
-            $method = 'get' . $this->getEntityTypeName();
-            return $this->upsert(
-                $this->TfEndpoint->{$method}($entityId)
+        return $this->getEntity(static::ENTITY_CLASS, $entityId);
+    }
+    /**
+    * REVIEW: Requires entities to be flushed
+    * @param string $entityClass
+    * @param integer $id
+    * @return EntityInterface
+    */
+    protected function getEntity(string $entityClass, int $id): EntityInterface
+    {
+        $repo = $this->entityManager->getRepository($entityClass);
+        if (!$repo instanceof RemoteSourceRepositoryInterface) {
+            throw new RTException(
+                'ThirdPartyEndpoint requires RemoteSourceRepositoryInterface, ' . get_class($repo) . ' supplied'
             );
         }
+
+        $entity = $repo->findWithFallback($id);
+
+        if (empty($entity)) {
+            $path = explode('\\', $entityClass);
+            $entityName = array_pop($path);
+            $exc = new EntityNotFoundException($entityName . ' ID:' . $id . ' not found', 404);
+            $exc->setData(['class' => get_class($this), 'stackTrace' => debug_backtrace()]);
+
+            throw $exc;
+        }
+
+        return $entity;
     }
 
     /**
@@ -63,6 +84,7 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
     }
 
     /**
+     * @deprecated
      * Create new item or update existing with new data
      *
      * @param string $class
@@ -80,16 +102,6 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
         return $entity;
     }
 
-    public function getEntityTypeName(string $class = null): string
-    {
-        $className = $class ?: static::ENTITY_CLASS;
-        if (!$className) {
-            throw new RTException('Entity class not set in ' . static::class);
-        }
-        $path = explode('\\', $className);
-        return array_pop($path);
-    }
-
     /**
      * Update entity with $data
      *
@@ -97,7 +109,7 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
      * @param object $data
      * @return PrimaryEntity
      */
-    abstract protected function populateEntity($entity, object $data): PrimaryEntity;
+    // abstract protected function populateEntity($entity, object $data): PrimaryEntity;
 
     /**
      * TODO:

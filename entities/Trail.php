@@ -5,7 +5,7 @@ use RideTimeServer\Entities\Traits\LocationTrait;
 use RideTimeServer\Entities\Traits\TerrainProfileTrait;
 
 /**
- * @Entity
+ * @Entity(repositoryClass="RideTimeServer\API\Repositories\TrailRepository")
  * @Table(name="trail")
  */
 class Trail extends PrimaryEntity implements PrimaryEntityInterface

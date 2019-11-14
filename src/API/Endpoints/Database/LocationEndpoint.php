@@ -3,7 +3,6 @@ namespace RideTimeServer\API\Endpoints\Database;
 
 use RideTimeServer\Entities\Location;
 use Doctrine\Common\Collections\Criteria;
-use RideTimeServer\Entities\PrimaryEntity;
 
 class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointInterface
 {
@@ -23,23 +22,5 @@ class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointI
         }
 
         return $this->listEntities(static::ENTITY_CLASS, $criteria);
-    }
-
-    /**
-     * Fill existing entity with proper formed data
-     *
-     * @param Location $location
-     * @param object $data
-     * @return Location
-     */
-    protected function populateEntity($location, object $data): PrimaryEntity
-    {
-        $location->setId($data->id);
-        $location->setName($data->name);
-        $location->setDifficulties($data->difficulties);
-        $location->setGpsLat($data->coords[0]);
-        $location->setGpsLon($data->coords[1]);
-
-        return $location;
     }
 }

@@ -2,7 +2,7 @@
 namespace RideTimeServer\Entities\Traits;
 
 use RideTimeServer\Entities\Trail;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * Add Trail[] list
@@ -14,14 +14,14 @@ trait TrailsTrait
      *
      * @ManyToMany(targetEntity="Trail")
      *
-     * @var ArrayCollection|Trail[]
+     * @var Collection|Trail[]
      */
     private $trails;
 
     /**
-     * @return ArrayCollection|Trail[]
+     * @return Collection|Trail[]
      */
-    public function getTrails(): ArrayCollection
+    public function getTrails(): Collection
     {
         return $this->trails;
     }

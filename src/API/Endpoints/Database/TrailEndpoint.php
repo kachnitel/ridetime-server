@@ -2,8 +2,6 @@
 namespace RideTimeServer\API\Endpoints\Database;
 
 use RideTimeServer\API\Endpoints\EntityEndpointInterface;
-use RideTimeServer\Entities\Location;
-use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\Entities\Trail;
 use RideTimeServer\Exception\RTException;
 
@@ -19,23 +17,7 @@ class TrailEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterfac
 
     public function listByLocation(int $locationId): array
     {
-        $results = $this->TfEndpoint->getLocationTrails($locationId);
-        return $this->addMultiple($results);
-    }
-
-    /**
-     * @param Trail $trail
-     * @param object $data
-     * @return PrimaryEntity
-     */
-    protected function populateEntity($trail, object $data): PrimaryEntity
-    {
-        $trail->applyProperties($data);
-        $trail->setProfile($data->profile);
-
-        $location = $this->getEntity(Location::class, $data->location);
-        $trail->setLocation($location);
-
-        return $trail;
+        $results = $this->entityManager->getRepository(Trail::class)->listByLocation($locationId);
+        return array_map(function(Trail $trail) { return $trail->getDetail(); }, $results);
     }
 }

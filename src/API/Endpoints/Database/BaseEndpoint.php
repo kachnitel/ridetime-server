@@ -4,10 +4,10 @@ namespace RideTimeServer\API\Endpoints\Database;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Logger;
 use RideTimeServer\Entities\EntityInterface;
 use RideTimeServer\Entities\PrimaryEntity;
-use RideTimeServer\Entities\PrimaryEntityInterface;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\EntityNotFoundException;
 use RideTimeServer\Exception\UserException;
@@ -26,7 +26,7 @@ abstract class BaseEndpoint
      */
     protected $logger;
 
-    public function __construct(EntityManager $entityManager, Logger $logger)
+    public function __construct(EntityManagerInterface $entityManager, Logger $logger)
     {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
