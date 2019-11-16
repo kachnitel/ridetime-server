@@ -3,6 +3,9 @@ namespace RideTimeServer\API;
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use RideTimeServer\API\Connectors\TrailforksConnector;
+use RideTimeServer\RemoteSourceEntityManager;
 
 class Database {
     /**
@@ -12,12 +15,16 @@ class Database {
      * @param array $dbSecrets ['database', 'user', 'password', 'host']
      * @return callable
      */
-    public function getEntityManager(array $doctrineConfig, array $dbSecrets): EntityManager
+    public function getEntityManager(
+        array $doctrineConfig,
+        array $dbSecrets,
+        TrailforksConnector $tfConnector
+    ): EntityManagerInterface
     {
         // Setup Doctrine
         $configuration = Setup::createAnnotationMetadataConfiguration(
-            $paths = [__DIR__ . $doctrineConfig['entitiesPath']],
-            $isDevMode = $doctrineConfig['devMode']
+            [__DIR__ . $doctrineConfig['entitiesPath']],
+            $doctrineConfig['devMode']
         );
 
         // Setup connection parameters
@@ -35,6 +42,7 @@ class Database {
          */
         $entityManager = EntityManager::create($connectionParameters, $configuration);
 
-        return $entityManager;
+        $customEntityManager = new RemoteSourceEntityManager($entityManager, $tfConnector);
+        return $customEntityManager;
     }
 }

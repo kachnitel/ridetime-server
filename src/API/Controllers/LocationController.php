@@ -1,50 +1,42 @@
 <?php
 namespace RideTimeServer\API\Controllers;
 
+use RideTimeServer\API\Connectors\TrailforksConnector;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
 use RideTimeServer\API\Endpoints\Database\TrailEndpoint;
-use RideTimeServer\API\Endpoints\RestApi\TrailforksEndpoint;
-use RideTimeServer\Entities\Location;
-use RideTimeServer\Entities\Trail;
+use RideTimeServer\API\Endpoints\Database\RouteEndpoint;
 
 class LocationController extends BaseController
 {
     public function nearby(Request $request, Response $response, array $args): Response
     {
-        $tfEndpoint = $this->getTrailforksEndpoint();
-
         $latLon = [
             $request->getQueryParam('lat'),
             $request->getQueryParam('lon')
         ];
         $range = $request->getQueryParam('range');
-        $result = $tfEndpoint->locationsNearby($latLon, $range);
-        $responseJson = $this->cacheResult($result);
 
-        return $response->withJson($responseJson);
+        $result = $this->getEndpoint()->nearby($latLon, $range);
+
+        return $response->withJson($result);
     }
 
     public function bbox(Request $request, Response $response, array $args): Response
     {
-        $tfEndpoint = $this->getTrailforksEndpoint();
-
         $bbox = $request->getQueryParam('coords');
-        $result = $tfEndpoint->locationsBBox($bbox);
-        $responseJson = $this->cacheResult($result);
+        $result = $this->getEndpoint()->bbox($bbox);
 
-        return $response->withJson($responseJson);
+        return $response->withJson($result);
     }
 
     public function search(Request $request, Response $response, array $args): Response
     {
-        $tfEndpoint = $this->getTrailforksEndpoint();
+        $name = $request->getQueryParam('name');
+        $result = $this->getEndpoint()->search($name);
 
-        $result = $tfEndpoint->locationsSearch($request->getQueryParam('name'));
-        $responseJson = $this->cacheResult($result);
-
-        return $response->withJson($responseJson);
+        return $response->withJson($result);
     }
 
     public function trailsByLocation(Request $request, Response $response, array $args): Response
@@ -56,6 +48,12 @@ class LocationController extends BaseController
         return $response->withJson($responseJson);
     }
 
+    /**
+     * @deprecated TODO: remove
+     *
+     * @param array $result
+     * @return array
+     */
     protected function cacheResult(array $result): array
     {
         return $this->getEndpoint()->addMultiple($result);
@@ -69,7 +67,7 @@ class LocationController extends BaseController
         return new LocationEndpoint(
             $this->container->entityManager,
             $this->container->logger,
-            $this->getTrailforksEndpoint()
+            $this->getTrailforksConnector()
         );
     }
 
@@ -78,12 +76,21 @@ class LocationController extends BaseController
         return new TrailEndpoint(
             $this->container->entityManager,
             $this->container->logger,
-            $this->getTrailforksEndpoint()
+            $this->getTrailforksConnector()
         );
     }
 
-    protected function getTrailforksEndpoint(): TrailforksEndpoint
+    protected function getRouteEndpoint(): RouteEndpoint
     {
-        return new TrailforksEndpoint($this->container['trailforks']);
+        return new RouteEndpoint(
+            $this->container->entityManager,
+            $this->container->logger,
+            $this->getTrailforksConnector()
+        );
+    }
+
+    protected function getTrailforksConnector(): TrailforksConnector
+    {
+        return $this->container['trailforks'];
     }
 }

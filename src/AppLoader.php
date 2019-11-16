@@ -51,8 +51,15 @@ class AppLoader implements AppLoaderInterface
 
         $this->initErrorHandlers($container);
 
+        $container['trailforks'] = function($container) use ($secrets) {
+            return new TrailforksConnector(
+                $secrets['trailforks']['app_id'],
+                $secrets['trailforks']['app_secret']
+            );
+        };
+
         $container['entityManager'] = function($container) use ($config, $secrets) {
-            return (new Database())->getEntityManager($config['doctrine'], $secrets['db']);
+            return (new Database())->getEntityManager($config['doctrine'], $secrets['db'], $container['trailforks']);
         };
 
         $container['s3'] = function ($container) use ($secrets) {
@@ -71,13 +78,6 @@ class AppLoader implements AppLoaderInterface
                 'client' => $client,
                 'bucket' => $credentials['s3bucket']
             ];
-        };
-
-        $container['trailforks'] = function($container) use ($secrets) {
-            return new TrailforksConnector(
-                $secrets['trailforks']['app_id'],
-                $secrets['trailforks']['app_secret']
-            );
         };
     }
 

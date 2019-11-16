@@ -57,7 +57,7 @@ abstract class BaseTrailforksRepository extends EntityRepository
      * @param object $data
      * @return PrimaryEntity
      */
-    public function upsert(object $apiData)
+    public function upsert(object $apiData): PrimaryEntity
     {
         $data = $this->transform($apiData);
 

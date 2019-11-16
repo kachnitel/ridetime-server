@@ -4,7 +4,6 @@ namespace RideTimeServer\Tests\API\Endpoints;
 use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
 use Monolog\Logger;
 use RideTimeServer\API\Connectors\TrailforksConnector;
-use RideTimeServer\API\Endpoints\RestApi\TrailforksEndpoint;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Tests\API\APITestCase;
 
@@ -15,7 +14,7 @@ class LocationEndpointTest extends APITestCase
         $endpoint = new LocationEndpoint(
             $this->entityManager,
             new Logger('LocationEndpointTest'),
-            new TrailforksEndpoint(new TrailforksConnector('', ''))
+            new TrailforksConnector('', '')
         );
 
         $locationData = [

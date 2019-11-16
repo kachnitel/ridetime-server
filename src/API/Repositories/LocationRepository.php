@@ -1,7 +1,6 @@
 <?php
 namespace RideTimeServer\API\Repositories;
 
-use Doctrine\ORM\EntityRepository;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\PrimaryEntity;
 
@@ -27,6 +26,19 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
     ];
 
     const REGION_MAP_URL_PREFIX = 'https://ep1.pinkbike.org/files/regionmaps/';
+
+    /**
+     * Call API with $filter
+     *
+     * @param string $filter
+     * @return void
+     */
+    public function remoteFilter(string $filter): array
+    {
+        $data = $this->connector->locations($filter, self::API_FIELDS);
+        $results = array_map([$this, 'upsert'], $data);
+        return array_map(function(Location $location) { return $location->getDetail(); }, $results);
+    }
 
     /**
      * Convert Trailforks Location API values into RT format

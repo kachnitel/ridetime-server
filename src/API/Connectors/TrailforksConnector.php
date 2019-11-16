@@ -31,51 +31,6 @@ class TrailforksConnector
         ]);
     }
 
-    /**
-     * Filter locations within $range from $latLon
-     *
-     * @param array $latLon [lat, lon]
-     * @param integer $range In km
-     * @return array
-     */
-    public function getLocationsNearby(array $latLon, int $range, $fields = [])
-    {
-        $filter = "nearby_range::{$range};lat::{$latLon[0]};lon::{$latLon[1]}";
-        return $this->locations($filter, $fields);
-    }
-
-    /**
-     * Bounding box filtered locations
-     *
-     * bbox filter is in the format of
-     * top-left lat/lon and bottom-right lat/lon
-     * values seperated by commas.
-     *
-     * Example: bbox::49.33,-122.973,49.322,-122.957
-     *
-     * @param float[] $bbox
-     * @return array
-     */
-    public function getLocationsBBox(array $bbox, $fields = [])
-    {
-        $boundary = join(',', $bbox);
-        $filter = "bbox::{$boundary}";
-        return $this->locations($filter, $fields);
-    }
-
-    /**
-     * Search locations by name
-     *
-     * @param string $search
-     * @param array $fields
-     * @return array
-     */
-    public function searchLocations(string $search, $fields = [])
-    {
-        $filter = "search::{$search}";
-        return $this->locations($filter, $fields);
-    }
-
     public function locations(string $filter, array $fields): array
     {
         $filter .= ';bottom::ridingarea';
@@ -110,6 +65,13 @@ class TrailforksConnector
         return $this->doRequest('trail', $query)->data;
     }
 
+    /**
+     * REVIEW: look into repositories
+     *
+     * @param integer $locationId
+     * @param array $fields
+     * @return void
+     */
     public function getLocationTrails(int $locationId, $fields = [])
     {
         return $this->getLocationChildren('trails', $locationId, $fields);
