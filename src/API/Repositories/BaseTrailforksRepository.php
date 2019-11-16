@@ -4,6 +4,7 @@ namespace RideTimeServer\API\Repositories;
 use Doctrine\ORM\EntityRepository;
 use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\API\Connectors\TrailforksConnector;
+use RideTimeServer\Exception\EntityNotFoundException;
 
 abstract class BaseTrailforksRepository extends EntityRepository
 {
@@ -45,8 +46,12 @@ abstract class BaseTrailforksRepository extends EntityRepository
         }
 
         $path = explode('\\', $this->getEntityName());
-        $connectorMethod = 'get' . array_pop($path);
+        $entityShortName = array_pop($path);
+        $connectorMethod = 'get' . $entityShortName;
         $data = $this->connector->{$connectorMethod}($id, static::API_FIELDS);
+        if (!$data) {
+            throw new EntityNotFoundException("{$entityShortName} ID: {$id} not found at API!", 404);
+        }
         return $this->upsert($data);
     }
 
