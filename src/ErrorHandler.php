@@ -34,6 +34,7 @@ class ErrorHandler
         if ($exception instanceof RTException) {
             $errorDetail['data'] = $exception->getData();
         }
+        $errorDetail['trace'] = $exception->getTrace();
 
         if ($this->isUserError($exception)) {
             $logLevel = Logger::INFO;
@@ -48,7 +49,6 @@ class ErrorHandler
             $errorInfo['errorId'] = uniqid('err-');
             $errorInfo['timestamp'] = time();
 
-            $errorDetail['trace'] = $exception->getTrace();
             $errorDetail['code'] = $exception->getCode();
         }
 
