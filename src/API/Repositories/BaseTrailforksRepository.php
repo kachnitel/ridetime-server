@@ -14,6 +14,11 @@ abstract class BaseTrailforksRepository extends EntityRepository
     const API_FIELDS = [];
 
     /**
+     * ID field returned from API response
+     */
+    const API_ID_FIELD = '';
+
+    /**
      * @var TrailforksConnector
      */
     protected $connector;
@@ -62,12 +67,14 @@ abstract class BaseTrailforksRepository extends EntityRepository
      * @param object $data
      * @return PrimaryEntity
      */
-    public function upsert(object $apiData): PrimaryEntity
+    public function upsert(object $data): PrimaryEntity
     {
-        $data = $this->transform($apiData);
 
         $entityClass = $this->getClassName();
-        $entity = $this->getEntityManager()->find($entityClass, $data->id) ?? new $entityClass();
+        $entity = $this->getEntityManager()->find(
+            $entityClass,
+            $data->{static::API_ID_FIELD}
+        ) ?? new $entityClass();
         $this->populateEntity($entity, $data);
 
         $this->getEntityManager()->persist($entity);
@@ -78,7 +85,8 @@ abstract class BaseTrailforksRepository extends EntityRepository
 
     /**
      * Convert data from format returned by API to
-     * a format digestible by the Entity
+     * a format digestible by the Entity in $this->populateEntity()
+     * TODO: deprecate, unnecessary now
      *
      * @param object $data
      * @return object

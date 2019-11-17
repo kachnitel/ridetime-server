@@ -23,6 +23,8 @@ class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRe
         'stats'
     ];
 
+    const API_ID_FIELD = 'id';
+
     public function listByLocation(int $locationId): array
     {
         $results = $this->connector->getLocationRoutes($locationId, static::API_FIELDS);

@@ -25,6 +25,8 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
         "tc_6"  // double black
     ];
 
+    const API_ID_FIELD = 'rid';
+
     const REGION_MAP_URL_PREFIX = 'https://ep1.pinkbike.org/files/regionmaps/';
 
     /**
@@ -76,6 +78,8 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
      */
     protected function populateEntity(PrimaryEntity $location, object $data): PrimaryEntity
     {
+        $data = $this->transform($data);
+
         $location->setId($data->id);
         $location->setName($data->name);
         $location->setDifficulties($data->difficulties);

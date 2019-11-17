@@ -16,6 +16,8 @@ class TrailRepository extends BaseTrailforksRepository implements RemoteSourceRe
         'rid'
     ];
 
+    const API_ID_FIELD = 'trailid';
+
     public function listByLocation(int $locationId): array
     {
         $results = $this->connector->getLocationTrails($locationId, static::API_FIELDS);
@@ -42,6 +44,8 @@ class TrailRepository extends BaseTrailforksRepository implements RemoteSourceRe
      */
     protected function populateEntity(PrimaryEntity $trail, object $data): PrimaryEntity
     {
+        $data = $this->transform($data);
+
         $trail->applyProperties($data);
         $trail->setProfile($data->profile);
 
