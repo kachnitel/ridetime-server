@@ -82,7 +82,7 @@ class Router
         /** Search */
         $app->get('/search', Controllers\LocationController::class . ':search');
         /** TODO: List location top routes and trails, tunnel through to Trailforks */
-        // $app->get('/{id:[0-9]+}/routes', Controllers\LocationController::class . ':routes');
+        $app->get('/{id:[0-9]+}/routes', Controllers\LocationController::class . ':routesByLocation');
         $app->get('/{id:[0-9]+}/trails', Controllers\LocationController::class . ':trailsByLocation');
         /** TODO: Search location trails and routes */
     }

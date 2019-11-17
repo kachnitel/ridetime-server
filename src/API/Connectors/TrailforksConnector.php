@@ -66,11 +66,11 @@ class TrailforksConnector
     }
 
     /**
-     * REVIEW: look into repositories
+     * REVIEW: look into removing and leaving only "trails()" and "routes()" - see locations()
      *
      * @param integer $locationId
      * @param array $fields
-     * @return void
+     * @return array|null
      */
     public function getLocationTrails(int $locationId, $fields = [])
     {

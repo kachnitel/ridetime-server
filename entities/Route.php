@@ -4,6 +4,7 @@ namespace RideTimeServer\Entities;
 use RideTimeServer\Entities\Traits\LocationTrait;
 use RideTimeServer\Entities\Traits\TerrainProfileTrait;
 use RideTimeServer\Entities\Traits\TrailsTrait;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity(repositoryClass="RideTimeServer\API\Repositories\RouteRepository")
@@ -21,6 +22,10 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
         'description',
         // 'cover_photo'
     ];
+
+    public function __construct() {
+        $this->trails = new ArrayCollection();
+    }
 
     /**
      * Get trail detail
@@ -43,11 +48,16 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
         ];
     }
 
+    /**
+     * @return object
+     */
     public function getRelated(): object
     {
         return (object) [
             'location' => [$this->getLocation()->getDetail()],
-            // 'trail' => ..
+            'trail' => array_map(function(Trail $trail) {
+                return $trail->getDetail();
+            }, $this->getTrails()->getValues())
         ];
     }
 

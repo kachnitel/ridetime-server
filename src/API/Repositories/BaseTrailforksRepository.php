@@ -42,6 +42,13 @@ abstract class BaseTrailforksRepository extends EntityRepository
         }
     }
 
+    /**
+     * Look into the DB for entity, with fallback to Trailforks if not found in DB
+     * Adds to DB if found at API
+     *
+     * @param integer $id
+     * @return PrimaryEntity
+     */
     public function findWithFallback(int $id): PrimaryEntity
     {
         $result = $this->find($id);

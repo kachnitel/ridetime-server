@@ -15,9 +15,17 @@ class RouteEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterfac
         return [];
     }
 
-    public function listByLocation(int $locationId): array
+    /**
+     * REVIEW: $detail param inconsistent with rest of API
+     * @param integer $locationId
+     * @param bool $detail Returns the Entity if false
+     * @return object[]
+     */
+    public function listByLocation(int $locationId, bool $detail = true): array
     {
         $results = $this->entityManager->getRepository(Route::class)->listByLocation($locationId);
-        return array_map(function(Route $route) { return $route->getDetail(); }, $results);
+        return $detail
+            ? array_map(function(Route $route) { return $route->getDetail(); }, $results)
+            : $results;
     }
 }

@@ -7,6 +7,8 @@ use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
 use RideTimeServer\API\Endpoints\Database\TrailEndpoint;
 use RideTimeServer\API\Endpoints\Database\RouteEndpoint;
+use RideTimeServer\Entities\Location;
+use RideTimeServer\Entities\Route;
 
 class LocationController extends BaseController
 {
@@ -49,14 +51,39 @@ class LocationController extends BaseController
     }
 
     /**
-     * @deprecated TODO: remove
-     *
-     * @param array $result
-     * @return array
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
-    protected function cacheResult(array $result): array
+    public function routesByLocation(Request $request, Response $response, array $args): Response
     {
-        return $this->getEndpoint()->addMultiple($result);
+        $locationId = $args['id'];
+
+        /** @var Route[] $routes */
+        $routes = $this->getRouteEndpoint()->listByLocation($locationId, false);
+        $trails = [];
+        $locations = [];
+
+        foreach ($routes as $route) {
+            $routeTrails = $route->getRelated()->trail;
+            $trails = array_unique(array_merge($trails, $routeTrails), SORT_REGULAR);
+
+            if (!in_array($route->getLocation(), $locations)) {
+                $locations[] = $route->getLocation();
+            }
+        }
+        // Return format? {results, relatedEntites} should work,
+        // REVIEW: but the rest of API needs to follow suit returning
+        // `{"results": []}` rather than just `[]` in list methods
+
+        return $response->withJson((object) [
+            'results' => array_map(function(Route $route) { return $route->getDetail(); }, $routes),
+            'relatedEntities' => (object) [
+                'trail' => array_values($trails),
+                'location' => array_map(function(Location $location) { return $location->getDetail(); }, $locations)
+            ]
+        ]);
     }
 
     /**

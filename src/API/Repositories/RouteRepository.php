@@ -5,6 +5,7 @@ use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\Entities\Route;
 use RideTimeServer\Entities\Trail;
+use RideTimeServer\Exception\EntityNotFoundException;
 
 class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRepositoryInterface
 {
@@ -19,6 +20,7 @@ class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRe
         // 'prov_abv',
         // 'city_title',
         // 'country_title',
+        // 'alias', // For link to TF in app
         'trails',
         'stats'
     ];
@@ -34,7 +36,9 @@ class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRe
 
     protected function transform(object $data): object
     {
-        $trails = array_map(function($trail) { return $trail->trailid; }, $data->trails);
+        $trails = $data->trails
+            ? array_map(function($trail) { return $trail->trailid; }, $data->trails)
+            : [];
 
         return (object) [
             'id' => $data->id,
@@ -48,29 +52,38 @@ class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRe
     }
 
     /**
-     * @param Route $entity
+     * @param Route $route
      * @param object $data
      * @return PrimaryEntity
      */
-    protected function populateEntity(PrimaryEntity $entity, object $data): PrimaryEntity
+    protected function populateEntity(PrimaryEntity $route, object $data): PrimaryEntity
     {
-        /** @var Route $entity */
-        $entity->applyProperties($data);
+        $data = $this->transform($data);
+
+        /** @var Route $route */
+        $route->applyProperties($data);
 
         $location = $this->getEntityManager()
             ->getRepository(Location::class)
             ->findWithFallback($data->location);
-        $entity->setLocation($location);
+        $route->setLocation($location);
 
-        $entity->setProfile($data->profile);
+        $route->setProfile($data->profile);
 
         foreach ($data->trails as $trailId) {
-            $trail = $this->getEntityManager()
-                ->getRepository(Trail::class)
-                ->findWithFallback($trailId);
-            $entity->addTrail($trail);
+            try {
+                $trail = $this->getEntityManager()
+                    ->getRepository(Trail::class)
+                    ->findWithFallback($trailId);
+            } catch (EntityNotFoundException $e) {
+                /**
+                 * TODO: https://github.com/kachnitel/ridetime-server/issues/28
+                 */
+                continue;
+            }
+            $route->addTrail($trail);
         }
 
-        return $entity;
+        return $route;
     }
 }

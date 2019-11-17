@@ -6,6 +6,11 @@ use Doctrine\Common\Collections\Collection;
 
 /**
  * Add Trail[] list
+ * requires setting trails in constructor
+ *
+ *   public function __construct() {
+ *       $this->trails = new ArrayCollection();
+ *   }
  */
 trait TrailsTrait
 {
