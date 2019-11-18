@@ -5,6 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Container\ContainerInterface;
 use RideTimeServer\API\Endpoints\EndpointInterface;
+use RideTimeServer\Entities\PrimaryEntity;
 
 abstract class BaseController
 {
@@ -47,9 +48,10 @@ abstract class BaseController
         $data = $request->getParsedBody();
         $currentUser = $request->getAttribute('currentUser');
 
+        /** @var PrimaryEntity $entity */
         $entity = $this->getEndpoint()->add($data, $currentUser);
 
-        return $response->withJson($entity)->withStatus(201);
+        return $response->withJson($entity->getDetail())->withStatus(201);
     }
 
     public function list(Request $request, Response $response, array $args): Response

@@ -124,14 +124,14 @@ abstract class BaseEndpoint
      *
      * @param array $data
      * @param User $currentUser
-     * @return object // REVIEW: Return Entity?
+     * @return PrimaryEntity
      */
-    public function add(array $data, User $currentUser): object
+    public function add(array $data, User $currentUser): PrimaryEntity
     {
         $entity = $this->create($data, $currentUser);
         $this->saveEntity($entity);
 
-        return $entity->getDetail();
+        return $entity;
     }
 
     abstract protected function create(array $data, User $currentUser): PrimaryEntity;
