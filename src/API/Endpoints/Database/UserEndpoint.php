@@ -1,13 +1,11 @@
 <?php
 namespace RideTimeServer\API\Endpoints\Database;
 
-use RideTimeServer\Entities\User;
-use RideTimeServer\Exception\EntityNotFoundException;
 use Doctrine\Common\Collections\Criteria;
-use RideTimeServer\Exception\RTException;
 use RideTimeServer\Exception\UserException;
-use RideTimeServer\Entities\Friendship;
 use RideTimeServer\API\Endpoints\EntityEndpointInterface;
+use RideTimeServer\Entities\User;
+use RideTimeServer\Entities\Friendship;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\PrimaryEntity;
 
