@@ -23,7 +23,7 @@ jobs:
       run: echo '{"db":{"host":"127.0.0.1","database":"rt_test","user":"root","password":"root"}}' > .secrets.json
 
     - name: Create `rt_test` database
-      run: mysql -e "CREATE DATABASE rt_test"
+      run: mysql -u root -proot -e "CREATE DATABASE rt_test"
 
     # - name: Stop default MySQL
     #   run: sudo service mysql stop
