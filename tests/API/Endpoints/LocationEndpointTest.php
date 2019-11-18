@@ -42,13 +42,12 @@ class LocationEndpointTest extends APITestCase
         $this->knownLocations[] = $this->getLocation();
 
         $result = $this->getEndpointMockEntityManager()->list();
-        // REVIEW: Currently returning getDetail
-        // $this->assertContainsOnlyInstancesOf(Location::class, $result);
+        $this->assertContainsOnlyInstancesOf(Location::class, $result);
         $this->assertCount(2, $result);
         $this->assertEquals(
             [
-                $this->knownLocations[0]->getDetail(),
-                $this->knownLocations[1]->getDetail()
+                $this->knownLocations[0],
+                $this->knownLocations[1]
             ],
             $result
         );

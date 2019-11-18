@@ -75,4 +75,11 @@ abstract class BaseController
     {
         return (int) filter_var($id, FILTER_SANITIZE_NUMBER_INT);
     }
+
+    protected function extractDetails(array $entities): array
+    {
+        return array_map(function(PrimaryEntity $entity) {
+            return $entity->getDetail();
+        }, $entities);
+    }
 }

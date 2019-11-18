@@ -57,9 +57,7 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
     {
         return (object) [
             'location' => [$this->getLocation()->getDetail()],
-            'trail' => array_map(function(Trail $trail) {
-                return $trail->getDetail();
-            }, $this->getTrails()->getValues())
+            'trail' => $this->getTrails()->getValues()
         ];
     }
 

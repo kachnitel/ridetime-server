@@ -22,7 +22,7 @@ class LocationController extends BaseController
 
         $result = $this->getEndpoint()->nearby($latLon, $range);
 
-        return $response->withJson($result);
+        return $response->withJson($this->extractDetails($result));
     }
 
     public function bbox(Request $request, Response $response, array $args): Response
@@ -30,7 +30,7 @@ class LocationController extends BaseController
         $bbox = $request->getQueryParam('coords');
         $result = $this->getEndpoint()->bbox($bbox);
 
-        return $response->withJson($result);
+        return $response->withJson($this->extractDetails($result));
     }
 
     public function search(Request $request, Response $response, array $args): Response
@@ -38,7 +38,7 @@ class LocationController extends BaseController
         $name = $request->getQueryParam('name');
         $result = $this->getEndpoint()->search($name);
 
-        return $response->withJson($result);
+        return $response->withJson($this->extractDetails($result));
     }
 
     public function trailsByLocation(Request $request, Response $response, array $args): Response
@@ -73,15 +73,14 @@ class LocationController extends BaseController
                 $locations[] = $route->getLocation();
             }
         }
-        // Return format? {results, relatedEntites} should work,
-        // REVIEW: but the rest of API needs to follow suit returning
+        // REVIEW: rest of API needs to follow suit returning
         // `{"results": []}` rather than just `[]` in list methods
 
         return $response->withJson((object) [
-            'results' => array_map(function(Route $route) { return $route->getDetail(); }, $routes),
+            'results' => $this->extractDetails($routes),
             'relatedEntities' => (object) [
-                'trail' => array_values($trails),
-                'location' => array_map(function(Location $location) { return $location->getDetail(); }, $locations)
+                'trail' => $this->extractDetails(array_values($trails)),
+                'location' => $this->extractDetails($locations)
             ]
         ]);
     }

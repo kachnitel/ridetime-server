@@ -33,13 +33,12 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
      * Call API with $filter
      *
      * @param string $filter
-     * @return void
+     * @return Location[]
      */
     public function remoteFilter(string $filter): array
     {
         $data = $this->connector->locations($filter, self::API_FIELDS);
-        $results = array_map([$this, 'upsert'], $data);
-        return array_map(function(Location $location) { return $location->getDetail(); }, $results);
+        return array_map([$this, 'upsert'], $data);
     }
 
     /**

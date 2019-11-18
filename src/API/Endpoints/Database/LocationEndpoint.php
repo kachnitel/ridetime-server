@@ -10,7 +10,7 @@ class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointI
     const ENTITY_CLASS = Location::class;
 
     /**
-     * @return array[Location]
+     * @return Location[]
      */
     public function list(?array $ids = null): array
     {
@@ -30,7 +30,7 @@ class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointI
      *
      * @param array $latLon [lat, lon]
      * @param integer $range In km
-     * @return array
+     * @return Location[]
      */
     public function nearby(array $latLon, int $range): array
     {
@@ -49,7 +49,7 @@ class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointI
      * Example: bbox::49.33,-122.973,49.322,-122.957
      *
      * @param float[] $bbox
-     * @return array
+     * @return Location[]
      */
     public function bbox(array $bbox): array
     {
@@ -63,7 +63,7 @@ class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointI
      * Search by name
      *
      * @param string $name
-     * @return array
+     * @return Location[]
      */
     public function search(string $name): array
     {
@@ -74,7 +74,7 @@ class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointI
 
     /**
      * @param string $filter
-     * @return array
+     * @return Location[]
      */
     protected function filter(string $filter): array
     {

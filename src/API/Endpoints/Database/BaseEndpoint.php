@@ -94,29 +94,17 @@ abstract class BaseEndpoint
     /**
      * @param string $entityClass
      * @param Criteria $searchCriteria
-     * @return array
+     * @return PrimaryEntity[]
      */
-    protected function listEntities(
-        string $entityClass,
-        Criteria $searchCriteria
-    ): array
+    protected function listEntities(string $entityClass, Criteria $searchCriteria): array
     {
-        $repository = $this->entityManager->getRepository($entityClass);
-
-        // REVIEW: does this fetch all before filtering?
-        $entities = $repository->findAll();
+        $entities = $this->entityManager->getRepository($entityClass)->findAll();
 
         if ($searchCriteria) {
             $entities = (new ArrayCollection($entities))->matching($searchCriteria);
         }
 
-        $result = [];
-        /** @var EntityInterface $entity */
-        foreach ($entities as $entity) {
-            $result[] = $entity->getDetail();
-        }
-
-        return $result;
+        return $entities->getValues();
     }
 
     /**
