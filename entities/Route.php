@@ -56,7 +56,7 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
     public function getRelated(): object
     {
         return (object) [
-            'location' => [$this->getLocation()->getDetail()],
+            'location' => [$this->getLocation()],
             'trail' => $this->getTrails()->getValues()
         ];
     }

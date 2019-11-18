@@ -61,7 +61,7 @@ class LocationController extends BaseController
         $locationId = $args['id'];
 
         /** @var Route[] $routes */
-        $routes = $this->getRouteEndpoint()->listByLocation($locationId, false);
+        $routes = $this->getRouteEndpoint()->listByLocation($locationId);
         $trails = [];
         $locations = [];
 
