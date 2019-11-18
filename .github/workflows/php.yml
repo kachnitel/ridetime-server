@@ -1,4 +1,4 @@
-name: PHP Composer
+name: PHP CodeClimate
 
 on: [push]
 
@@ -23,7 +23,7 @@ jobs:
       run: echo '{"db":{"host":"localhost","database":"rt_test","user":"rt_test","password":"${{ secrets.DB_TEST_PW }}"}}' > .secrets.json
 
     - name: Setup MySql
-    - uses: mirromutth/mysql-action@v1.1
+      uses: mirromutth/mysql-action@v1.1
       with:
         mysql database: 'rt_test' # Optional, default value is "test". The specified database which will be create
         mysql user: 'rt_test' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
