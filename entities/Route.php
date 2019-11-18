@@ -4,6 +4,7 @@ namespace RideTimeServer\Entities;
 use RideTimeServer\Entities\Traits\LocationTrait;
 use RideTimeServer\Entities\Traits\TerrainProfileTrait;
 use RideTimeServer\Entities\Traits\TrailsTrait;
+use RideTimeServer\Entities\Traits\IdTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -12,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Route extends PrimaryEntity implements PrimaryEntityInterface
 {
+    use IdTrait;
     use LocationTrait;
     use TrailsTrait;
     use TerrainProfileTrait;
@@ -76,14 +78,6 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
     }
 
     /**
-     * @Id
-     * @Column(type="integer", unique=true)
-     *
-     * @var int
-     */
-    private $id;
-
-    /**
      * @Column(type="string")
      *
      * @var string
@@ -103,27 +97,6 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
      * @var Location
      */
     private $location;
-
-    /**
-     * @param integer $id
-     * @return self
-     */
-    public function setId(int $id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id
-     *
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
 
     /**
      * Get the value of title

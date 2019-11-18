@@ -2,6 +2,7 @@
 namespace RideTimeServer\Entities;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\TrailsTrait;
 use RideTimeServer\Exception\RTException;
 
@@ -11,6 +12,7 @@ use RideTimeServer\Exception\RTException;
  */
 class Location extends PrimaryEntity implements PrimaryEntityInterface
 {
+    use IdTrait;
     use TrailsTrait;
 
     /**
@@ -36,14 +38,6 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
         throw new RTException("Location::getRelated not implemented", 501);
         return new \Object();
     }
-
-    /**
-     * @Id
-     * @Column(type="integer", unique=true)
-     *
-     * @var int
-     */
-    private $id;
 
     /**
      * @Column(type="string")
@@ -93,30 +87,6 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
     public function __construct() {
         $this->events = new ArrayCollection();
         $this->trails = new ArrayCollection();
-    }
-
-    /**
-     * Get the value of id
-     *
-     * @return  int
-     */
-    public function getId(): int
-    {
-        return (int) $this->id;
-    }
-
-    /**
-     * Set the value of id
-     *
-     * @param  int  $id
-     *
-     * @return  self
-     */
-    public function setId(int $id)
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     /**
