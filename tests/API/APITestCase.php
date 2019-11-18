@@ -4,6 +4,7 @@ namespace RideTimeServer\Tests\API;
 use RideTimeServer\Tests\RTTestCase;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
+use Monolog\Logger;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EntityInterface;
@@ -19,11 +20,6 @@ class APITestCase extends RTTestCase
      * @var EntityManager
      */
     protected $entityManager;
-
-    /**
-     * @var array
-     */
-    protected $entities = [];
 
     protected function setUp(): void
     {
@@ -51,15 +47,7 @@ class APITestCase extends RTTestCase
      */
     protected function tearDown(): void
     {
-        foreach ($this->entities as $entity) {
-            if ($this->entityManager->contains($entity)) {
-                $this->entityManager->remove($entity);
-            } else {
-                $type = get_class($entity);
-                $id = method_exists($entity, 'getId') ? $entity->getId() : null;
-                $this->addWarning("Trying to remove entity '{$type}'" . ($id ? " with ID '{$id}'" : ''));
-            }
-        }
+        $this->entityManager->clear();
         $this->entityManager->flush();
     }
 
@@ -115,7 +103,6 @@ class APITestCase extends RTTestCase
     {
         $reflection = new \ReflectionClass($class);
         $entity = $reflection->newInstance();
-        $this->entities[] = $entity;
 
         // Set private id
         $property = $reflection->getProperty('id');
@@ -123,5 +110,10 @@ class APITestCase extends RTTestCase
         $property->setValue($entity, $id ?? rand(1,100));
 
         return $entity;
+    }
+
+    protected function getLogger(): Logger
+    {
+        return new Logger(static::class);
     }
 }

@@ -25,16 +25,6 @@ jobs:
     - name: Create `rt_test` database
       run: mysql -u root -proot -e "CREATE DATABASE rt_test"
 
-    # - name: Stop default MySQL
-    #   run: sudo service mysql stop
-
-    # - name: Setup MySql
-    #   uses: mirromutth/mysql-action@v1.1
-    #   with:
-    #     mysql database: 'rt_test' # Optional, default value is "test". The specified database which will be create
-    #     mysql user: 'rt_test' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-    #     mysql password: ${{ secrets.DB_TEST_PW }} # Required if "mysql user"
-
     - name: Create DB structure
       run: vendor/bin/doctrine orm:schema-tool:create
 
