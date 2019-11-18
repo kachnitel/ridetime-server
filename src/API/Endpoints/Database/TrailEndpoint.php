@@ -15,9 +15,14 @@ class TrailEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterfac
         return [];
     }
 
+    /**
+     * @param integer $locationId
+     * @return Trail[]
+     */
     public function listByLocation(int $locationId): array
     {
-        $results = $this->entityManager->getRepository(Trail::class)->listByLocation($locationId);
-        return array_map(function(Trail $trail) { return $trail->getDetail(); }, $results);
+        return $this->entityManager
+            ->getRepository(self::ENTITY_CLASS)
+            ->listByLocation($locationId);
     }
 }

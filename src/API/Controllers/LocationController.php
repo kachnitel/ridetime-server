@@ -45,9 +45,9 @@ class LocationController extends BaseController
     {
         $locationId = $args['id'];
 
-        $responseJson = $this->getTrailEndpoint()->listByLocation($locationId);
+        $result = $this->getTrailEndpoint()->listByLocation($locationId);
 
-        return $response->withJson($responseJson);
+        return $response->withJson($this->extractDetails($result));
     }
 
     /**

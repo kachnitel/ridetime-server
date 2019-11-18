@@ -18,7 +18,7 @@ class EventController extends BaseController
 
         $result = $this->getEndpoint()->listInvites($user);
 
-        return $response->withJson($result);
+        return $response->withJson($this->extractDetails($result));
     }
 
     /**
@@ -170,7 +170,9 @@ class EventController extends BaseController
     public function filter(Request $request, Response $response, array $args): Response
     {
         $params = $request->getQueryParams();
-        return $response->withJson($this->getEndpoint()->filter($params));
+        $result = $this->getEndpoint()->filter($params);
+
+        return $response->withJson($this->extractDetails($result));
     }
 
     /**

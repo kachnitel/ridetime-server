@@ -20,7 +20,9 @@ abstract class PrimaryEntity implements PrimaryEntityInterface
     protected function extractDetails(array $entities): array
     {
         return array_map(
-            function(PrimaryEntityInterface $item) {return $item->getDetail();},
+            function (PrimaryEntityInterface $item) {
+                return $item->getDetail();
+            },
             $entities
         );
     }

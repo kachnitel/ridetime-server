@@ -9,6 +9,7 @@ class Notifications
     const EXPO_URL = 'https://exp.host/--/api/v2/push/send';
 
     /**
+     * REVIEW: static
      * Send a notification to the EXPO API
      * @see https://docs.expo.io/versions/v32.0.0/guides/push-notifications/#http2-api
      *
