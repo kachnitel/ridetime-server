@@ -20,6 +20,8 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
         'difficulty'
     ];
 
+    const DIFFICULTIES = [0,1,2,3,4];
+
     /**
      * @deprecated ? May not be used outside tests
      *

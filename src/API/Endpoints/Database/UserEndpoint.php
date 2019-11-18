@@ -28,7 +28,7 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
     /**
      * @return array[User]
      */
-    public function list(?array $ids): array
+    public function list(?array $ids = null): array
     {
         $criteria = Criteria::create()
             ->setMaxResults(20);

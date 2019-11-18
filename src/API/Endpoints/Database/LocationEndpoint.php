@@ -12,7 +12,7 @@ class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointI
     /**
      * @return array[Location]
      */
-    public function list(?array $ids): array
+    public function list(?array $ids = null): array
     {
         $criteria = Criteria::create()
             // ->orderBy(array('date' => Criteria::ASC)) // distance by default

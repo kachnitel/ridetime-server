@@ -9,7 +9,7 @@ class RouteEndpoint extends ThirdPartyEndpoint implements EntityEndpointInterfac
 {
     const ENTITY_CLASS = Route::class;
 
-    public function list(?array $ids): array
+    public function list(?array $ids = null): array
     {
         throw new RTException('Routes list method not implemented', 501);
         return [];

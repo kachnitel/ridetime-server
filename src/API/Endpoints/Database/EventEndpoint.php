@@ -70,7 +70,7 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     /**
      * @return array[Event]
      */
-    public function list(?array $ids): array
+    public function list(?array $ids = null): array
     {
         $expr = $ids
             ? Criteria::expr()->in('id', $ids)

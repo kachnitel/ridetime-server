@@ -16,5 +16,5 @@ interface EntityEndpointInterface extends EndpointInterface
     /**
      * @return array[EntityInterface]
      */
-    public function list(?array $ids): array;
+    public function list(?array $ids = null): array;
 }

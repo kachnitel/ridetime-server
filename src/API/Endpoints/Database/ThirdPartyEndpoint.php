@@ -67,51 +67,6 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
     }
 
     /**
-     * @param object[] $items
-     * @return object[]
-     */
-    public function addMultiple(array $items): array
-    {
-        $result = [];
-
-        foreach ($items as $item) {
-            $entity = $this->upsert($item);
-            $result[] = $entity->getDetail();
-        }
-        $this->entityManager->flush();
-
-        return $result;
-    }
-
-    /**
-     * @deprecated
-     * Create new item or update existing with new data
-     *
-     * @param string $class
-     * @param object $data
-     * @return PrimaryEntity
-     */
-    public function upsert(object $data)
-    {
-        $entityClass = static::ENTITY_CLASS;
-        $entity = $this->entityManager->find($entityClass, $data->id) ?? new $entityClass();
-        $this->populateEntity($entity, $data);
-
-        $this->entityManager->persist($entity);
-
-        return $entity;
-    }
-
-    /**
-     * Update entity with $data
-     *
-     * @param [type] $entity
-     * @param object $data
-     * @return PrimaryEntity
-     */
-    // abstract protected function populateEntity($entity, object $data): PrimaryEntity;
-
-    /**
      * TODO:
      *  data coming from app/user should also be objects(not arrays) like from APIs
      *

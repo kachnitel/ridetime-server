@@ -1,61 +1,95 @@
 <?php
 namespace RideTimeServer\Tests\API\Endpoints;
 
+use Doctrine\ORM\EntityManager;
 use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
 use Monolog\Logger;
 use RideTimeServer\API\Connectors\TrailforksConnector;
+use RideTimeServer\API\Repositories\LocationRepository;
 use RideTimeServer\Entities\Location;
+use RideTimeServer\Entities\Trail;
 use RideTimeServer\Tests\API\APITestCase;
 
 class LocationEndpointTest extends APITestCase
 {
-    public function testAddMultiple()
+    /**
+     * @var Location[]
+     */
+    protected $knownLocations = [];
+
+    public function testNearby()
     {
-        $endpoint = new LocationEndpoint(
-            $this->entityManager,
-            new Logger('LocationEndpointTest'),
-            new TrailforksConnector('', '')
-        );
+        $result = $this->getEndpointMockEntityManager()->nearby([1, 2], 3);
+        $this->assertCount(1, $result);
+        $this->assertEquals('nearby_range::3;lat::1;lon::2', $result[0]);
+    }
 
-        $locationData = [
-            (object) [
-                "id" => 1,
-                "name" => "Mount Fromme",
-                "coords" => [
-                    49.356132,
-                    -123.053226
-                ],
-                "difficulties" => [
-                    "0" => 6,
-                    "1" => 23,
-                    "2" => 25,
-                    "3" => 12
-                ]
+    public function testBbox()
+    {
+        $result = $this->getEndpointMockEntityManager()->bbox([1,2,3,4]);
+        $this->assertEquals('bbox::1,2,3,4', $result[0]);
+    }
+
+    public function testSearch()
+    {
+        $result = $this->getEndpointMockEntityManager()->search('Cypress');
+        $this->assertEquals('search::Cypress', $result[0]);
+    }
+
+    public function testList()
+    {
+        $this->knownLocations[] = $this->getLocation();
+        $this->knownLocations[] = $this->getLocation();
+
+        $result = $this->getEndpointMockEntityManager()->list();
+        // REVIEW: Currently returning getDetail
+        // $this->assertContainsOnlyInstancesOf(Location::class, $result);
+        $this->assertCount(2, $result);
+        $this->assertEquals(
+            [
+                $this->knownLocations[0]->getDetail(),
+                $this->knownLocations[1]->getDetail()
             ],
-            (object) [
-                "id" => 9,
-                "name" => "Mount Seymour",
-                "coords" => [
-                    49.338761,
-                    -122.977445
-                ],
-                "difficulties" => [
-                    "0" => 13,
-                    "1" => 33,
-                    "2" => 24,
-                    "3" => 6
-                ]
-            ]
-        ];
+            $result
+        );
+    }
 
-        $locations = $endpoint->addMultiple($locationData);
+    /**
+     * Initialize EntityManager with a mock repository
+     * remoteFilter(): returns [args] including the filter string
+     *
+     * @return LocationEndpoint
+     */
+    protected function getEndpointMockEntityManager()
+    {
+        $mockRepo = $this->createMock(LocationRepository::class);
+        $mockRepo->expects($this->any())
+            ->method('remoteFilter')
+            ->will(
+                $this->returnCallback(function() { return func_get_args(); })
+            );
 
-        /** @var Location[] $entities */
-        $entities = $this->entityManager->getRepository(Location::class)->findAll();
+        $mockRepo->expects($this->any())
+            ->method('findAll')
+            ->willReturn($this->knownLocations);
 
-        $this->assertCount(2, $entities);
-        $this->assertEquals($locationData[0]->id, $entities[0]->getId());
-        $this->assertEquals($locationData[1]->id, $entities[1]->getId());
-        $this->assertEquals($locations[0], $this->entityManager->find(Location::class, 1)->getDetail());
+        /** @var EntityManager $entityManager Fool VSCode linter */
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->any())
+            ->method('getRepository')
+            ->willReturn($mockRepo);
+
+        return new LocationEndpoint($entityManager, new Logger(self::class), new TrailforksConnector('', ''));
+    }
+
+    protected function getLocation(): Location
+    {
+        $location = new Location();
+        $location->setId(random_int(PHP_INT_MIN, PHP_INT_MAX));
+        $location->setName(uniqid());
+        $location->setGpsLat(rand() / 100);
+        $location->setGpsLon(rand() / 100);
+        $location->setDifficulties(array_rand(Trail::DIFFICULTIES, rand(2,5)));
+        return $location;
     }
 }
