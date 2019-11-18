@@ -76,7 +76,6 @@ abstract class BaseTrailforksRepository extends EntityRepository
      */
     public function upsert(object $data): PrimaryEntity
     {
-
         $entityClass = $this->getClassName();
         $entity = $this->getEntityManager()->find(
             $entityClass,

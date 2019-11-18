@@ -9,6 +9,8 @@ use RideTimeServer\Exception\RTException;
 
 class NotificationsEndpoint extends BaseEndpoint implements EndpointInterface
 {
+    const ENTITY_CLASS = NotificationsToken::class;
+
     public function setToken(User $user, string $tokenString)
     {
         $repo = $this->entityManager->getRepository(NotificationsToken::class);
