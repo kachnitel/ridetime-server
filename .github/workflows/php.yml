@@ -15,48 +15,39 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
-    
+
     - name: Add test config
       run: echo '{"db":{"host":"localhost","database":"rt_test","user":"rt_test","password":"${{ secrets.DB_TEST_PW }}"}}' > .secrets.test.json
-      
+
     - name: Add same config so that doctrine creates the DB
       run: echo '{"db":{"host":"localhost","database":"rt_test","user":"rt_test","password":"${{ secrets.DB_TEST_PW }}"}}' > .secrets.json
-      
+
     - name: Setup MySql
     - uses: mirromutth/mysql-action@v1.1
       with:
         mysql database: 'rt_test' # Optional, default value is "test". The specified database which will be create
         mysql user: 'rt_test' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-        mysql password: ${{ secrets.DB_TEST_PW }} # Required if "mysql user" 
-        
+        mysql password: ${{ secrets.DB_TEST_PW }} # Required if "mysql user"
+
     - name: Create DB structure
       run: vendor/bin/doctrine orm:schema-tool:update -f
-      
-    - name: Setup test coverage
-      env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-        
+
     - name: Download CodeClimate reporter
       run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      
+
     - name: Set CC reporter executable
       run: chmod +x ./cc-test-reporter
-      
+
     - name: Initialize CC test reporter
       run: ./cc-test-reporter before-build
-      
+
     - name: Run tests
       run: vendor/bin/phpunit --coverage-clover 'coverage/result.xml'
-      
+
     - name: Format CC test results
       run: cc-test-reporter format-coverage -t clover coverage/result.xml
-      
-    - name: Upload CC coverage results
-      run: cc-test-reporter upload-coverage -i coverage/codeclimate.json
-              
-      
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
 
-    # - name: Run test suite
-    #   run: composer run-script test
+    - name: Upload CC coverage results
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      run: cc-test-reporter upload-coverage -i coverage/codeclimate.json
