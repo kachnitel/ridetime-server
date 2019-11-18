@@ -39,7 +39,7 @@ class UserController extends BaseController
         $ep = $this->getEndpoint();
         $hits = $ep->search($key, $val);
 
-        return $response->withJson($hits);
+        return $response->withJson($this->extractDetails($hits));
     }
 
     public function update(Request $request, Response $response, array $args): Response

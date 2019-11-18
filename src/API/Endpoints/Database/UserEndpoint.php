@@ -47,11 +47,7 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
             $queryBuilder->expr()->like('u.' . $field, ':text')
         )->setParameter('text', '%' . $text . '%');
 
-        $results = [];
-        foreach ($queryBuilder->getQuery()->getResult() as $item) {
-            $results[] = $item->getDetail();
-        }
-        return $results;
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**
