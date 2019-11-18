@@ -90,16 +90,6 @@ abstract class BaseTrailforksRepository extends EntityRepository
     }
 
     /**
-     * Convert data from format returned by API to
-     * a format digestible by the Entity in $this->populateEntity()
-     * TODO: deprecate, unnecessary now
-     *
-     * @param object $data
-     * @return object
-     */
-    abstract protected function transform(object $data): object;
-
-    /**
      * Populate $entity with $data
      *
      * @param PrimaryEntity $entity

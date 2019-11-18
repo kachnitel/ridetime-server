@@ -25,15 +25,19 @@ class TrailRepository extends BaseTrailforksRepository implements RemoteSourceRe
         return array_map([$this, 'upsert'], $results);
     }
 
+    /**
+     * Prepare scalar values for Trail::applyProperties
+     *
+     * @param object $trailData
+     * @return object
+     */
     protected function transform(object $trailData): object
     {
         return (object) [
             'id' => $trailData->trailid,
             'title' => $trailData->title,
             'description' => $trailData->description,
-            'difficulty' => $trailData->difficulty - 3, // TF uses different diff. ratings
-            'profile' => $trailData->stats,
-            'location' => $trailData->rid
+            'difficulty' => $trailData->difficulty - 3 // TF uses different diff. ratings
         ];
     }
 
@@ -44,14 +48,16 @@ class TrailRepository extends BaseTrailforksRepository implements RemoteSourceRe
      */
     protected function populateEntity(PrimaryEntity $trail, object $data): PrimaryEntity
     {
-        $data = $this->transform($data);
+        $scalarData = $this->transform($data);
 
-        $trail->applyProperties($data);
-        $trail->setProfile($data->profile);
+        /** @var Trail $trail */
+        $trail->applyProperties($scalarData);
+
+        $trail->setProfile($data->stats);
 
         $location = $this->getEntityManager()
             ->getRepository(Location::class)
-            ->findWithFallback($data->location);
+            ->findWithFallback($data->rid);
         $trail->setLocation($location);
 
         return $trail;

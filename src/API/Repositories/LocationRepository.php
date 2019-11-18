@@ -43,33 +43,6 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
     }
 
     /**
-     * Convert Trailforks Location API values into RT format
-     *
-     * @param object $location
-     * @return object
-     */
-    protected function transform(object $location): object
-    {
-        return (object) [
-            'id' => (int) $location->rid,
-            'name' => $location->title,
-            'coords' => [
-                (float) $location->latitude,
-                (float) $location->longitude
-            ],
-            'difficulties' => (object) [
-                0 => (int) $location->tc_3,
-                1 => (int) $location->tc_4,
-                2 => (int) $location->tc_5,
-                3 => (int) $location->tc_6
-            ],
-            'imagemap' => $location->imagemap ? self::REGION_MAP_URL_PREFIX . $location->imagemap : null,
-            'shuttle' => (bool) $location->shuttle,
-            'bikepark' => (bool) $location->bikepark
-        ];
-    }
-
-    /**
      * Fill existing entity with proper formed data
      *
      * @param Location $location
@@ -78,13 +51,21 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
      */
     protected function populateEntity(PrimaryEntity $location, object $data): PrimaryEntity
     {
-        $data = $this->transform($data);
+        // TODO:
+        // 'imagemap' => $location->imagemap ? self::REGION_MAP_URL_PREFIX . $location->imagemap : null,
+        // 'shuttle' => (bool) $location->shuttle,
+        // 'bikepark' => (bool) $location->bikepark
 
-        $location->setId($data->id);
-        $location->setName($data->name);
-        $location->setDifficulties($data->difficulties);
-        $location->setGpsLat($data->coords[0]);
-        $location->setGpsLon($data->coords[1]);
+        $location->setId($data->rid);
+        $location->setName($data->title);
+        $location->setGpsLat($data->latitude);
+        $location->setGpsLon($data->longitude);
+        $location->setDifficulties((object) [
+            0 => (int) $data->tc_3,
+            1 => (int) $data->tc_4,
+            2 => (int) $data->tc_5,
+            3 => (int) $data->tc_6
+        ]);
 
         return $location;
     }
