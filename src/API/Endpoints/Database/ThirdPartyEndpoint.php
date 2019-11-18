@@ -18,12 +18,23 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
     {
         return $this->getEntity(static::ENTITY_CLASS, $entityId);
     }
+
     /**
-    * REVIEW: Requires entities to be flushed
-    * @param string $entityClass
-    * @param integer $id
-    * @return EntityInterface
-    */
+     * @param array|null $ids
+     * @return array
+     */
+    public function list(?array $ids = null): array
+    {
+        throw new RTException(static::ENTITY_CLASS . '::list() method not implemented', 501);
+        return []; // Satisfy VSCode
+    }
+
+    /**
+     * REVIEW: Requires entities to be flushed
+     * @param string $entityClass
+     * @param integer $id
+     * @return EntityInterface
+     */
     protected function getEntity(string $entityClass, int $id): EntityInterface
     {
         $repo = $this->entityManager->getRepository($entityClass);
