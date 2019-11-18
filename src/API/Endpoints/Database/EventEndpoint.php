@@ -15,19 +15,6 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
     const ENTITY_CLASS = Event::class;
 
     /**
-     * @param array $data
-     * @param Logger $logger
-     * @return object
-     */
-    public function add(array $data, User $currentUser): object
-    {
-        $event = $this->create($data, $currentUser);
-        $this->saveEntity($event);
-
-        return $event->getDetail();
-    }
-
-    /**
      * TODO: Validate $data
      *
      * @param array $data
