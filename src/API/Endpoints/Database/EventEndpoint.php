@@ -12,6 +12,8 @@ use RideTimeServer\Entities\User;
 
 class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
+    const ENTITY_CLASS = Event::class;
+
     /**
      * @param array $data
      * @param Logger $logger

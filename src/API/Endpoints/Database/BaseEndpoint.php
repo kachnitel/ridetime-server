@@ -10,10 +10,13 @@ use RideTimeServer\Entities\EntityInterface;
 use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\EntityNotFoundException;
+use RideTimeServer\Exception\RTException;
 use RideTimeServer\Exception\UserException;
 
 abstract class BaseEndpoint
 {
+    const ENTITY_CLASS = '';
+
     /**
      * Doctrine entity manager
      *
@@ -30,6 +33,9 @@ abstract class BaseEndpoint
     {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
+        if (static::ENTITY_CLASS === '') {
+            throw new RTException('ENTITY_CLASS constant must be set in ' . static::class);
+        }
     }
 
     /**
@@ -68,16 +74,21 @@ abstract class BaseEndpoint
     {
         $entity = $this->entityManager->find($entityClass, $id);
 
+        $this->validateEntity($entity, $id);
+
+        return $entity;
+    }
+
+    protected function validateEntity(?EntityInterface $entity, int $id)
+    {
         if (empty($entity)) {
-            $path = explode('\\', $entityClass);
+            $path = explode('\\', static::ENTITY_CLASS);
             $entityName = array_pop($path);
             $exc = new EntityNotFoundException($entityName . ' ID:' . $id . ' not found', 404);
             $exc->setData(['class' => get_class($this), 'stackTrace' => debug_backtrace()]);
 
             throw $exc;
         }
-
-        return $entity;
     }
 
     /**

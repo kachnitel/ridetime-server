@@ -5,14 +5,11 @@ use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\Entities\PrimaryEntityInterface;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\RTException;
-use RideTimeServer\Exception\EntityNotFoundException;
 use RideTimeServer\API\Repositories\RemoteSourceRepositoryInterface;
 use RideTimeServer\Entities\EntityInterface;
 
 abstract class ThirdPartyEndpoint extends BaseEndpoint
 {
-    const ENTITY_CLASS = '';
-
     /**
      * @param integer $entityId
      * @return PrimaryEntity
@@ -38,14 +35,7 @@ abstract class ThirdPartyEndpoint extends BaseEndpoint
 
         $entity = $repo->findWithFallback($id);
 
-        if (empty($entity)) {
-            $path = explode('\\', $entityClass);
-            $entityName = array_pop($path);
-            $exc = new EntityNotFoundException($entityName . ' ID:' . $id . ' not found', 404);
-            $exc->setData(['class' => get_class($this), 'stackTrace' => debug_backtrace()]);
-
-            throw $exc;
-        }
+        $this->validateEntity($entity, $id);
 
         return $entity;
     }
