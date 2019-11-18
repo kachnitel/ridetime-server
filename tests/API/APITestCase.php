@@ -3,6 +3,7 @@ namespace RideTimeServer\Tests\API;
 
 use RideTimeServer\Tests\RTTestCase;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 use Monolog\Logger;
 use RideTimeServer\Entities\User;
@@ -25,7 +26,7 @@ class APITestCase extends RTTestCase
     {
         // Setup Doctrine
         $configuration = Setup::createAnnotationMetadataConfiguration(
-            $paths = [__DIR__ . '/entities'],
+            $paths = [__DIR__ . '/../../entities'],
             $isDevMode = true
         );
 
