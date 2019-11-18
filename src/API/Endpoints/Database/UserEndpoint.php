@@ -8,6 +8,7 @@ use RideTimeServer\Exception\RTException;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\Entities\Friendship;
 use RideTimeServer\API\Endpoints\EntityEndpointInterface;
+use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\PrimaryEntity;
 
 class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
@@ -171,9 +172,8 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
     {
         !empty($user->getLocations()) && $user->getLocations()->clear();
 
-        $locationEndpoint = new LocationEndpoint($this->entityManager, $this->logger);
         foreach ($locationIds as $locationId) {
-            $user->addLocation($locationEndpoint->get($locationId));
+            $user->addLocation($this->getEntity(Location::class, $locationId));
         }
     }
 }
