@@ -51,9 +51,9 @@ jobs:
       run: vendor/bin/phpunit --coverage-clover 'coverage/result.xml'
 
     - name: Format CC test results
-      run: cc-test-reporter format-coverage -t clover coverage/result.xml
+      run: ./cc-test-reporter format-coverage -t clover coverage/result.xml
 
     - name: Upload CC coverage results
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      run: cc-test-reporter upload-coverage -i coverage/codeclimate.json
+      run: ./cc-test-reporter upload-coverage -i coverage/codeclimate.json
