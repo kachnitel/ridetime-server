@@ -33,7 +33,7 @@ jobs:
         mysql password: ${{ secrets.DB_TEST_PW }} # Required if "mysql user"
 
     - name: Create DB structure
-      run: vendor/bin/doctrine orm:schema-tool:update -f
+      run: vendor/bin/doctrine orm:schema-tool:create
 
     - name: Download CodeClimate reporter
       run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
