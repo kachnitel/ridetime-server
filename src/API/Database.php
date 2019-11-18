@@ -13,7 +13,8 @@ class Database {
      *
      * @param array $doctrineConfig ['entitiesPath', 'devMode']
      * @param array $dbSecrets ['database', 'user', 'password', 'host']
-     * @return callable
+     * @param TrailforksConnector $tfConnector
+     * @return EntityManagerInterface
      */
     public function getEntityManager(
         array $doctrineConfig,

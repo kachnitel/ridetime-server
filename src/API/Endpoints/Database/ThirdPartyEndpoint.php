@@ -1,10 +1,6 @@
 <?php
 namespace RideTimeServer\API\Endpoints\Database;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Monolog\Logger;
-use RideTimeServer\API\Connectors\TrailforksConnector;
 use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\Entities\PrimaryEntityInterface;
 use RideTimeServer\Entities\User;
@@ -16,18 +12,6 @@ use RideTimeServer\Entities\EntityInterface;
 abstract class ThirdPartyEndpoint extends BaseEndpoint
 {
     const ENTITY_CLASS = '';
-
-    /**
-     * @var TrailforksConnector
-     */
-    protected $tfConnector;
-
-    public function __construct(EntityManagerInterface $entityManager, Logger $logger, TrailforksConnector $tfConnector)
-    {
-        parent::__construct($entityManager, $logger);
-        $this->tfConnector = $tfConnector;
-        $entityManager->getRepository(static::ENTITY_CLASS)->setConnector($tfConnector);
-    }
 
     /**
      * @param integer $entityId
