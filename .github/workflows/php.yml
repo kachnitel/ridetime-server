@@ -22,6 +22,9 @@ jobs:
     - name: Add same config so that doctrine creates the DB
       run: echo '{"db":{"host":"localhost","database":"rt_test","user":"rt_test","password":"${{ secrets.DB_TEST_PW }}"}}' > .secrets.json
 
+    - name: Stop default MySQL
+      run: sudo service mysql stop
+
     - name: Setup MySql
       uses: mirromutth/mysql-action@v1.1
       with:
