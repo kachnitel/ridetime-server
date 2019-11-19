@@ -32,8 +32,6 @@ class LocationRepositoryTest extends APITestCase
             $this->entityManager,
             $this->entityManager->getClassMetadata(Location::class)
         );
-
-        /** @var LocationRepository $repo */
         $repo->setConnector($mockConnector);
 
         $result = $repo->remoteFilter($filter);
@@ -43,18 +41,5 @@ class LocationRepositoryTest extends APITestCase
         foreach ($result as $location) {
             $this->assertTrue($this->entityManager->contains($location));
         }
-    }
-
-    public function _testFindWithFallback()
-    {
-        /**
-         * TODO:
-         * Mock $connector and inject
-         * Mock upsert()
-         * Add 1 Location to EM
-         * Find the added location
-         * Find one at *mocked* API
-         * Search one that doesn't exist, check for exception
-         */
     }
 }

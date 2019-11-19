@@ -77,16 +77,24 @@ abstract class BaseTrailforksRepository extends EntityRepository
     public function upsert(object $data): PrimaryEntity
     {
         $entityClass = $this->getClassName();
+        /** @var PrimaryEntity $entity */
         $entity = $this->getEntityManager()->find(
             $entityClass,
-            $data->{static::API_ID_FIELD}
+            $data->{$this->getIdField()}
         ) ?? new $entityClass();
-        $this->populateEntity($entity, $data);
-
+        $entity = $this->populateEntity($entity, $data);
         $this->getEntityManager()->persist($entity);
         $this->updatedCounter++;
 
         return $entity;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getIdField()
+    {
+        return static::API_ID_FIELD;
     }
 
     /**
