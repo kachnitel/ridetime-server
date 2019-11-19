@@ -20,9 +20,19 @@ class TrailRepository extends BaseTrailforksRepository implements RemoteSourceRe
 
     public function listByLocation(int $locationId): array
     {
-        $results = $this->connector->getLocationTrails($locationId, static::API_FIELDS);
+        return $this->remoteFilter('rid::' . $locationId);
+    }
 
-        return array_map([$this, 'upsert'], $results);
+    /**
+     * Call API with $filter
+     *
+     * @param string $filter
+     * @return Trail[]
+     */
+    public function remoteFilter(string $filter): array
+    {
+        $data = $this->connector->trails($filter, self::API_FIELDS);
+        return array_map([$this, 'upsert'], $data);
     }
 
     /**

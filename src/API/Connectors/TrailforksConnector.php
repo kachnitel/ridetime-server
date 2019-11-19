@@ -43,6 +43,37 @@ class TrailforksConnector
         return $this->doRequest('regions', $query)->data;
     }
 
+    /**
+     * TODO: merge with trails
+     *
+     * @param integer $id
+     * @param array $fields
+     * @return void
+     */
+    public function routes(string $filter, array $fields): array
+    {
+        $query = [
+            'filter' => $filter,
+            'fields' => join(',', $fields),
+            'rows' => 100,
+            'scope' => 'full'
+        ];
+
+        return $this->doRequest('routes', $query)->data;
+    }
+
+    public function trails(string $filter, array $fields): array
+    {
+        $query = [
+            'filter' => $filter,
+            'fields' => join(',', $fields),
+            'rows' => 100,
+            'scope' => 'full'
+        ];
+
+        return $this->doRequest('trails', $query)->data;
+    }
+
     public function getLocation(int $id, $fields = [])
     {
         $query = [
@@ -63,35 +94,6 @@ class TrailforksConnector
         ];
 
         return $this->doRequest('trail', $query)->data;
-    }
-
-    /**
-     * REVIEW: look into removing and leaving only "trails()" and "routes()" - see locations()
-     *
-     * @param integer $locationId
-     * @param array $fields
-     * @return array|null
-     */
-    public function getLocationTrails(int $locationId, $fields = [])
-    {
-        return $this->getLocationChildren('trails', $locationId, $fields);
-    }
-
-    public function getLocationRoutes(int $locationId, $fields = [])
-    {
-        return $this->getLocationChildren('routes', $locationId, $fields);
-    }
-
-    protected function getLocationChildren(string $type, int $locationId, $fields = [])
-    {
-        $filter = 'rid::' . $locationId;
-        $query = [
-            'filter' => $filter,
-            'fields' => join(',', $fields),
-            'scope' => 'full',
-            'rows' => 100
-        ];
-        return $this->doRequest($type, $query)->data;
     }
 
     protected function doRequest(string $endpoint, array $query)
