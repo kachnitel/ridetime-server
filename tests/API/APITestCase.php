@@ -41,16 +41,14 @@ class APITestCase extends RTTestCase
         ];
 
         $this->entityManager = EntityManager::create($connectionParameters, $configuration);
-    }
 
-    /**
-     * FIXME: Actually purge the DB
-     *
-     * @return void
-     */
-    protected function tearDown(): void
-    {
-        $this->entityManager->clear();
+        $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
+        foreach ($metadata as $type) {
+            $entities = $this->entityManager->getRepository($type->getName())->findAll();
+            foreach ($entities as $entity) {
+                $this->entityManager->remove($entity);
+            }
+        }
         $this->entityManager->flush();
     }
 
