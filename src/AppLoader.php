@@ -54,7 +54,8 @@ class AppLoader implements AppLoaderInterface
         $container['trailforks'] = function($container) use ($secrets) {
             return new TrailforksConnector(
                 $secrets['trailforks']['app_id'],
-                $secrets['trailforks']['app_secret']
+                $secrets['trailforks']['app_secret'],
+                $container['logger']
             );
         };
 
