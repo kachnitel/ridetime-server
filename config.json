@@ -9,7 +9,7 @@
     "addContentLengthHeader": false
   },
   "doctrine": {
-    "entitiesPath": "/entities",
+    "entitiesPath": "/src/Entities",
     "devMode": true
   },
   "auth": {

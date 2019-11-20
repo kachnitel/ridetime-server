@@ -26,7 +26,7 @@ class APITestCase extends RTTestCase
     {
         // Setup Doctrine
         $configuration = Setup::createAnnotationMetadataConfiguration(
-            $paths = [__DIR__ . '/../../entities'],
+            $paths = [__DIR__ . '/../../src/Entities'],
             $isDevMode = true
         );
 
