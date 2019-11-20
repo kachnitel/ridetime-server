@@ -95,7 +95,7 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
         }
 
         if (isset($filters['difficulty'])) {
-            $values = array_map(function ($value) { return (int) $value; }, $filters['difficulty']);
+            $values = array_map('intval', $filters['difficulty']);
             $criteria = $criteria->andWhere(Criteria::expr()->in('difficulty', $values));
         }
 
