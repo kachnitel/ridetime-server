@@ -2,7 +2,6 @@
 namespace RideTimeServer\API\Endpoints\Database;
 
 use Doctrine\Common\Collections\Criteria;
-use Monolog\Logger;
 use RideTimeServer\API\Endpoints\EntityEndpointInterface;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EventMember;
@@ -89,9 +88,8 @@ class EventEndpoint extends BaseEndpoint implements EntityEndpointInterface
 
         if (isset($filters['location'])) {
             $locations = [];
-            $locationEndpoint = new LocationEndpoint($this->entityManager, $this->logger);
             foreach ($filters['location'] as $locationId) {
-                $locations[] = $locationEndpoint->get($locationId);
+                $locations[] = $this->getEntity(Location::class, $locationId);
             }
             $criteria = $criteria->andWhere(Criteria::expr()->in('location', $locations));
         }
