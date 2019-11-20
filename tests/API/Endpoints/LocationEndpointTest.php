@@ -78,7 +78,10 @@ class LocationEndpointTest extends APITestCase
             ->method('getRepository')
             ->willReturn($mockRepo);
 
-        return new LocationEndpoint($entityManager, new Logger(self::class), new TrailforksConnector('', ''));
+        return new LocationEndpoint(
+            $entityManager,
+            $this->getLogger(),
+            new TrailforksConnector('', '', $this->getLogger()));
     }
 
     protected function getLocation(): Location
