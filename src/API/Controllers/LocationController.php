@@ -7,7 +7,6 @@ use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
 use RideTimeServer\API\Endpoints\Database\TrailEndpoint;
 use RideTimeServer\API\Endpoints\Database\RouteEndpoint;
-use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Route;
 
 class LocationController extends BaseController
@@ -73,9 +72,9 @@ class LocationController extends BaseController
                 $locations[] = $route->getLocation();
             }
         }
+
         // REVIEW: rest of API needs to follow suit returning
         // `{"results": []}` rather than just `[]` in list methods
-
         return $response->withJson((object) [
             'results' => $this->extractDetails($routes),
             'relatedEntities' => (object) [
