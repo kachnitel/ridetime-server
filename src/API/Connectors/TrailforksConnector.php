@@ -6,6 +6,10 @@ use Emarref\Guzzle\Middleware\ParamMiddleware;
 use GuzzleHttp\HandlerStack;
 use function GuzzleHttp\json_decode;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\MessageFormatter;
+use Monolog\Logger;
+use Psr\Log\LogLevel;
 use RideTimeServer\Exception\RTException;
 
 class TrailforksConnector
@@ -14,16 +18,24 @@ class TrailforksConnector
 
     protected $client;
 
-    public function __construct(string $clientId, string $clientSecret)
+    protected $requestCount = 0;
+
+    public function __construct(string $clientId, string $clientSecret, Logger $logger)
     {
         $paramMiddleware = ParamMiddleware::create([
             'app_id' => $clientId,
             'app_secret' => $clientSecret
         ]);
 
+        $loggerMiddleware = Middleware::log(
+            $logger,
+            new MessageFormatter(),
+            LogLevel::DEBUG
+        );
+
         $stack = HandlerStack::create();
         $stack->push($paramMiddleware);
-
+        $stack->push($loggerMiddleware);
 
         $this->client = new Client([
             'base_uri' => self::API_URL,
@@ -106,6 +118,7 @@ class TrailforksConnector
             $this->handleConnectionError($th);
         }
 
+        $this->requestCount++;
         return json_decode($response->getBody());
     }
 
@@ -133,5 +146,10 @@ class TrailforksConnector
         ]);
 
         throw $e;
+    }
+
+    public function getRequestCount()
+    {
+        return $this->requestCount;
     }
 }
