@@ -32,7 +32,7 @@ abstract class BaseController
 
         return $response->withJson((object) [
             'result' => $entity->getDetail(),
-            'relatedEntities' => method_exists($entity, 'getRelated') ? $entity->getRelated() : null
+            'relatedEntities' => $entity instanceof PrimaryEntity ? $entity->getRelated() : null
         ]);
     }
 
@@ -61,7 +61,10 @@ abstract class BaseController
             : null;
         $result = $this->getEndpoint()->list($ids);
 
-        return $response->withJson($result);
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($result)
+            // TODO: extract related entities where needed
+        ]);
     }
 
     /**
