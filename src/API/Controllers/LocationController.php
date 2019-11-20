@@ -21,7 +21,9 @@ class LocationController extends BaseController
 
         $result = $this->getEndpoint()->nearby($latLon, $range);
 
-        return $response->withJson($this->extractDetails($result));
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($result)
+        ]);
     }
 
     public function bbox(Request $request, Response $response, array $args): Response
@@ -29,7 +31,9 @@ class LocationController extends BaseController
         $bbox = $request->getQueryParam('coords');
         $result = $this->getEndpoint()->bbox($bbox);
 
-        return $response->withJson($this->extractDetails($result));
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($result)
+        ]);
     }
 
     public function search(Request $request, Response $response, array $args): Response
@@ -37,7 +41,9 @@ class LocationController extends BaseController
         $name = $request->getQueryParam('name');
         $result = $this->getEndpoint()->search($name);
 
-        return $response->withJson($this->extractDetails($result));
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($result)
+        ]);
     }
 
     public function trailsByLocation(Request $request, Response $response, array $args): Response
@@ -46,7 +52,9 @@ class LocationController extends BaseController
 
         $result = $this->getTrailEndpoint()->listByLocation($locationId);
 
-        return $response->withJson($this->extractDetails($result));
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($result)
+        ]);
     }
 
     /**
