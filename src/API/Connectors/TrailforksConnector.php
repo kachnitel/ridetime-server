@@ -8,6 +8,7 @@ use function GuzzleHttp\json_decode;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\TransferStats;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 use RideTimeServer\Exception\RTException;
@@ -19,6 +20,8 @@ class TrailforksConnector
     protected $client;
 
     protected $requestCount = 0;
+
+    protected $requestTime = 0.0;
 
     public function __construct(string $clientId, string $clientSecret, Logger $logger)
     {
@@ -110,9 +113,15 @@ class TrailforksConnector
 
     protected function doRequest(string $endpoint, array $query)
     {
+        $conn = $this;
+
         try {
             $response = $this->client->get($endpoint, [
-                'query' => $query
+                'query' => $query,
+                'on_stats' => function (TransferStats $stats) use ($conn) {
+                    // NOTE: PHP 7.4 please!
+                    $conn->addRequestTime($stats->getTransferTime());
+                }
             ]);
         } catch (ClientException $th) {
             $this->handleConnectionError($th);
@@ -148,8 +157,28 @@ class TrailforksConnector
         throw $e;
     }
 
-    public function getRequestCount()
+    /**
+     * Returns API request counter
+     *
+     * @return integer
+     */
+    public function getRequestCount(): int
     {
         return $this->requestCount;
+    }
+
+    public function addRequestTime(float $time)
+    {
+        $this->requestTime += $time;
+    }
+
+    /**
+     * Returns total time spent requesting from API
+     *
+     * @return float
+     */
+    public function getRequestTime(): float
+    {
+        return $this->requestTime;
     }
 }

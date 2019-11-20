@@ -29,9 +29,31 @@ class LoggerMiddleware
          * @return \Psr\Http\Message\ResponseInterface
          */
         return function (Request $request, Response $response, callable $next) use ($container) {
-            $container['logger']->addDebug($request->getMethod() . ' ' . $request->getUri()->getPath());
+            $startTime = microtime(true);
+            $ruStart = getrusage();
+            $container->get('logger')->addDebug($request->getMethod() . ' ' . $request->getUri()->getPath());
 
             $response = $next($request, $response);
+
+            $ruEnd = getrusage();
+            $rutime = function ($ru, $rus, $index) {
+                return ($ru["ru_$index.tv_sec"]*1000 + intval($ru["ru_$index.tv_usec"]/1000))
+                 -  ($rus["ru_$index.tv_sec"]*1000 + intval($rus["ru_$index.tv_usec"]/1000));
+            };
+            $container->get('logger')->addInfo('Request stats', [
+                'request' => $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                'executionTime' => microtime(true) - $startTime,
+                'resources' => [
+                    'stime' => $rutime($ruEnd, $ruStart, 'stime') . 'ms',
+                    'utime' => $rutime($ruEnd, $ruStart, 'utime') . 'ms'
+                ],
+                'requestStats' => [
+                    'trailforks' => [
+                        'count' => $container->get('trailforks')->getRequestCount(),
+                        'time' => $container->get('trailforks')->getRequestTime()
+                    ]
+                ]
+            ]);
 
             return $response;
         };
