@@ -175,7 +175,7 @@ class EventController extends BaseController
         $result = $this->getEndpoint()->filter($params);
 
         return $response->withJson((object) [
-                        'results' => $this->extractDetails($result)
+            'results' => $this->extractDetails($result)
         ]);
     }
 
