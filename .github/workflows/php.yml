@@ -46,4 +46,4 @@ jobs:
     - name: Upload CC coverage results
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      run: ./cc-test-reporter upload-coverage -i coverage/codeclimate.json
+      run: ./cc-test-reporter upload-coverage -i coverage/codeclimate.json --debug
