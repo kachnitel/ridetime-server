@@ -7,7 +7,10 @@ use RideTimeServer\Tests\API\APITestCase;
 
 class RouteRepositoryTest extends APITestCase
 {
-    public function testUpsert(Type $var = null)
+    /**
+     * @covers RouteRepository::populateEntity
+     */
+    public function testUpsert()
     {
         $trail[1] = $this->entityManager->merge($this->generateTrail(1));
         $trail[2] = $this->entityManager->merge($this->generateTrail(2));
