@@ -8,7 +8,7 @@ use RideTimeServer\Tests\API\APITestCase;
 class RouteRepositoryTest extends APITestCase
 {
     /**
-     * @covers RouteRepository::populateEntity
+     * @covers \RideTimeServer\API\Repositories\RouteRepository::populateEntity()
      */
     public function testUpsert()
     {
