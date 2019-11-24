@@ -77,8 +77,8 @@ class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRe
             foreach ($data->trails as $trailInfo) {
                 try {
                     $trail = $this->getEntityManager()
-                    ->getRepository(Trail::class)
-                    ->findWithFallback($trailInfo->trailid);
+                        ->getRepository(Trail::class)
+                        ->findWithFallback($trailInfo->trailid);
                 } catch (EntityNotFoundException $e) {
                     /**
                      * TODO: https://github.com/kachnitel/ridetime-server/issues/28

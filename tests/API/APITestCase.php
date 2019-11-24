@@ -3,12 +3,13 @@ namespace RideTimeServer\Tests\API;
 
 use RideTimeServer\Tests\RTTestCase;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 use Monolog\Logger;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EntityInterface;
+use RideTimeServer\Entities\Location;
+use RideTimeServer\Entities\Trail;
 
 /**
  * Sets up an EntityManager instance using a test database.
@@ -62,20 +63,16 @@ class APITestCase extends RTTestCase
     }
 
     /**
-     * TODO: fill required values / use ep::createUser?
-     *
-     * @param [type] $id
+     * @param int $id
      * @return User
      */
-    protected function generateUser($id = null): User
+    protected function generateUser(int $id = null): User
     {
         /** @var User $user */
         $user = $this->generateEntity(User::class, $id);
-
-        $name = uniqid('Joe');
+        $name = $user->getName();
         $user->applyProperties([
             // TODO:
-            'name' => $name,
             'email' => $name . '@provider.place'
         ]);
         $user->setAuthId(uniqid($name . '-'));
@@ -83,11 +80,10 @@ class APITestCase extends RTTestCase
         return $user;
     }
 
-    protected function generateEvent($id = null, User $user = null): Event
+    protected function generateEvent(int $id = null, User $user = null): Event
     {
         /** @var Event $event */
         $event = $this->generateEntity(Event::class, $id);
-        $event->setTitle(uniqid('Event'));
         $event->setDate(new \DateTime('2 hours'));
         $event->setDifficulty(rand(0, 4));
         $event->setTerrain('trail');
@@ -100,7 +96,32 @@ class APITestCase extends RTTestCase
         return $event;
     }
 
-    protected function generateEntity(string $class, $id = null): EntityInterface
+    protected function generateLocation(int $id = null): Location
+    {
+        /** @var Location $location */
+        $location = $this->generateEntity(Location::class, $id);
+        $location->setGpsLat(rand(0, 999999999) / 1000000);
+        $location->setGpsLon(rand(0, 999999999) / 1000000);
+        $location->setDifficulties(array_rand(Trail::DIFFICULTIES, rand(2,5)));
+        return $location;
+    }
+
+    protected function generateTrail(int $id = null): Trail
+    {
+        /** @var Trail $trail */
+        $trail = $this->generateEntity(Trail::class, $id);
+        $trail->setDifficulty(array_rand(Trail::DIFFICULTIES));
+        $trail->setDescription('TrailDescription' . $trail->getId());
+        return $trail;
+    }
+
+    /**
+     * @param string $class
+     * @param integer $id
+     * @param string $nameField // Field in which an entity name is stored (user->name, event->title)
+     * @return EntityInterface
+     */
+    protected function generateEntity(string $class, int $id = null): EntityInterface
     {
         $reflection = new \ReflectionClass($class);
         $entity = $reflection->newInstance();
@@ -108,7 +129,14 @@ class APITestCase extends RTTestCase
         // Set private id
         $property = $reflection->getProperty('id');
         $property->setAccessible(true);
-        $property->setValue($entity, $id ?? rand(1,100));
+        $property->setValue($entity, $id ?? mt_rand());
+
+        $path = explode('\\', $class);
+        $entityType = array_pop($path);
+        $generatedNameTitle = $entityType . '_' . $entity->getId();
+        method_exists($entity, 'setName')
+            ? $entity->setName($generatedNameTitle)
+            : $entity->setTitle($generatedNameTitle);
 
         return $entity;
     }

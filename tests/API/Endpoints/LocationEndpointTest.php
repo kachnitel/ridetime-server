@@ -38,8 +38,8 @@ class LocationEndpointTest extends APITestCase
 
     public function testList()
     {
-        $this->knownLocations[] = $this->getLocation();
-        $this->knownLocations[] = $this->getLocation();
+        $this->knownLocations[] = $this->generateLocation();
+        $this->knownLocations[] = $this->generateLocation();
 
         $result = $this->getEndpointMockEntityManager()->list();
         $this->assertContainsOnlyInstancesOf(Location::class, $result);
@@ -82,16 +82,5 @@ class LocationEndpointTest extends APITestCase
             $entityManager,
             $this->getLogger(),
             new TrailforksConnector('', '', $this->getLogger()));
-    }
-
-    protected function getLocation(): Location
-    {
-        $location = new Location();
-        $location->setId(random_int(PHP_INT_MIN, PHP_INT_MAX));
-        $location->setName(uniqid());
-        $location->setGpsLat(rand() / 100);
-        $location->setGpsLon(rand() / 100);
-        $location->setDifficulties(array_rand(Trail::DIFFICULTIES, rand(2,5)));
-        return $location;
     }
 }
