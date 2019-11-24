@@ -81,8 +81,6 @@ class LocationController extends BaseController
             }
         }
 
-        // REVIEW: rest of API needs to follow suit returning
-        // `{"results": []}` rather than just `[]` in list methods
         return $response->withJson((object) [
             'results' => $this->extractDetails($routes),
             'relatedEntities' => (object) [
