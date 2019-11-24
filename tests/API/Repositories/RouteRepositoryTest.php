@@ -2,9 +2,7 @@
 namespace RideTimeServer\Tests\API\Repositories;
 
 use RideTimeServer\API\Repositories\RouteRepository;
-use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Route;
-use RideTimeServer\Entities\Trail;
 use RideTimeServer\Tests\API\APITestCase;
 
 class RouteRepositoryTest extends APITestCase
@@ -42,32 +40,11 @@ class RouteRepositoryTest extends APITestCase
         );
         /** @var Route $route */
         $route = $repo->upsert($data);
-        // $route->addTrail($trail[1]);
 
-        // var_dump($route->getTrails()->getValues());
         $this->assertCount(2, $route->getTrails());
         $this->assertContains($trail[1], $route->getTrails());
         $this->assertSame($location, $route->getLocation());
-
-        /**
-         * TODO:
-         * check values being set properly (and returned in getdetail?)
-         */
+        $this->assertEquals($data->title, $route->getTitle());
+        $this->assertEquals($data->stats, $route->getProfile());
     }
-
-    /**
-     * TODO:
-     * testGetDetail() { compare trails list ids with input () }
-     * testGetRelated() {
-     *  - add location and trails to entityManager
-     *      - would need to be fully set for getDetail - mock to do just getId, name
-     *  - compare Location object and Trails[] with input in format:
-     *    - populateEntity($route, {
-     *      id: 1,
-     *      rid: 1,
-     *      trails: [
-     *          {trailid: 1}
-     *      ]
-     * })
-     */
 }
