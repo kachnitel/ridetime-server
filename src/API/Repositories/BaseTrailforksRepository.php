@@ -78,13 +78,15 @@ abstract class BaseTrailforksRepository extends EntityRepository
     {
         $entityClass = $this->getClassName();
         /** @var PrimaryEntity $entity */
-        $entity = new $entityClass();
+        $entity = $this->getEntityManager()->find(
+            $entityClass,
+            $data->{$this->getIdField()}
+        ) ?? new $entityClass();
         $entity = $this->populateEntity($entity, $data);
-
-        $result = $this->getEntityManager()->merge($entity);
+        $this->getEntityManager()->persist($entity);
         $this->updatedCounter++;
 
-        return $result;
+        return $entity;
     }
 
     /**
