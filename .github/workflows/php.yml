@@ -38,7 +38,7 @@ jobs:
       run: ./cc-test-reporter before-build
 
     - name: Run tests
-      run: vendor/bin/phpunit --coverage-clover 'coverage/result.xml'
+      run: vendor/bin/phpunit --coverage-clover 'coverage/result.xml' --coverage-text
 
     - name: Format CC test results
       run: ./cc-test-reporter format-coverage -t clover coverage/result.xml
