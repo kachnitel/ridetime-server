@@ -10,6 +10,7 @@ use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EntityInterface;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Trail;
+use RideTimeServer\Exception\RTException;
 
 /**
  * Sets up an EntityManager instance using a test database.
@@ -27,8 +28,8 @@ class APITestCase extends RTTestCase
     {
         // Setup Doctrine
         $configuration = Setup::createAnnotationMetadataConfiguration(
-            $paths = [__DIR__ . '/../../src/Entities'],
-            $isDevMode = true
+            [__DIR__ . '/../../src/Entities'], // paths
+            true // isDevMode
         );
 
         $secrets = $this->loadTestSecrets();
@@ -43,14 +44,18 @@ class APITestCase extends RTTestCase
 
         $this->entityManager = EntityManager::create($connectionParameters, $configuration);
 
-        $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
-        foreach ($metadata as $type) {
-            $entities = $this->entityManager->getRepository($type->getName())->findAll();
-            foreach ($entities as $entity) {
-                $this->entityManager->remove($entity);
+        try {
+            $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
+            foreach ($metadata as $type) {
+                $entities = $this->entityManager->getRepository($type->getName())->findAll();
+                foreach ($entities as $entity) {
+                    $this->entityManager->remove($entity);
+                }
             }
+            $this->entityManager->flush();
+        } catch (\Exception $exception) {
+            throw new RTException('Error cleaning up database in setUp: ' . $exception->getMessage(), 0, $exception);
         }
-        $this->entityManager->flush();
     }
 
     private function loadTestSecrets(): object
