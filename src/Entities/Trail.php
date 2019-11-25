@@ -1,6 +1,7 @@
 <?php
 namespace RideTimeServer\Entities;
 
+use RideTimeServer\Entities\Traits\DifficultyTrait;
 use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\LocationTrait;
 use RideTimeServer\Entities\Traits\TerrainProfileTrait;
@@ -14,6 +15,7 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
     use IdTrait;
     use LocationTrait;
     use TerrainProfileTrait;
+    use DifficultyTrait;
 
     const SCALAR_FIELDS = [
         'id',
@@ -89,13 +91,6 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
     private $title;
 
     /**
-     * @Column(type="integer")
-     *
-     * @var int
-     */
-    private $difficulty;
-
-    /**
      * @Column(type="text")
      *
      * @var string
@@ -129,30 +124,6 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
     public function setTitle(string $title)
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of difficulty
-     *
-     * @return int
-     */
-    public function getDifficulty()
-    {
-        return $this->difficulty;
-    }
-
-    /**
-     * Set the value of difficulty
-     *
-     * @param int $difficulty
-     *
-     * @return self
-     */
-    public function setDifficulty(int $difficulty)
-    {
-        $this->difficulty = $difficulty;
 
         return $this;
     }

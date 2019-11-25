@@ -4,6 +4,7 @@ namespace RideTimeServer\Entities;
 use \Doctrine\Common\Collections\ArrayCollection;
 use \Doctrine\Common\Collections\Collection;
 use \Doctrine\ORM\PersistentCollection;
+use RideTimeServer\Entities\Traits\DifficultyTrait;
 use RideTimeServer\Entities\Traits\LocationTrait;
 
 /**
@@ -12,6 +13,7 @@ use RideTimeServer\Entities\Traits\LocationTrait;
  */
 class Event extends PrimaryEntity implements PrimaryEntityInterface
 {
+    use DifficultyTrait;
     use LocationTrait;
 
     const STATUS_CONFIRMED = "confirmed";
@@ -54,11 +56,6 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
      * @OneToMany(targetEntity="EventMember", mappedBy="event", cascade={"persist", "remove"})
      */
     private $members;
-
-    /**
-     * @Column(type="smallint")
-     */
-    private $difficulty;
 
     /**
      * @Column(type="string")
@@ -246,26 +243,6 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     public function removeMember(EventMember $membership)
     {
         $this->members->removeElement($membership);
-    }
-
-    /**
-     * Get the value of difficulty
-     */
-    public function getDifficulty()
-    {
-        return (int) $this->difficulty;
-    }
-
-    /**
-     * Set the value of difficulty
-     *
-     * @return  self
-     */
-    public function setDifficulty($difficulty)
-    {
-        $this->difficulty = $difficulty;
-
-        return $this;
     }
 
     /**
