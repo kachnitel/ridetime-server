@@ -108,6 +108,7 @@ class APITestCase extends RTTestCase
         $location->setGpsLat(rand(0, 999999999) / 1000000);
         $location->setGpsLon(rand(0, 999999999) / 1000000);
         $location->setDifficulties(array_rand(Trail::DIFFICULTIES, rand(2,5)));
+        $location->setAlias('location-alias-' . $location->getId());
         return $location;
     }
 
@@ -117,6 +118,7 @@ class APITestCase extends RTTestCase
         $trail = $this->generateEntity(Trail::class, $id);
         $trail->setDifficulty(array_rand(Trail::DIFFICULTIES));
         $trail->setDescription('TrailDescription' . $trail->getId());
+        $trail->setAlias('trail-alias-' . $trail->getId());
         return $trail;
     }
 

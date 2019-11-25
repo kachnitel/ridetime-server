@@ -48,11 +48,7 @@ class EventEndpointTest extends APITestCase
         $user = $this->generateUser();
         $this->entityManager->persist($user);
 
-        $location = new Location();
-        $location->setId(rand());
-        $location->setName('Location ' . uniqid());
-        $location->setGpsLat(1);
-        $location->setGpsLon(2);
+        $location = $this->generateLocation();
         $this->entityManager->persist($location);
 
         $eventData = [

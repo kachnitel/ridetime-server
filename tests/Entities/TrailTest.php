@@ -48,7 +48,8 @@ class TrailTest extends TestCase
             'id' => random_int(0, 1000),
             'difficulty' => random_int(0, 4),
             'title' => 'Test ' . $randomText,
-            'description' => 'Description test ' . $randomText
+            'description' => 'Description test ' . $randomText,
+            'alias' => $randomText
         ];
     }
 }

@@ -35,7 +35,8 @@ class RouteRepositoryTest extends APITestCase
               "distance": "10520",
               "alt_climb": "464.3",
               "alt_descent": "-452.2"
-            }
+            },
+            "alias": "classic-loop"
         }');
         $repo = new RouteRepository(
             $this->entityManager,

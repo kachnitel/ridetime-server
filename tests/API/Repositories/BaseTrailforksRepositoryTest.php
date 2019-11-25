@@ -53,6 +53,7 @@ class BaseTrailforksRepositoryTest extends APITestCase
                 $location->setName($data->title);
                 $location->setGpsLat($data->latitude);
                 $location->setGpsLon($data->longitude);
+                $location->setAlias($data->alias);
 
                 return $location;
             }));
@@ -72,6 +73,7 @@ class BaseTrailforksRepositoryTest extends APITestCase
         $location->setName('Test cached location');
         $location->setGpsLat(1.23);
         $location->setGpsLon(3.45);
+        $location->setAlias('cached-location');
         $this->entityManager->persist($location);
 
         $cached = $repo->findWithFallback(2);
