@@ -1,6 +1,7 @@
 <?php
 namespace RideTimeServer\Entities;
 
+use RideTimeServer\Entities\Traits\AliasTrait;
 use RideTimeServer\Entities\Traits\DifficultyTrait;
 use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\LocationTrait;
@@ -16,12 +17,14 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
     use LocationTrait;
     use TerrainProfileTrait;
     use DifficultyTrait;
+    use AliasTrait;
 
     const SCALAR_FIELDS = [
         'id',
         'title',
         'description',
-        'difficulty'
+        'difficulty',
+        'alias'
     ];
 
     const DIFFICULTIES = [0,1,2,3,4];
@@ -72,7 +75,8 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
             'description' => $this->getDescription(),
             'difficulty' => $this->getDifficulty(),
             'location' => $this->getLocation()->getId(),
-            'profile' => $this->getProfile()
+            'profile' => $this->getProfile(),
+            'alias' => $this->getAlias()
         ];
     }
 

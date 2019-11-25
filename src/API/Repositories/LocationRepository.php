@@ -7,22 +7,22 @@ use RideTimeServer\Entities\PrimaryEntity;
 class LocationRepository extends BaseTrailforksRepository implements RemoteSourceRepositoryInterface
 {
     const API_FIELDS = [
-        "rid",
-        "title",
-        "alias",
-        "hidden",
-        "changed",
-        "latitude",
-        "longitude",
-        "search",
-        "imagemap", // https://ep1.pinkbike.org/files/regionmaps/{imagemap}
-        "shuttle",
-        "bikepark",
+        'rid',
+        'title',
+        'alias',
+        'hidden',
+        'changed',
+        'latitude',
+        'longitude',
+        'search',
+        'imagemap', // https://ep1.pinkbike.org/files/regionmaps/{imagemap}
+        'shuttle',
+        'bikepark',
         // Difficulties
-        "tc_3", // green
-        "tc_4", // blue
-        "tc_5", // black
-        "tc_6"  // double black
+        'tc_3', // green
+        'tc_4', // blue
+        'tc_5', // black
+        'tc_6'  // double black
     ];
 
     const API_ID_FIELD = 'rid';
@@ -65,6 +65,7 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
             2 => (int) $data->tc_5,
             3 => (int) $data->tc_6
         ]);
+        $location->setAlias($data->alias);
 
         return $location;
     }

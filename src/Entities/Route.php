@@ -7,6 +7,7 @@ use RideTimeServer\Entities\Traits\TrailsTrait;
 use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\DifficultyTrait;
 use Doctrine\Common\Collections\ArrayCollection;
+use RideTimeServer\Entities\Traits\AliasTrait;
 
 /**
  * @Entity(repositoryClass="RideTimeServer\API\Repositories\RouteRepository")
@@ -19,12 +20,14 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
     use TrailsTrait;
     use TerrainProfileTrait;
     use DifficultyTrait;
+    use AliasTrait;
 
     const SCALAR_FIELDS = [
         'id',
         'title',
         'description',
-        'difficulty'
+        'difficulty',
+        'alias'
         // 'cover_photo'
     ];
 
@@ -50,7 +53,8 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
             'difficulty' => $this->getDifficulty(),
             'location' => $this->getLocation()->getId(),
             'profile' => $this->getProfile(),
-            'trails' => $trailIds
+            'trails' => $trailIds,
+            'alias' => $this->getAlias()
         ];
     }
 

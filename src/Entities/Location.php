@@ -2,6 +2,7 @@
 namespace RideTimeServer\Entities;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+use RideTimeServer\Entities\Traits\AliasTrait;
 use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\TrailsTrait;
 use RideTimeServer\Exception\RTException;
@@ -14,6 +15,7 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
 {
     use IdTrait;
     use TrailsTrait;
+    use AliasTrait;
 
     /**
      * Get location detail
@@ -29,7 +31,8 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
                 $this->getGpsLat(),
                 $this->getGpsLon()
             ],
-            'difficulties' => $this->getDifficulties()
+            'difficulties' => $this->getDifficulties(),
+            'alias' => $this->getAlias()
         ];
     }
 

@@ -20,7 +20,7 @@ class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRe
         // 'prov_abv',
         // 'city_title',
         // 'country_title',
-        // 'alias', // For link to TF in app
+        'alias',
         'trails',
         'stats'
     ];
@@ -50,7 +50,8 @@ class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRe
             'id' => $data->id,
             'title' => $data->title,
             'description' => $data->description,
-            'difficulty' => $data->difficulty - 3 // TF uses different diff. ratings
+            'difficulty' => $data->difficulty - 3, // TF uses different diff. ratings
+            'alias' => $data->alias
         ];
     }
 

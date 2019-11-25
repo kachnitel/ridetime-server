@@ -13,7 +13,8 @@ class TrailRepository extends BaseTrailforksRepository implements RemoteSourceRe
         'difficulty',
         'stats',
         'description',
-        'rid'
+        'rid',
+        'alias'
     ];
 
     const API_ID_FIELD = 'trailid';
@@ -47,7 +48,8 @@ class TrailRepository extends BaseTrailforksRepository implements RemoteSourceRe
             'id' => $trailData->trailid,
             'title' => $trailData->title,
             'description' => $trailData->description,
-            'difficulty' => $trailData->difficulty - 3 // TF uses different diff. ratings
+            'difficulty' => $trailData->difficulty - 3, // TF uses different diff. ratings
+            'alias' => $trailData->alias
         ];
     }
 
