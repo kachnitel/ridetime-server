@@ -73,8 +73,6 @@ class Router
 
     public static function initLocationRoutes(App $app)
     {
-        /** List locations */
-        $app->get('', Controllers\LocationController::class . ':list');
         /** Nearby locations */
         $app->get('/nearby', Controllers\LocationController::class . ':nearby');
         /** Bounding box */

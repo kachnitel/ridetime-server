@@ -4,7 +4,7 @@ namespace RideTimeServer\API\Controllers;
 use RideTimeServer\API\Connectors\TrailforksConnector;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
+use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Route;
 use RideTimeServer\Entities\Trail;
 
@@ -18,7 +18,9 @@ class LocationController extends BaseController
         ];
         $range = $request->getQueryParam('range');
 
-        $result = $this->getEndpoint()->nearby($latLon, $range);
+        $result = $this->getEntityManager()
+            ->getRepository(Location::class)
+            ->nearby($latLon, $range);
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
@@ -28,7 +30,9 @@ class LocationController extends BaseController
     public function bbox(Request $request, Response $response, array $args): Response
     {
         $bbox = $request->getQueryParam('coords');
-        $result = $this->getEndpoint()->bbox($bbox);
+        $result = $this->getEntityManager()
+            ->getRepository(Location::class)
+            ->bbox($bbox);
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
@@ -38,7 +42,9 @@ class LocationController extends BaseController
     public function search(Request $request, Response $response, array $args): Response
     {
         $name = $request->getQueryParam('name');
-        $result = $this->getEndpoint()->search($name);
+        $result = $this->getEntityManager()
+            ->getRepository(Location::class)
+            ->search($name);
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
@@ -91,18 +97,6 @@ class LocationController extends BaseController
                 'location' => $this->extractDetails($locations)
             ]
         ]);
-    }
-
-    /**
-     * @return LocationEndpoint
-     */
-    protected function getEndpoint()
-    {
-        return new LocationEndpoint(
-            $this->container->entityManager,
-            $this->container->logger,
-            $this->getTrailforksConnector()
-        );
     }
 
     protected function getTrailforksConnector(): TrailforksConnector
