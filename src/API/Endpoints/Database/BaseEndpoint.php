@@ -46,7 +46,7 @@ abstract class BaseEndpoint
      */
     public function get(int $id)
     {
-        return $this->getEntity(self::ENTITY_CLASS, $id);
+        return $this->getEntity(static::ENTITY_CLASS, $id);
     }
 
     /**
