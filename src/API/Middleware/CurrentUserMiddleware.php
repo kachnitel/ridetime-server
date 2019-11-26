@@ -1,12 +1,12 @@
 <?php
 namespace RideTimeServer\API\Middleware;
 
+use Doctrine\ORM\EntityManager;
 use Psr\Container\ContainerInterface;
+use RideTimeServer\Entities\User;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use RideTimeServer\API\Endpoints\Database\UserEndpoint;
 use RideTimeServer\Exception\RTException;
-use RideTimeServer\Exception\EntityNotFoundException;
 use RideTimeServer\Exception\UserException;
 
 class CurrentUserMiddleware {
@@ -33,16 +33,19 @@ class CurrentUserMiddleware {
          */
         return function (Request $request, Response $response, callable $next) use ($container, $requireUser) {
             $token = $request->getAttribute('token');
-            $logger = $container['logger'];
+            $logger = $container->get('logger');
 
             if (empty($token['sub'])) {
                 throw new RTException('No token found in request');
             }
 
-            $endpoint = new UserEndpoint($container['entityManager'], $logger);
-            try {
-                $user = $endpoint->findOneBy('authId', $token['sub']);
-            } catch (EntityNotFoundException $e) {
+            /** @var EntityManager $entityManager */
+            $entityManager = $container->get('entityManager');
+
+            $user = $entityManager
+                ->getRepository(User::class)
+                ->findOneBy(['authId' => $token['sub']]);
+            if (!$user) {
                 if ($requireUser) {
                     throw new UserException('Attempting to access resource without valid user', 400);
                 }
