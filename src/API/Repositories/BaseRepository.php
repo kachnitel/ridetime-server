@@ -4,9 +4,24 @@ namespace RideTimeServer\API\Repositories;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityRepository;
 use RideTimeServer\Entities\EntityInterface;
+use RideTimeServer\Exception\EntityNotFoundException;
 
-class BaseRepository extends EntityRepository
+abstract class BaseRepository extends EntityRepository
 {
+    public function get(int $id)
+    {
+        $entity = $this->find($id);
+
+        if (empty($entity)) {
+            $exc = new EntityNotFoundException($this->getClassShortName() . ' ID:' . $id . ' not found', 404);
+            $exc->setData(['class' => get_class($this), 'stackTrace' => debug_backtrace()]);
+
+            throw $exc;
+        }
+
+        return $entity;
+    }
+
     /**
      * @param EntityInterface $entity
      * @return void
@@ -15,12 +30,11 @@ class BaseRepository extends EntityRepository
     {
         $this->getEntityManager()->persist($entity);
         try {
-            $this->getEntityManager()->flush();
+            $this->getEntityManager()->flush($entity);
         } catch (UniqueConstraintViolationException $e) {
             $errorId = uniqid();
-            $entityClassName = substr(strrchr(get_class($entity), '\\'), 1);
 
-            $this->logger->addWarning($entityClassName . ' creation failed', [
+            $this->logger->addWarning($this->getClassShortName() . ' creation failed', [
                 'message' => $e->getMessage(),
                 'code' => $e->getErrorCode(),
                 'errorId' => $errorId
@@ -29,7 +43,13 @@ class BaseRepository extends EntityRepository
             /**
              * TODO: determine the conflicting column
              */
-            throw new UserException($entityClassName . ' already exists', 409);
+            throw new UserException($this->getClassShortName() . ' already exists', 409);
         }
+    }
+
+    public function getClassShortName()
+    {
+        $path = explode('\\', $this->getClassName());
+        return array_pop($path);
     }
 }
