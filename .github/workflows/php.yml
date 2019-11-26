@@ -19,14 +19,11 @@ jobs:
     - name: Add test config
       run: echo '{"db":{"host":"127.0.0.1","database":"rt_test","user":"root","password":"root"}}' > .secrets.test.json
 
-    - name: Add same config so that doctrine creates the DB
-      run: echo '{"db":{"host":"127.0.0.1","database":"rt_test","user":"root","password":"root"}}' > .secrets.json
-
     - name: Create `rt_test` database
       run: mysql -u root -proot -e "CREATE DATABASE rt_test"
 
     - name: Create DB structure
-      run: vendor/bin/doctrine orm:schema-tool:create
+      run: TEST=1 vendor/bin/doctrine orm:schema-tool:create
 
     - name: Download CodeClimate reporter
       run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter

@@ -11,7 +11,8 @@ $configuration = Setup::createAnnotationMetadataConfiguration(
     $isDevMode = true
 );
 
-$secretsFile = file_get_contents(__DIR__ . '/.secrets.json');
+$secretsFileName = getenv('TEST') ? '.secrets.test.json' : '.secrets.json';
+$secretsFile = file_get_contents(__DIR__ . '/' . $secretsFileName);
 $secrets = json_decode($secretsFile, true);
 
 // Setup connection parameters
