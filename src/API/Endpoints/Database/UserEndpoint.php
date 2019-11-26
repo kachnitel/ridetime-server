@@ -14,17 +14,6 @@ class UserEndpoint extends BaseEndpoint implements EntityEndpointInterface
     const ENTITY_CLASS = User::class;
 
     /**
-     * Load user from database
-     *
-     * @param integer $userId
-     * @return User
-     */
-    public function get(int $userId)
-    {
-        return $this->getEntity(User::class, $userId);
-    }
-
-    /**
      * @return array[User]
      */
     public function list(?array $ids = null): array

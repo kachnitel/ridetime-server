@@ -5,9 +5,8 @@ use RideTimeServer\API\Connectors\TrailforksConnector;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\Database\LocationEndpoint;
-use RideTimeServer\API\Endpoints\Database\TrailEndpoint;
-use RideTimeServer\API\Endpoints\Database\RouteEndpoint;
 use RideTimeServer\Entities\Route;
+use RideTimeServer\Entities\Trail;
 
 class LocationController extends BaseController
 {
@@ -50,7 +49,9 @@ class LocationController extends BaseController
     {
         $locationId = $args['id'];
 
-        $result = $this->getTrailEndpoint()->listByLocation($locationId);
+        $result = $this->getEntityManager()
+            ->getRepository(Trail::class)
+            ->listByLocation($locationId);
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
@@ -68,7 +69,9 @@ class LocationController extends BaseController
         $locationId = $args['id'];
 
         /** @var Route[] $routes */
-        $routes = $this->getRouteEndpoint()->listByLocation($locationId);
+        $routes = $this->getEntityManager()
+            ->getRepository(Route::class)
+            ->listByLocation($locationId);
         $trails = [];
         $locations = [];
 
@@ -102,26 +105,8 @@ class LocationController extends BaseController
         );
     }
 
-    protected function getTrailEndpoint(): TrailEndpoint
-    {
-        return new TrailEndpoint(
-            $this->container->entityManager,
-            $this->container->logger,
-            $this->getTrailforksConnector()
-        );
-    }
-
-    protected function getRouteEndpoint(): RouteEndpoint
-    {
-        return new RouteEndpoint(
-            $this->container->entityManager,
-            $this->container->logger,
-            $this->getTrailforksConnector()
-        );
-    }
-
     protected function getTrailforksConnector(): TrailforksConnector
     {
-        return $this->container['trailforks'];
+        return $this->container->get('trailforks');
     }
 }

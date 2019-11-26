@@ -4,8 +4,12 @@ namespace RideTimeServer\API\Endpoints\Database;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\API\Repositories\LocationRepository;
 use Doctrine\Common\Collections\Criteria;
+use RideTimeServer\API\Endpoints\EntityEndpointInterface;
+use RideTimeServer\Entities\PrimaryEntity;
+use RideTimeServer\Entities\User;
+use RideTimeServer\Exception\RTException;
 
-class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointInterface
+class LocationEndpoint extends BaseEndpoint implements EntityEndpointInterface
 {
     const ENTITY_CLASS = Location::class;
 
@@ -23,6 +27,19 @@ class LocationEndpoint extends ThirdPartyEndpoint implements ThirdPartyEndpointI
         }
 
         return $this->listEntities(static::ENTITY_CLASS, $criteria);
+    }
+
+    /**
+     * TODO: remove - merge Endpoint with Repo!
+     *
+     * @param array $data
+     * @param User $currentUser
+     * @return PrimaryEntity
+     */
+    public function create(array $data, User $currentUser): PrimaryEntity
+    {
+        throw new RTException('Location::create not supported');
+        return new PrimaryEntity;
     }
 
     /**

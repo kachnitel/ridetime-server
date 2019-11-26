@@ -39,6 +39,17 @@ abstract class BaseEndpoint
     }
 
     /**
+     * Load entity from database
+     *
+     * @param integer $id
+     * @return PrimaryEntity
+     */
+    public function get(int $id)
+    {
+        return $this->getEntity(self::ENTITY_CLASS, $id);
+    }
+
+    /**
      * @param EntityInterface $entity
      * @return void
      */

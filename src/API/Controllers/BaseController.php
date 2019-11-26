@@ -4,8 +4,8 @@ namespace RideTimeServer\API\Controllers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Container\ContainerInterface;
-use RideTimeServer\API\Endpoints\EndpointInterface;
 use RideTimeServer\Entities\PrimaryEntity;
+use Doctrine\ORM\EntityManagerInterface;
 
 abstract class BaseController
 {
@@ -67,13 +67,6 @@ abstract class BaseController
         ]);
     }
 
-    /**
-     * Returns an EndpointInterface derived class
-     *
-     * @return EndpointInterface
-     */
-    abstract protected function getEndpoint();
-
     protected function inputFilterId($id): int
     {
         return (int) filter_var($id, FILTER_SANITIZE_NUMBER_INT);
@@ -84,5 +77,10 @@ abstract class BaseController
         return array_map(function(PrimaryEntity $entity) {
             return $entity->getDetail();
         }, $entities);
+    }
+
+    protected function getEntityManager(): EntityManagerInterface
+    {
+        return $this->container->get('entityManager');
     }
 }
