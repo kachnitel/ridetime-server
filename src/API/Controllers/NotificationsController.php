@@ -4,10 +4,10 @@ namespace RideTimeServer\API\Controllers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Container\ContainerInterface;
+use RideTimeServer\Entities\NotificationsToken;
 use RideTimeServer\Exception\UserException;
-use RideTimeServer\API\Endpoints\Database\NotificationsEndpoint;
 
-class NotificationsController
+class NotificationsController extends BaseController
 {
     /**
      * @var ContainerInterface
@@ -30,19 +30,10 @@ class NotificationsController
 
         $token = $data['token'];
         $user = $request->getAttribute('currentUser');
-        $this->getEndpoint()->setToken($user, $token);
+        $this->getEntityManager()
+            ->getRepository(NotificationsToken::class)
+            ->setToken($user, $token);
 
         return $response->withStatus(204);
-    }
-
-    /**
-     * @return NotificationsEndpoint
-     */
-    protected function getEndpoint()
-    {
-        return new NotificationsEndpoint(
-            $this->container->entityManager,
-            $this->container->logger
-        );
     }
 }

@@ -2,7 +2,7 @@
 namespace RideTimeServer\Entities;
 
 /**
- * @Entity
+ * @Entity(repositoryClass="RideTimeServer\API\Repositories\NotificationsTokenRepository")
  * @Table(name="notifications_token")
  */
 class NotificationsToken implements EntityInterface
