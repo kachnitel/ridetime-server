@@ -4,7 +4,6 @@ namespace RideTimeServer\API\Controllers;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\API\Endpoints\Database\EventEndpoint;
-use RideTimeServer\API\Endpoints\Database\UserEndpoint;
 use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Exception\EntityNotFoundException;
 use RideTimeServer\Notifications;
@@ -37,11 +36,10 @@ class EventController extends BaseController
         $userId = $this->inputFilterId($args['userId']);
         $currentUser = $request->getAttribute('currentUser');
         $event = $this->getEndpoint()->get($eventId);
-        $userEndpoint = new UserEndpoint(
-            $this->container->entityManager,
-            $this->container->logger
-        );
-        $user = $userEndpoint->get($userId);
+
+        $user = $this->getEntityManager()
+            ->getRepository(User::class)
+            ->get($userId);
 
         $result = $this->getEndpoint()->invite($eventId, $userId);
 
