@@ -24,7 +24,7 @@ class UserRepositoryTest extends APITestCase
         $this->assertEquals($data->name, $user->getName());
         $this->assertEquals($data->email, $user->getEmail());
         $this->assertEquals($data->authId, $user->getAuthId());
-        // ... REVIEW: Have a getter in user for an object of all properties?
+        // ... REVIEW: compare with getDetail+authId?
     }
 
     public function testUpdate()
