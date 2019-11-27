@@ -1,12 +1,11 @@
 <?php
 namespace RideTimeServer\API\Repositories;
 
-use Doctrine\ORM\EntityRepository;
 use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\API\Connectors\TrailforksConnector;
 use RideTimeServer\Exception\EntityNotFoundException;
 
-abstract class BaseTrailforksRepository extends EntityRepository
+abstract class BaseTrailforksRepository extends BaseRepository
 {
     /**
      * Optional filter for api fields

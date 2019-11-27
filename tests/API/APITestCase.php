@@ -76,7 +76,7 @@ class APITestCase extends RTTestCase
         /** @var User $user */
         $user = $this->generateEntity(User::class, $id);
         $name = $user->getName();
-        $user->applyProperties([
+        $user->applyProperties((object) [
             // TODO:
             'email' => $name . '@provider.place'
         ]);

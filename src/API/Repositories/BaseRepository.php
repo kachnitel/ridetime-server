@@ -5,9 +5,16 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityRepository;
 use RideTimeServer\Entities\EntityInterface;
 use RideTimeServer\Exception\EntityNotFoundException;
+use Monolog\Logger;
+use RideTimeServer\Exception\UserException;
 
 abstract class BaseRepository extends EntityRepository
 {
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
     public function get(int $id)
     {
         $entity = $this->find($id);
@@ -26,7 +33,7 @@ abstract class BaseRepository extends EntityRepository
      * @param EntityInterface $entity
      * @return void
      */
-    protected function saveEntity(EntityInterface $entity)
+    public function saveEntity(EntityInterface $entity)
     {
         $this->getEntityManager()->persist($entity);
         try {
@@ -51,5 +58,10 @@ abstract class BaseRepository extends EntityRepository
     {
         $path = explode('\\', $this->getClassName());
         return array_pop($path);
+    }
+
+    public function setLogger(Logger $logger)
+    {
+        $this->logger = $logger;
     }
 }

@@ -3,10 +3,11 @@ namespace RideTimeServer\API\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Http\Response;
-use RideTimeServer\API\Endpoints\Database\UserEndpoint;
 use RideTimeServer\API\PictureHandler;
+use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\UserException;
-use RideTimeServer\Exception\EntityNotFoundException;
+
+use function GuzzleHttp\json_decode;
 
 class AuthController extends BaseController
 {
@@ -34,19 +35,22 @@ class AuthController extends BaseController
     public function signIn(Request $request, Response $response, array $args): Response
     {
         $token = $request->getAttribute('token');
-        $authUserId = $token['sub'];
 
-        $data = $request->getParsedBody();
+        $data = json_decode($request->getBody());
         $userEmail = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
 
-        try {
-            $user = $this->getEndpoint()->findOneBy('email', $userEmail);
-        } catch (EntityNotFoundException $eNotFound) {
+        /** @var User $user */
+        $user = $this->getEntityManager()
+            ->getRepository(User::class)
+            ->findOneBy(['email' => $userEmail]);
+        if (!$user) {
             return $response->withJson((object) [
                 'success' => false,
                 'errorCode' => 404
             ]);
         }
+
+        $authUserId = $token['sub'];
         // Verify user from token
         if ($authUserId !== $user->getAuthId()) {
             $e = new UserException('Authentication ID mismatch', 400);
@@ -58,6 +62,7 @@ class AuthController extends BaseController
 
             throw $e;
         }
+
         $result = (object) [
             'success' => true,
             'user' => $user->getDetail()
@@ -69,34 +74,25 @@ class AuthController extends BaseController
     public function signUp(Request $request, Response $response, array $args): Response
     {
         $token = $request->getAttribute('token');
-        $authUserId = $token['sub'];
 
-        $data = $request->getParsedBody();
+        $data = json_decode($request->getBody());
+        $data->authId = $token['sub'];
 
-        if (!empty($data['picture'])) {
+        if (!empty($data->picture)) {
             $handler = new PictureHandler(
                 $this->container['s3']['client'],
                 $this->container['s3']['bucket']
             );
-            // TODO: upload with id or do not use the id at all
-            $data['picture'] = $handler->processPictureUrl($data['picture'], 0);
+            // TODO: upload with id / need to flush entity first (and after updating :()
+            $data->picture = $handler->processPictureUrl($data->picture, 0);
         }
 
-        $data['authId'] = $authUserId;
-        $result = $this->getEndpoint()->add($data, $this->container['logger']);
-        $status = 201;
+        /** @var \RideTimeServer\API\Repositories\UserRepository $repo */
+        $repo = $this->getEntityManager()
+            ->getRepository(User::class);
+        $user = $repo->create($data);
+        $repo->saveEntity($user);
 
-        return $response->withJson($result)->withStatus($status);
-    }
-
-    /**
-     * @return UserEndpoint
-     */
-    protected function getEndpoint()
-    {
-        return new UserEndpoint(
-            $this->container->entityManager,
-            $this->container->logger
-        );
+        return $response->withJson($user->getDetail())->withStatus(201);
     }
 }

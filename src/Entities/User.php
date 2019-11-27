@@ -6,7 +6,7 @@ use RideTimeServer\Exception\UserException;
 use RideTimeServer\Exception\RTException;
 
 /**
- * @Entity
+ * @Entity(repositoryClass="RideTimeServer\API\Repositories\UserRepository")
  * @Table(name="user")
  */
 class User extends PrimaryEntity implements PrimaryEntityInterface
@@ -540,10 +540,11 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
      * Update User with $data
      * Only applies editable scalar properties
      *
-     * @param array $data
+     * @param object $data
      * @return void
+     * REVIEW: Should apply all, not just scalar properties
      */
-    public function applyProperties(array $data)
+    public function applyProperties(object $data)
     {
         $properties = [
             'name',
@@ -553,13 +554,14 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
             'picture',
             'level',
             'bike',
-            'favourites'
+            'favourites',
+            'authId'
         ];
 
         foreach ($properties as $property) {
-            if (!empty($data[$property])) {
+            if (!empty($data->{$property})) {
                 $method = $this->getSetterMethod($property);
-                $this->{$method}((string) $data[$property]);
+                $this->{$method}((string) $data->{$property});
             }
         }
     }
