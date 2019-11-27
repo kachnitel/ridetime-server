@@ -3,7 +3,6 @@ namespace RideTimeServer\API\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use RideTimeServer\API\Endpoints\Database\UserEndpoint;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
 use RideTimeServer\API\Repositories\UserRepository;
@@ -119,10 +118,10 @@ class UserController extends BaseController
      */
     public function requestFriend(Request $request, Response $response, array $args): Response
     {
-        $friendship = $this->getEndpoint()->addFriend(
-            $request->getAttribute('currentUser')->getId(),
-            $args['id']
-        );
+        /** @var User $user */
+        $user = $request->getAttribute('currentUser');
+        $friendship = $user->addFriend($this->getUserRepository()->get($args['id']));
+        $this->getUserRepository()->saveEntity($user);
 
         $notifications = new Notifications();
         $notifications->sendNotification(
@@ -151,10 +150,10 @@ class UserController extends BaseController
      */
     public function acceptFriend(Request $request, Response $response, array $args): Response
     {
-        $friendship = $this->getEndpoint()->acceptFriend(
-            $args['id'],
-            $request->getAttribute('currentUser')->getId()
-        );
+        /** @var User $user */
+        $user = $request->getAttribute('currentUser');
+        $friendship = $user->acceptFriend($this->getUserRepository()->get($args['id']));
+        $this->getUserRepository()->saveEntity($friendship);
 
         $notifications = new Notifications();
         $notifications->sendNotification(
@@ -183,23 +182,12 @@ class UserController extends BaseController
     public function removeFriend(Request $request, Response $response, array $args): Response
     {
         $fs = $request->getAttribute('currentUser')->removeFriend(
-            $this->getEndpoint()->get($args['id'])
+            $this->getUserRepository()->get($args['id'])
         );
-        $this->container['entityManager']->remove($fs);
-        $this->container['entityManager']->flush();
+        $this->getEntityManager()->remove($fs);
+        $this->getEntityManager()->flush();
 
         return $response->withStatus(204);
-    }
-
-    /**
-     * @return UserEndpoint
-     */
-    protected function getEndpoint()
-    {
-        return new UserEndpoint(
-            $this->container->entityManager,
-            $this->container->logger
-        );
     }
 
     protected function validateSameId(int $currentUserId, int $id)
