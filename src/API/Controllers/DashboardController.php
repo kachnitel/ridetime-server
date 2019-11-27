@@ -7,7 +7,6 @@ use Psr\Container\ContainerInterface;
 use Doctrine\Common\Collections\Collection;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Friendship;
-use RideTimeServer\API\Endpoints\Database\UserEndpoint;
 
 class DashboardController
 {
@@ -22,10 +21,7 @@ class DashboardController
     }
 
     /**
-     * TODO: Invites REVIEW: Seems easier to leave invites in Events controller
-     * raising the question whether dashboard shouldn't just be a single route
-     * "GET /dashboard" returning info about self and pending friendships,
-     * or "GET /users/me" returning this
+     * REVIEW: Move to UserController "GET /users/me" ?
      *
      * @param Request $request
      * @param Response $response
@@ -56,20 +52,9 @@ class DashboardController
     protected function filterPendingRequests(Collection $friendships)
     {
         $filter = function(Friendship $friendship) {
-            return $friendship->getStatus() === 0;
+            return $friendship->getStatus() === Friendship::STATUS_PENDING;
         };
 
         return $friendships->filter($filter);
-    }
-
-    /**
-     * @return UserEndpoint
-     */
-    protected function getUserEndpoint(): UserEndpoint
-    {
-        return new UserEndpoint(
-            $this->container->entityManager,
-            $this->container->logger
-        );
     }
 }
