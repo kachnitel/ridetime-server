@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use RideTimeServer\Entities\EntityInterface;
 use RideTimeServer\Exception\EntityNotFoundException;
 use Monolog\Logger;
+use RideTimeServer\Entities\PrimaryEntity;
 use RideTimeServer\Exception\UserException;
 
 abstract class BaseRepository extends EntityRepository
@@ -15,7 +16,7 @@ abstract class BaseRepository extends EntityRepository
      */
     protected $logger;
 
-    public function get(int $id)
+    public function get(int $id): PrimaryEntity
     {
         $entity = $this->find($id);
 
