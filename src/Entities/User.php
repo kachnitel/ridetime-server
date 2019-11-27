@@ -543,6 +543,7 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
      * @param object $data
      * @return void
      * REVIEW: Should apply all, not just scalar properties
+     *   - would need to be able to get Location to set relationship
      */
     public function applyProperties(object $data)
     {

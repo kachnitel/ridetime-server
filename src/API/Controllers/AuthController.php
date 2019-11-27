@@ -78,6 +78,9 @@ class AuthController extends BaseController
         $data = json_decode($request->getBody());
         $data->authId = $token['sub'];
 
+        /**
+         * TODO: Dedupe / UserController::update
+         */
         if (!empty($data->picture)) {
             $handler = new PictureHandler(
                 $this->container['s3']['client'],

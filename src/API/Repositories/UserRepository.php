@@ -21,16 +21,44 @@ class UserRepository extends BaseRepository
 
         $user = new User();
         $user->applyProperties($data);
-        // TODO: Dedupe from UserEndpoint::update (user->applyProperties should handle location and all)
         if (!empty($data->locations)) {
-            /** @var \RideTimeServer\API\Repositories\LocationRepository $locationRepo */
-            $locationRepo = $this->getEntityManager()
-                ->getRepository(Location::class);
-            foreach ($data->locations as $locationId) {
-                $user->addLocation($locationRepo->get($locationId));
-            }
+            $this->setLocations($user, $data->locations);
         }
 
         return $user;
+    }
+
+    public function update(User $user, object $data)
+    {
+        $user->applyProperties($data);
+        if (!empty($data->locations)) {
+            $this->setLocations($user, $data->locations);
+        }
+    }
+
+    protected function setLocations(User $user, array $locations)
+    {
+        /** @var \RideTimeServer\API\Repositories\LocationRepository $locationRepo */
+        $locationRepo = $this->getEntityManager()
+            ->getRepository(Location::class);
+
+        foreach ($locations as $locationId) {
+            $user->addLocation($locationRepo->get($locationId));
+        }
+    }
+
+    /**
+     * @param string $field
+     * @param string $searchTerm
+     * @return User[]
+     */
+    public function search(string $field, string $searchTerm): array
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder->select('u')->from(User::class, 'u')->where(
+            $queryBuilder->expr()->like('u.' . $field, ':text')
+        )->setParameter('text', '%' . $searchTerm . '%');
+
+        return $queryBuilder->getQuery()->getResult();
     }
 }
