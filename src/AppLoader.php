@@ -60,7 +60,7 @@ class AppLoader implements AppLoaderInterface
         };
 
         $container['entityManager'] = function($container) use ($config, $secrets) {
-            return (new Database())->getEntityManager($config['doctrine'], $secrets['db'], $container['trailforks']);
+            return (new Database())->getEntityManager($config['doctrine'], $secrets['db'], $container);
         };
 
         $container['s3'] = function ($container) use ($secrets) {
