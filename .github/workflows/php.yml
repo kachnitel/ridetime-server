@@ -40,8 +40,8 @@ jobs:
     - name: Format CC test results
       run: ./cc-test-reporter format-coverage --debug -t clover coverage/result.xml
       env:
-        GIT_BRANCH=${GITHUB_REF}
-        GIT_COMMIT_SHA=${GITHUB_SHA}
+        GIT_BRANCH: ${GITHUB_REF}
+        GIT_COMMIT_SHA: ${GITHUB_SHA}
 
     - name: Upload CC coverage results
       env:
