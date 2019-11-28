@@ -38,9 +38,9 @@ jobs:
       run: vendor/bin/phpunit --coverage-clover 'coverage/result.xml' --coverage-text
 
     - name: Format CC test results
-      run: ./cc-test-reporter format-coverage --debug -t clover coverage/result.xml
+      run: GIT_BRANCH=$(git branch --show-current) && ./cc-test-reporter format-coverage --debug -t clover coverage/result.xml
       env:
-        GIT_BRANCH: ${{ github.ref }}
+        # GIT_BRANCH: ${{ github.ref }}
         GIT_COMMIT_SHA: ${{ github.sha }}
 
     - name: Upload CC coverage results
