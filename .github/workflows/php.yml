@@ -16,6 +16,9 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
+    - name: Set CC Required env vars
+      run: export GIT_BRANCH=$GITHUB_HEAD_REF && export GIT_COMMIT_SHA=$(git rev-parse origin/$GITHUB_HEAD_REF)
+
     - name: Add test config
       run: echo '{"db":{"host":"127.0.0.1","database":"rt_test","user":"root","password":"root"}}' > .secrets.test.json
 
@@ -38,7 +41,7 @@ jobs:
       run: vendor/bin/phpunit --coverage-clover 'coverage/result.xml' --coverage-text
 
     - name: Format CC test results
-      run: ./cc-test-reporter format-coverage -t clover coverage/result.xml
+      run: ./cc-test-reporter format-coverage --debug -t clover coverage/result.xml
 
     - name: Upload CC coverage results
       env:
