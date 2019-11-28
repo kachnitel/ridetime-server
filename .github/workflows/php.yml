@@ -6,9 +6,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
+    env: # FIXME:
       GIT_COMMIT_SHA: ${{ github.sha }}
-      # GIT_BRANCH: ${{ github.ref }}
+      # GIT_BRANCH: ${{ github.ref }} # GIT_BRANCH=$(git branch --show-current)
 
     steps:
     - uses: actions/checkout@v1
@@ -33,9 +33,6 @@ jobs:
 
     - name: Set CC reporter executable
       run: chmod +x ./cc-test-reporter
-
-    - name: Set CC env vars
-      run: export GIT_BRANCH=$(git branch --show-current)
 
     - name: Initialize CC test reporter
       run: ./cc-test-reporter before-build
