@@ -15,6 +15,23 @@ use function GuzzleHttp\json_decode;
 class UserController extends BaseController
 {
     /**
+     * @param Request $request
+     * @param Response condition$response
+     * @param array $args
+     * @return Response
+     */
+    public function get(Request $request, Response $response, array $args): Response
+    {
+        /** @var User $user */
+        $user = $this->getUserRepository()->get($this->inputFilterId($args['id']));
+
+        return $response->withJson((object) [
+            'result' => $user->getDetail(),
+            'relatedEntities' => $user->getRelated()
+        ]);
+    }
+
+    /**
      * Search using field:searchTerm formatted string
      *
      * @param Request $request
