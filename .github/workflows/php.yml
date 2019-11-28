@@ -6,6 +6,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      GIT_COMMIT_SHA: ${{ github.sha }}
+      # GIT_BRANCH: ${{ github.ref }}
 
     steps:
     - uses: actions/checkout@v1
@@ -31,6 +34,9 @@ jobs:
     - name: Set CC reporter executable
       run: chmod +x ./cc-test-reporter
 
+    - name: Set CC env vars
+      run: export GIT_BRANCH=$(git branch --show-current) &&
+
     - name: Initialize CC test reporter
       run: ./cc-test-reporter before-build
 
@@ -38,10 +44,7 @@ jobs:
       run: vendor/bin/phpunit --coverage-clover 'coverage/result.xml' --coverage-text
 
     - name: Format CC test results
-      run: GIT_BRANCH=$(git branch --show-current) && ./cc-test-reporter format-coverage --debug -t clover coverage/result.xml
-      env:
-        # GIT_BRANCH: ${{ github.ref }}
-        GIT_COMMIT_SHA: ${{ github.sha }}
+      run: ./cc-test-reporter format-coverage --debug -t clover coverage/result.xml
 
     - name: Upload CC coverage results
       env:
