@@ -1,21 +1,141 @@
 <?php
 namespace RideTimeServer\API\Controllers;
 
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\Expression;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use RideTimeServer\API\Endpoints\Database\EventEndpoint;
+use RideTimeServer\API\Repositories\EventRepository;
+use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EventMember;
-use RideTimeServer\Exception\EntityNotFoundException;
+use RideTimeServer\Entities\Location;
 use RideTimeServer\Notifications;
 use RideTimeServer\Entities\User;
+use RideTimeServer\MembershipManager;
+
+use function GuzzleHttp\json_decode;
 
 class EventController extends BaseController
 {
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function add(Request $request, Response $response, array $args): Response
+    {
+        // TODO: Validate input!
+        $data = json_decode($request->getBody());
+        $currentUser = $request->getAttribute('currentUser');
+
+        /** @var EventRepository $repo */
+        $repo = $this->getEventRepository();
+        $event = $repo->create($data, $currentUser);
+        $repo->saveEntity($event);
+
+        return $response->withJson($event->getDetail())->withStatus(201);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response condition$response
+     * @param array $args
+     * @return Response
+     */
+    public function get(Request $request, Response $response, array $args): Response
+    {
+        $event = $this->getEventRepository()->get($args['id']);
+
+        return $response->withJson((object) [
+            'result' => $event->getDetail(),
+            'relatedEntities' => $event->getRelated()
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function list(Request $request, Response $response, array $args): Response
+    {
+        $result = $this->getEventRepository()->list($request->getQueryParam('ids'));
+
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($result)
+        ]);
+    }
+
+    /**
+     * Supported filters:
+     * - location[]
+     * - difficulty[]
+     * - dateStart
+     * - dateEnd
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function filter(Request $request, Response $response, array $args): Response
+    {
+        $filters = $request->getQueryParams();
+        $criteria = Criteria::create()
+        ->orderBy(array('date' => Criteria::ASC))
+        ->setFirstResult(0)
+        ->setMaxResults(20);
+
+        if (isset($filters['location'])) {
+            $locations = [];
+            foreach ($filters['location'] as $locationId) {
+                $locations[] = $this->getEntityManager()->find(Location::class, $locationId);
+            }
+            $criteria = $criteria->andWhere(Criteria::expr()->in('location', $locations));
+        }
+
+        if (isset($filters['difficulty'])) {
+            $values = array_map('intval', $filters['difficulty']);
+            $criteria = $criteria->andWhere(Criteria::expr()->in('difficulty', $values));
+        }
+
+        if (isset($filters['dateStart'])) {
+            $criteria = $criteria->andWhere($this->getDateFilter($filters['dateStart'], true));
+        }
+
+        if (isset($filters['dateEnd'])) {
+            $criteria = $criteria->andWhere($this->getDateFilter($filters['dateEnd'], false));
+        }
+
+        $result = $this->getEventRepository()->matching($criteria)->getValues();
+
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($result)
+        ]);
+    }
+
+    /**
+     * @param [string|int] $date Date string or unix timestamp
+     * @param boolean $gte Whether to search for timestamp
+     *   grater or lower than $date (default **true** = greater)
+     * @return Expression
+     */
+    protected function getDateFilter($date, bool $gte = true): Expression
+    {
+        $dtObject = is_numeric($date)
+            ? (new \DateTime())->setTimestamp($date)
+            : new \DateTime($date);
+        return $gte
+            ? Criteria::expr()->gte('date', $dtObject)
+            : Criteria::expr()->lte('date', $dtObject);
+    }
+
     public function listInvites(Request $request, Response $response, array $args): Response
     {
         $user = $request->getAttribute('currentUser');
-
-        $result = $this->getEndpoint()->listInvites($user);
+        $result = $user->getEvents(Event::STATUS_INVITED)->getValues();
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
@@ -32,16 +152,15 @@ class EventController extends BaseController
      */
     public function invite(Request $request, Response $response, array $args): Response
     {
-        $eventId = $this->inputFilterId($args['id']);
-        $userId = $this->inputFilterId($args['userId']);
         $currentUser = $request->getAttribute('currentUser');
-        $event = $this->getEndpoint()->get($eventId);
+        $event = $this->getEventRepository()->get($args['id']);
 
         $user = $this->getEntityManager()
             ->getRepository(User::class)
-            ->get($userId);
+            ->get($args['userId']);
 
-        $result = $this->getEndpoint()->invite($eventId, $userId);
+        $membership = $this->getMembershipManager()->invite($event, $user);
+        $this->getEventRepository()->saveEntity($membership);
 
         $notifications = new Notifications();
         $notifications->sendNotification(
@@ -56,7 +175,7 @@ class EventController extends BaseController
             'eventMember'
         );
 
-        return $response->withStatus(201)->withJson(['status' => $result]);
+        return $response->withStatus(201)->withJson(['status' => $membership->getDetail()]);
     }
 
     /**
@@ -71,14 +190,17 @@ class EventController extends BaseController
      */
     public function join(Request $request, Response $response, array $args): Response
     {
-        $eventId = $this->inputFilterId($args['id']);
         /** @var User $currentUser */
         $currentUser = $request->getAttribute('currentUser');
-        $event = $this->getEndpoint()->get($eventId);
+        /** @var Event $event */
+        $event = $this->getEventRepository()->get($args['id']);
 
-        $result = $this->getEndpoint()->join($eventId, $currentUser->getId());
+        $membership = $this->getMembershipManager()->join($event, $currentUser);
+        $this->getEventRepository()->saveEntity($membership);
 
         // Extract tokens of event members
+        // REVIEW: sendNotification should accept User[] instead of $tokens param
+        // TODO: filter confirmed members
         $tokens = [];
         $event->getMembers()->map(function(EventMember $membership) use (&$tokens, $currentUser) {
             // Skip own notification tokens
@@ -104,7 +226,7 @@ class EventController extends BaseController
             'eventMember'
         );
 
-        return $response->withStatus(201)->withJson(['status' => $result]);
+        return $response->withStatus(201)->withJson(['status' => $membership->getDetail()]);
     }
 
     /**
@@ -117,20 +239,14 @@ class EventController extends BaseController
      */
     public function leave(Request $request, Response $response, array $args): Response
     {
-        // TODO: Test and review: should be handled by error handler
-        try {
-            $result = $this->getEndpoint()->removeMember(
-                $$this->inputFilterId($args['id']),
-                (int) $request->getAttribute('currentUser')->getId()
-            );
-        } catch (EntityNotFoundException $exception) {
-            return $response->withStatus(404)->withJson([
-                'status' => 'error',
-                'message' => $exception->getMessage()
-            ]);
-        }
+        $membership = $this->getMembershipManager()->removeMember(
+            $this->getEventRepository()->get($args['id']),
+            $request->getAttribute('currentUser')
+        );
+        $this->getEntityManager()->remove($membership);
+        $this->getEntityManager()->flush();
 
-        return $response->withStatus(200)->withJson(['status' => $result]);
+        return $response->withStatus(200);
     }
 
     /**
@@ -144,47 +260,39 @@ class EventController extends BaseController
     public function remove(Request $request, Response $response, array $args): Response
     {
         // TODO: must be member of event
-        // $currentUserId = (int) $request->getAttribute('currentUser')->getId();
 
-        $result = $this->getEndpoint()->removeMember(
-            $this->inputFilterId($args['id']),
-            $this->inputFilterId($args['userId'])
+        $membership = $this->getMembershipManager()->removeMember(
+            $this->getEventRepository()->get($args['id']),
+            $this->getEntityManager()->getRepository(User::class)->get($args['userId'])
         );
+        $this->getEntityManager()->remove($membership);
+        $this->getEntityManager()->flush();
 
-        return $response->withStatus(200)->withJson(['status' => $result]);
+        // FIXME: removeMember returns void
+        return $response->withStatus(200);
     }
 
     public function acceptRequest(Request $request, Response $response, array $args): Response
     {
         // TODO: must be member of event
-        // $currentUserId = (int) $request->getAttribute('currentUser')->getId();
 
-        $result = $this->getEndpoint()->acceptRequest(
-            $this->inputFilterId($args['id']),
-            $this->inputFilterId($args['userId'])
+        $membership = $this->getMembershipManager()->acceptRequest(
+            $this->getEventRepository()->get($args['id']),
+            $this->getEntityManager()->getRepository(User::class)->get($args['userId'])
         );
+        $this->getEventRepository()->saveEntity($membership);
 
-        return $response->withStatus(200)->withJson(['status' => $result]);
+        return $response->withStatus(200)->withJson(['status' => $membership->getDetail()]);
     }
 
-    public function filter(Request $request, Response $response, array $args): Response
+    protected function getEventRepository(): EventRepository
     {
-        $params = $request->getQueryParams();
-        $result = $this->getEndpoint()->filter($params);
-
-        return $response->withJson((object) [
-            'results' => $this->extractDetails($result)
-        ]);
+        return $this->getEntityManager()
+            ->getRepository(Event::class);
     }
 
-    /**
-     * @return EventEndpoint
-     */
-    protected function getEndpoint()
+    protected function getMembershipManager(): MembershipManager
     {
-        return new EventEndpoint(
-            $this->container->entityManager,
-            $this->container->logger
-        );
+        return new MembershipManager();
     }
 }

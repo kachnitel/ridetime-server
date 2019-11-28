@@ -47,7 +47,7 @@ class BaseTrailforksRepositoryTest extends APITestCase
         $repo->method('populateEntity')
             ->will($this->returnCallback(function (Location $location, $data) {
                 /**
-                 * REVIEW: Copied LocationEndpoint::populateEntity
+                 * REVIEW: Copied LocationRepository::populateEntity
                  */
                 $location->setId($data->rid);
                 $location->setName($data->title);

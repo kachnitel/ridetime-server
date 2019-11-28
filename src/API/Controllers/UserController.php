@@ -1,7 +1,6 @@
 <?php
 namespace RideTimeServer\API\Controllers;
 
-use Doctrine\Common\Collections\Criteria;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use RideTimeServer\Exception\UserException;
@@ -24,7 +23,7 @@ class UserController extends BaseController
     public function get(Request $request, Response $response, array $args): Response
     {
         /** @var User $user */
-        $user = $this->getUserRepository()->get($this->inputFilterId($args['id']));
+        $user = $this->getUserRepository()->get($args['id']);
 
         return $response->withJson((object) [
             'result' => $user->getDetail(),

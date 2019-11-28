@@ -1,8 +1,8 @@
 <?php
-namespace RideTimeServer\Tests\API\Endpoints;
+namespace RideTimeServer\Tests;
 
 use RideTimeServer\Entities\EventMember;
-use RideTimeServer\API\Endpoints\Database\MembershipManager;
+use RideTimeServer\MembershipManager;
 use RideTimeServer\Tests\API\APITestCase;
 
 class MembershipManagerTest extends APITestCase
@@ -27,5 +27,6 @@ class MembershipManagerTest extends APITestCase
 
         $manager->removeMember($event, $user1);
         $this->assertCount(1, $event->getMembers());
+        $this->assertContains($member2, $event->getMembers());
     }
 }

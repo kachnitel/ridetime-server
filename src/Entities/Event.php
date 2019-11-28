@@ -8,7 +8,7 @@ use RideTimeServer\Entities\Traits\DifficultyTrait;
 use RideTimeServer\Entities\Traits\LocationTrait;
 
 /**
- * @Entity
+ * @Entity(repositoryClass="RideTimeServer\API\Repositories\EventRepository")
  * @Table(name="event")
  */
 class Event extends PrimaryEntity implements PrimaryEntityInterface

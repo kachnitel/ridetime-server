@@ -1,5 +1,5 @@
 <?php
-namespace RideTimeServer\API\Endpoints\Database;
+namespace RideTimeServer;
 
 use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Entities\User;
