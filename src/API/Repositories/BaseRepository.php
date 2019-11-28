@@ -1,12 +1,13 @@
 <?php
 namespace RideTimeServer\API\Repositories;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityRepository;
-use RideTimeServer\Entities\EntityInterface;
-use RideTimeServer\Exception\EntityNotFoundException;
 use Monolog\Logger;
-use RideTimeServer\Entities\PrimaryEntity;
+use RideTimeServer\Entities\EntityInterface;
+use RideTimeServer\Entities\PrimaryEntityInterface;
+use RideTimeServer\Exception\EntityNotFoundException;
 use RideTimeServer\Exception\UserException;
 
 abstract class BaseRepository extends EntityRepository
@@ -16,7 +17,7 @@ abstract class BaseRepository extends EntityRepository
      */
     protected $logger;
 
-    public function get(int $id): PrimaryEntity
+    public function get(int $id): PrimaryEntityInterface
     {
         $entity = $this->find($id);
 
@@ -28,6 +29,24 @@ abstract class BaseRepository extends EntityRepository
         }
 
         return $entity;
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function list(array $ids = null): array
+    {
+        if (!$ids) {
+            return $this->findAll();
+        }
+
+        $criteria = Criteria::create()->where(Criteria::expr()->in(
+            'id',
+            array_map('intval', $ids)
+        ));
+
+        return $this->matching($criteria)->getValues();
     }
 
     /**

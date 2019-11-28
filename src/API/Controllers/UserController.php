@@ -1,6 +1,7 @@
 <?php
 namespace RideTimeServer\API\Controllers;
 
+use Doctrine\Common\Collections\Criteria;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use RideTimeServer\Exception\UserException;
@@ -28,6 +29,21 @@ class UserController extends BaseController
         return $response->withJson((object) [
             'result' => $user->getDetail(),
             'relatedEntities' => $user->getRelated()
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function list(Request $request, Response $response, array $args): Response
+    {
+        $result = $this->getUserRepository()->list($request->getQueryParam('ids'));
+
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($result)
         ]);
     }
 
