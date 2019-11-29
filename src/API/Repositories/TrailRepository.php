@@ -60,6 +60,8 @@ class TrailRepository extends BaseTrailforksRepository implements RemoteSourceRe
      */
     protected function populateEntity(PrimaryEntity $trail, object $data): PrimaryEntity
     {
+        // REVIEW: This looks stupid.
+        // Use setters here and skip transform & applyProperties?
         $scalarData = $this->transform($data);
 
         /** @var Trail $trail */

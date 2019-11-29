@@ -148,6 +148,30 @@ class APITestCase extends RTTestCase
         return $entity;
     }
 
+    /**
+     * Returns Mocked $class instance which replaces 'remoteFilter()'
+     *   return value with its arguments
+     * @param string $class Class that implements RemoteSourceRepositoryInterface
+     * @return MockObject|RemoteSourceRepositoryInterface
+     */
+    protected function getRepoMockRemoteFilter(string $class)
+    {
+        /** @var MockObject|RemoteSourceRepositoryInterface $mockRepo */
+        $mockRepo = $this->getMockBuilder($class)
+            ->setMethods(['remoteFilter'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockRepo->expects($this->exactly(1))
+            ->method('remoteFilter')
+            ->will(
+                $this->returnCallback(function() {
+                    return func_get_args();
+                 })
+            );
+
+        return $mockRepo;
+    }
+
     protected function getLogger(): Logger
     {
         return new Logger(static::class);

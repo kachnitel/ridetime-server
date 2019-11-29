@@ -51,4 +51,12 @@ class RouteRepositoryTest extends APITestCase
         $this->assertEquals($data->title, $route->getTitle());
         $this->assertEquals($data->stats, $route->getProfile());
     }
+
+    public function testListByLocation()
+    {
+        /** @var RouteRepository $repo */
+        $repo = $this->getRepoMockRemoteFilter(RouteRepository::class);
+        $result = $repo->listByLocation(123);
+        $this->assertEquals('rid::123', $result[0]);
+    }
 }
