@@ -8,6 +8,7 @@ use Monolog\Logger;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EntityInterface;
+use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Trail;
 use RideTimeServer\Exception\RTException;
@@ -85,18 +86,44 @@ class APITestCase extends RTTestCase
         return $user;
     }
 
-    protected function generateEvent(int $id = null, User $user = null): Event
+    /**
+     * @param integer $id
+     * @param User $createdBy
+     * @param Location $location
+     * @param User[] $members
+     * @return Event
+     */
+    protected function generateEvent(
+        int $id = null,
+        User $createdBy = null,
+        Location $location = null,
+        $members = []
+    ): Event
     {
         /** @var Event $event */
         $event = $this->generateEntity(Event::class, $id);
         $event->setDate(new \DateTime('2 hours'));
         $event->setDifficulty(rand(0, 4));
         $event->setTerrain('trail');
-        if ($user === null) {
-            $user = $this->generateUser();
-            $this->entityManager->persist($user);
+        if ($createdBy === null) {
+            $createdBy = $this->generateUser();
+            $this->entityManager->persist($createdBy);
         }
-        $event->setCreatedBy($user);
+        $event->setCreatedBy($createdBy);
+        if ($location === null) {
+            $location = $this->generateLocation();
+            $this->entityManager->persist($location);
+        }
+        $event->setLocation($location);
+        if ($members !== []) {
+            foreach ($members as $member) {
+                $membership = new EventMember();
+                $membership->setEvent($event);
+                $membership->setUser($member);
+                $membership->setStatus(Event::STATUS_CONFIRMED);
+                $event->addMember($membership);
+            }
+        }
 
         return $event;
     }
