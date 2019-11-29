@@ -84,9 +84,9 @@ class EventController extends BaseController
     {
         $filters = $request->getQueryParams();
         $criteria = Criteria::create()
-        ->orderBy(array('date' => Criteria::ASC))
-        ->setFirstResult(0)
-        ->setMaxResults(20);
+            ->orderBy(array('date' => Criteria::ASC))
+            ->setFirstResult(0)
+            ->setMaxResults(20);
 
         if (isset($filters['location'])) {
             $locations = [];
@@ -102,11 +102,15 @@ class EventController extends BaseController
         }
 
         if (isset($filters['dateStart'])) {
-            $criteria = $criteria->andWhere($this->getDateFilter($filters['dateStart'], true));
+            $criteria = $criteria->andWhere(
+                Criteria::expr()->gte('date', $this->getDateTimeObject($filters['dateStart']))
+            );
         }
 
         if (isset($filters['dateEnd'])) {
-            $criteria = $criteria->andWhere($this->getDateFilter($filters['dateEnd'], false));
+            $criteria = $criteria->andWhere(
+                Criteria::expr()->lte('date', $this->getDateTimeObject($filters['dateEnd']))
+            );
         }
 
         $result = $this->getEventRepository()->matching($criteria)->getValues();
@@ -118,18 +122,13 @@ class EventController extends BaseController
 
     /**
      * @param [string|int] $date Date string or unix timestamp
-     * @param boolean $gte Whether to search for timestamp
-     *   grater or lower than $date (default **true** = greater)
-     * @return Expression
+     * @return \DateTime
      */
-    protected function getDateFilter($date, bool $gte = true): Expression
+    protected function getDateTimeObject($date): \DateTime
     {
-        $dtObject = is_numeric($date)
+        return is_numeric($date)
             ? (new \DateTime())->setTimestamp($date)
             : new \DateTime($date);
-        return $gte
-            ? Criteria::expr()->gte('date', $dtObject)
-            : Criteria::expr()->lte('date', $dtObject);
     }
 
     public function listInvites(Request $request, Response $response, array $args): Response
