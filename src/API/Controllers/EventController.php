@@ -2,7 +2,6 @@
 namespace RideTimeServer\API\Controllers;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Expr\Expression;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\API\Repositories\EventRepository;
