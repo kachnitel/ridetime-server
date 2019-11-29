@@ -226,7 +226,7 @@ class EventController extends BaseController
             'eventMember'
         );
 
-        return $response->withStatus(201)->withJson(['status' => $membership->getDetail()]);
+        return $response->withStatus(201)->withJson($membership->getDetail());
     }
 
     /**
