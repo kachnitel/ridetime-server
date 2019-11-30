@@ -7,7 +7,6 @@ use Slim\Http\Response;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Route;
 use RideTimeServer\Entities\Trail;
-use RideTimeServer\Exception\RTException;
 
 class LocationController extends BaseController
 {
