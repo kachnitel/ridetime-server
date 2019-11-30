@@ -33,7 +33,7 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     private $title;
 
     /**
-     * @Column(type="string", nullable=true)
+     * @Column(type="string", nullable=true, length=2048)
      */
     private $description;
 
