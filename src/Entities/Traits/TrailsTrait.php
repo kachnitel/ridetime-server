@@ -17,7 +17,7 @@ trait TrailsTrait
     /**
      * Override to add `@OneToMany(targetEntity="Trail")`
      *
-     * @ManyToMany(targetEntity="Trail")
+     * @ManyToMany(targetEntity="Trail", indexBy="id")
      *
      * @var Collection|Trail[]
      */
@@ -37,7 +37,18 @@ trait TrailsTrait
      */
     public function addTrail(Trail $trail)
     {
-        $this->trails[] = $trail;
+        $this->trails[$trail->getId()] = $trail;
+
+        return $this;
+    }
+
+    /**
+     * @param Collection $trails
+     * @return static
+     */
+    public function setTrails(Collection $trails)
+    {
+        $this->trails = $trails;
 
         return $this;
     }

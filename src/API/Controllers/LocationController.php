@@ -7,6 +7,7 @@ use Slim\Http\Response;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Route;
 use RideTimeServer\Entities\Trail;
+use RideTimeServer\Exception\RTException;
 
 class LocationController extends BaseController
 {
@@ -58,6 +59,9 @@ class LocationController extends BaseController
         $result = $this->getEntityManager()
             ->getRepository(Trail::class)
             ->listByLocation($locationId);
+        if ($this->getEntityManager()->getUnitOfWork()->hasPendingInsertions()) {
+            throw new RTException('Unsaved entities in EM');
+        }
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
@@ -89,6 +93,7 @@ class LocationController extends BaseController
                 $locations[] = $route->getLocation();
             }
         }
+        $this->getEntityManager()->flush();
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($routes),
