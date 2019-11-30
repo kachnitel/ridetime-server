@@ -59,9 +59,7 @@ class LocationController extends BaseController
         $result = $this->getEntityManager()
             ->getRepository(Trail::class)
             ->listByLocation($locationId);
-        if ($this->getEntityManager()->getUnitOfWork()->hasPendingInsertions()) {
-            throw new RTException('Unsaved entities in EM');
-        }
+        $this->getEntityManager()->flush();
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
