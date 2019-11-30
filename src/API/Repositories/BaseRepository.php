@@ -57,7 +57,7 @@ abstract class BaseRepository extends EntityRepository
     {
         $this->getEntityManager()->persist($entity);
         try {
-            $this->getEntityManager()->flush($entity);
+            $this->getEntityManager()->flush();
         } catch (UniqueConstraintViolationException $e) {
             $errorId = uniqid();
 

@@ -36,7 +36,7 @@ class UserRepositoryTest extends APITestCase
         foreach ($locations as $location) {
             $this->entityManager->persist($location);
         }
-        $this->entityManager->flush($locations);
+        $this->entityManager->flush();
 
         $data = (object) [
             'locations' => [1, 2],

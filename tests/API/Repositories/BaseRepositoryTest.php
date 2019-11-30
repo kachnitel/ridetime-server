@@ -18,7 +18,7 @@ class BaseRepositoryTest extends APITestCase
     {
         $entity = $this->generateUser();
         $this->entityManager->persist($entity);
-        $this->entityManager->flush($entity);
+        $this->entityManager->flush();
 
         $result = $this->getBaseRepository()->get($entity->getId());
         $this->assertSame($entity, $result);

@@ -99,7 +99,7 @@ class EventControllerTest extends APITestCase
         $event = $this->generateEvent();
         $this->entityManager->persist($currentUser);
         $this->entityManager->persist($event);
-        $this->entityManager->flush([$currentUser, $event]);
+        $this->entityManager->flush();
 
         $request = $this->getRequest('POST')->withAttribute('currentUser', $currentUser);
 

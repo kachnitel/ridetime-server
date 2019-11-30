@@ -31,7 +31,7 @@ class EventRepositoryTest extends APITestCase
         );
         $event = $repo->create($eventData, $user);
         $this->entityManager->persist($event);
-        $this->entityManager->flush($event);
+        $this->entityManager->flush();
 
         $events = $this->entityManager->getRepository(Event::class)->findAll();
         $this->assertContains($event, $events);

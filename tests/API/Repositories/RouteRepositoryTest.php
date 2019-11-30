@@ -12,9 +12,9 @@ class RouteRepositoryTest extends APITestCase
      */
     public function testUpsert()
     {
-        $trail[1] = $this->entityManager->merge($this->generateTrail(1));
-        $trail[2] = $this->entityManager->merge($this->generateTrail(2));
-        $location = $this->entityManager->merge($this->generateLocation(1));
+        $this->entityManager->persist($trail[1] = $this->generateTrail(1));
+        $this->entityManager->persist($trail[2] = $this->generateTrail(2));
+        $this->entityManager->persist($location = $this->generateLocation(1));
         $this->entityManager->flush();
 
         $data = json_decode('{
