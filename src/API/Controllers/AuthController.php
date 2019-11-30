@@ -37,7 +37,7 @@ class AuthController extends BaseController
         $token = $request->getAttribute('token');
 
         $data = json_decode($request->getBody());
-        $userEmail = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
+        $userEmail = filter_var($data->email, FILTER_SANITIZE_EMAIL);
 
         /** @var User $user */
         $user = $this->getEntityManager()
