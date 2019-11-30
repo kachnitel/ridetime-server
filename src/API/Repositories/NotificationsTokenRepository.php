@@ -1,6 +1,7 @@
 <?php
 namespace RideTimeServer\API\Repositories;
 
+use RideTimeServer\Entities\NotificationsToken;
 use RideTimeServer\Entities\User;
 
 class NotificationsTokenRepository extends BaseRepository
