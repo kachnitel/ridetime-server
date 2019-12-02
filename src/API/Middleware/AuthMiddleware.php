@@ -50,10 +50,14 @@ class AuthMiddleware
 
     protected function getErrorHandlerCallback() {
         return function (ResponseInterface $response, $arguments) {
-            throw new AuthException(
-                'Authentication failed: ' . $arguments['message']
-                , $response->getStatusCode() ?? 401
-            );
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(401)
+                ->getBody()->write(json_encode((object) [
+                    'status' => 'error',
+                    'message' => 'Authentication failed: ' . $arguments['message'],
+                    'code' => 401
+                ]));
         };
     }
 
@@ -69,7 +73,7 @@ class AuthMiddleware
      */
     protected function getAuthPublicKey(array $config): string
     {
-        // FIXME: fallback etc..Guzzle?
+        // FIXME: fallback etc..use Guzzle
         $keys = json_decode(file_get_contents($config['auth']['publicKeyUrl']), true);
         return (new JWKConverter())->toPEM($keys['keys'][0]);
     }
