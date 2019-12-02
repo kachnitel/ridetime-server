@@ -63,7 +63,7 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     private $terrain;
 
     /**
-     * @Column(type="string", nullable=true)
+     * @Column(type="string", nullable=true, length=2048)
      */
     private $route;
 
