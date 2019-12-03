@@ -17,6 +17,38 @@ use function GuzzleHttp\json_decode;
 
 class EventControllerTest extends APITestCase
 {
+    public function testFilterFindsMatchingRoute()
+    {
+        $container = new Container([
+            'entityManager' => $this->entityManager,
+            'logger' => new Logger('EventControllerTest')
+        ]);
+        $controller = new EventController($container);
+
+        $event = $this->generateEvent();
+        $event->setDate(new \DateTime());
+        $event->setDifficulty(1);
+        $eventNoMatch = $this->generateEvent();
+        $event->setDifficulty(2);
+        $this->entityManager->persist($event);
+        $this->entityManager->persist($eventNoMatch);
+        $this->entityManager->flush();
+
+        $request = $this->getRequest('GET')
+            ->withQueryParams([
+                'location' => [$event->getLocation()->getId()],
+                'difficulty' => [$event->getDifficulty()],
+                'dateStart' => (new \DateTime('1 hour ago'))->getTimestamp(),
+                'dateEnd' => (new \DateTime('1 hour'))->format(DATE_W3C)
+            ]);
+
+        $response = $controller->filter($request, new Response(), []);
+
+        $result = json_decode($response->getBody());
+        $this->assertCount(1, $result->results);
+        $this->assertEquals($event->getId(), $result->results[0]->id);
+    }
+
     public function testRemoveMember()
     {
         $container = new Container([
