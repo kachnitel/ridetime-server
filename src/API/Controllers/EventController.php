@@ -2,12 +2,12 @@
 namespace RideTimeServer\API\Controllers;
 
 use Doctrine\Common\Collections\Criteria;
+use RideTimeServer\API\Filters\EventFilter;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\API\Repositories\EventRepository;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EventMember;
-use RideTimeServer\Entities\Location;
 use RideTimeServer\Notifications;
 use RideTimeServer\Entities\User;
 use RideTimeServer\MembershipManager;
@@ -87,47 +87,14 @@ class EventController extends BaseController
             ->setFirstResult(0)
             ->setMaxResults(20);
 
-        if (isset($filters['location'])) {
-            $locations = [];
-            foreach ($filters['location'] as $locationId) {
-                $locations[] = $this->getEntityManager()->find(Location::class, $locationId);
-            }
-            $criteria = $criteria->andWhere(Criteria::expr()->in('location', $locations));
-        }
-
-        if (isset($filters['difficulty'])) {
-            $values = array_map('intval', $filters['difficulty']);
-            $criteria = $criteria->andWhere(Criteria::expr()->in('difficulty', $values));
-        }
-
-        if (isset($filters['dateStart'])) {
-            $criteria = $criteria->andWhere(
-                Criteria::expr()->gte('date', $this->getDateTimeObject($filters['dateStart']))
-            );
-        }
-
-        if (isset($filters['dateEnd'])) {
-            $criteria = $criteria->andWhere(
-                Criteria::expr()->lte('date', $this->getDateTimeObject($filters['dateEnd']))
-            );
-        }
+        $filter = new EventFilter($this->getEntityManager(), $criteria);
+        $filter->apply($filters);
 
         $result = $this->getEventRepository()->matching($criteria)->getValues();
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
         ]);
-    }
-
-    /**
-     * @param [string|int] $date Date string or unix timestamp
-     * @return \DateTime
-     */
-    protected function getDateTimeObject($date): \DateTime
-    {
-        return is_numeric($date)
-            ? (new \DateTime())->setTimestamp($date)
-            : new \DateTime($date);
     }
 
     public function listInvites(Request $request, Response $response, array $args): Response
