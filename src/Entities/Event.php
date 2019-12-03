@@ -338,9 +338,9 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     }
 
     /**
-     * Returns thumbnails of confirmed users
+     * Returns confirmed users
      *
-     * @return array
+     * @return User[]
      */
     protected function getEventMembers(): array
     {
