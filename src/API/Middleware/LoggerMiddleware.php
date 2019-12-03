@@ -42,6 +42,17 @@ class LoggerMiddleware
             };
             $container->get('logger')->addInfo('Request stats', [
                 'request' => $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                'query' => $request->getQueryParams(),
+                'serverParams' => array_filter(
+                    $request->getServerParams(),
+                    function ($key) {
+                        return in_array($key, [
+                            'REQUEST_URI',
+                            'REMOTE_ADDR'
+                        ]);
+                    },
+                    ARRAY_FILTER_USE_KEY
+                ),
                 'executionTime' => microtime(true) - $startTime,
                 'resources' => [
                     'stime' => $rutime($ruEnd, $ruStart, 'stime') . 'ms',
