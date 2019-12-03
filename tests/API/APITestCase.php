@@ -107,12 +107,10 @@ class APITestCase extends RTTestCase
         $event->setTerrain('trail');
         if ($createdBy === null) {
             $createdBy = $this->generateUser();
-            $this->entityManager->persist($createdBy);
         }
         $event->setCreatedBy($createdBy);
         if ($location === null) {
             $location = $this->generateLocation();
-            $this->entityManager->persist($location);
         }
         $event->setLocation($location);
         if ($members !== []) {
@@ -152,10 +150,10 @@ class APITestCase extends RTTestCase
     /**
      * @param string $class
      * @param integer $id
-     * @param string $nameField // Field in which an entity name is stored (user->name, event->title)
+     * @param bool $persist
      * @return EntityInterface
      */
-    protected function generateEntity(string $class, int $id = null): EntityInterface
+    protected function generateEntity(string $class, int $id = null, bool $persist = true): EntityInterface
     {
         $reflection = new \ReflectionClass($class);
         $entity = $reflection->newInstance();
@@ -171,6 +169,10 @@ class APITestCase extends RTTestCase
         method_exists($entity, 'setName')
             ? $entity->setName($generatedNameTitle)
             : $entity->setTitle($generatedNameTitle);
+
+        if ($persist) {
+            $this->entityManager->persist($entity);
+        }
 
         return $entity;
     }
