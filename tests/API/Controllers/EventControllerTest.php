@@ -25,13 +25,16 @@ class EventControllerTest extends APITestCase
         ]);
         $controller = new EventController($container);
 
-        $event = $this->generateEvent();
+        $event = $this->generateEvent(null, null, $this->generateLocation(1));
         $event->setDate(new \DateTime());
         $event->setDifficulty(1);
         $eventNoMatch = $this->generateEvent();
-        $event->setDifficulty(2);
-        $this->entityManager->persist($event);
-        $this->entityManager->persist($eventNoMatch);
+        $eventNoMatch->setDifficulty(2);
+        $eventNoMatch2 = $this->generateEvent();
+        $eventNoMatch2->setDate(new \DateTime('2 hours ago'));
+        $eventNoMatch3 = $this->generateEvent();
+        $eventNoMatch3->setDate(new \DateTime('2 hours'));
+        $this->generateEvent(null, null, $this->generateLocation(2)); // No match 4 (location ID mismatch)
         $this->entityManager->flush();
 
         $request = $this->getRequest('GET')
