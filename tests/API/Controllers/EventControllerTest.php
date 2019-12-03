@@ -65,9 +65,6 @@ class EventControllerTest extends APITestCase
         $event = $this->generateEvent();
         $mod = $event->getCreatedBy(); // User initiating the action
 
-        $this->entityManager->persist($user);
-        $this->entityManager->persist($mod);
-        $this->entityManager->persist($event);
         $this->entityManager->flush();
 
         // Add user to event
@@ -103,9 +100,6 @@ class EventControllerTest extends APITestCase
         $event = $this->generateEvent();
         $mod = $event->getCreatedBy(); // User initiating the action
 
-        $this->entityManager->persist($user);
-        $this->entityManager->persist($mod);
-        $this->entityManager->persist($event);
         $this->entityManager->flush();
 
         // Add user to event
@@ -132,8 +126,6 @@ class EventControllerTest extends APITestCase
     {
         $currentUser = $this->generateUser();
         $event = $this->generateEvent();
-        $this->entityManager->persist($currentUser);
-        $this->entityManager->persist($event);
         $this->entityManager->flush();
 
         $request = $this->getRequest('POST')->withAttribute('currentUser', $currentUser);
