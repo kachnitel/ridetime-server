@@ -244,7 +244,7 @@ class EventController extends BaseController
         $this->getEntityManager()->remove($membership);
         $this->getEntityManager()->flush();
 
-        return $response->withStatus(200);
+        return $response->withStatus(204);
     }
 
     /**
@@ -266,8 +266,7 @@ class EventController extends BaseController
         $this->getEntityManager()->remove($membership);
         $this->getEntityManager()->flush();
 
-        // FIXME: removeMember returns void
-        return $response->withStatus(200);
+        return $response->withStatus(204);
     }
 
     public function acceptRequest(Request $request, Response $response, array $args): Response
