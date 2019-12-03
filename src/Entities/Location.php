@@ -1,11 +1,11 @@
 <?php
 namespace RideTimeServer\Entities;
 
-use \Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use RideTimeServer\Entities\Traits\AliasTrait;
 use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\TrailsTrait;
-use RideTimeServer\Exception\RTException;
 
 /**
  * @Entity(repositoryClass="RideTimeServer\API\Repositories\LocationRepository")
@@ -38,8 +38,9 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
 
     public function getRelated(): object
     {
-        throw new RTException("Location::getRelated not implemented", 501);
-        return new \Object();
+        return (object) [
+            'event' => $this->getEvents()->getValues()
+        ];
     }
 
     /**
@@ -187,9 +188,9 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
     /**
      * Get one location has many events. This is the inverse side.
      *
-     * @return  ArrayCollection|Event[]
+     * @return Collection|Event[]
      */
-    public function getEvents(): ArrayCollection
+    public function getEvents(): Collection
     {
         return $this->events;
     }
