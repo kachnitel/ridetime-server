@@ -98,7 +98,7 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
     private $description;
 
     /**
-     * @ManyToOne(targetEntity="Location", inversedBy="routes")
+     * @ManyToOne(targetEntity="Location")
      *
      * @var Location
      */
