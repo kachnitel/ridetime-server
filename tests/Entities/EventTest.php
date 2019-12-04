@@ -1,20 +1,39 @@
 <?php
 namespace RideTimeServer\Tests\Entities;
 
-use PHPUnit\Framework\TestCase;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\EventMember;
-use RideTimeServer\Exception\UserException;
+use RideTimeServer\Entities\Location;
 
-class EventTest extends TestCase
+class EventTest extends EntityTestCase
 {
+    public function testGetDetail()
+    {
+        $location = new Location();
+        $this->set($location, 1);
+        $event = new Event();
+        $this->set($event, 1);
+        $member = new User();
+        $this->set($member, 1);
+        $inv = new User();
+        $this->set($inv, 2);
 
+        $event->setLocation($location);
+        $event->setTerrain('trail');
+        $dt = new \DateTime();
+        $event->setDate($dt);
 
-    /**
-     * TODO:
-     * EventTest: public event join
-     */
+        $event->invite($inv);
+        ($event->invite($member))->confirm();
+
+        $detail = $event->getDetail();
+        $this->assertEquals([$member->getId()], $detail->members);
+        $this->assertEquals([$inv->getId()], $detail->invited);
+        $this->assertEquals('trail', $detail->terrain);
+        $this->assertEquals($location->getId(), $detail->location);
+        $this->assertEquals($dt->getTimestamp(), $detail->datetime);
+    }
 
     public function testJoinPublicEvent()
     {

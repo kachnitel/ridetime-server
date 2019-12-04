@@ -320,7 +320,8 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
             'id' => $this->getId(),
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
-            'members' => $this->extractIds($this->getEventMembers()),
+            'members' => $this->extractIds($this->getMembersWithStatus(Event::STATUS_CONFIRMED)),
+            'invited' => $this->extractIds($this->getMembersWithStatus(Event::STATUS_INVITED)),
             'difficulty' => $this->getDifficulty(),
             'location' => $this->getLocation()->getId(),
             'terrain' => $this->getTerrain(),
@@ -332,7 +333,7 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     public function getRelated(): object
     {
         return (object) [
-            'user' => $this->extractDetails($this->getEventMembers()),
+            'user' => $this->extractDetails($this->getMembersWithStatus(Event::STATUS_CONFIRMED)),
             'location' => $this->extractDetails([$this->getLocation()])
         ];
     }
@@ -342,12 +343,12 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
      *
      * @return User[]
      */
-    protected function getEventMembers(): array
+    protected function getMembersWithStatus(string $status): array
     {
         $members = [];
         /** @var \RideTimeServer\Entities\EventMember $member */
         foreach ($this->getMembers() as $member) {
-            if ($member->getStatus() !== Event::STATUS_CONFIRMED) {
+            if ($member->getStatus() !== $status) {
                 continue;
             }
             $members[] = $member->getUser();
