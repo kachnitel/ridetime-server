@@ -48,7 +48,6 @@ class TrailforksConnector
 
     public function locations(string $filter, array $fields): array
     {
-        $filter .= ';bottom::ridingarea';
         $query = [
             'filter' => $filter,
             'fields' => join(',', $fields),

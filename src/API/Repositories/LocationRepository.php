@@ -37,7 +37,7 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
      */
     public function remoteFilter(string $filter): array
     {
-        $data = $this->connector->locations($filter, self::API_FIELDS);
+        $data = $this->connector->locations($filter . ';bottom::ridingarea', self::API_FIELDS);
         return array_map([$this, 'upsert'], $data);
     }
 
