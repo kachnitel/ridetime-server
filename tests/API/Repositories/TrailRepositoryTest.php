@@ -11,6 +11,6 @@ class TrailRepositoryTest extends APITestCase
         /** @var TrailRepository $repo */
         $repo = $this->getRepoMockRemoteFilter(TrailRepository::class);
         $result = $repo->listByLocation(123);
-        $this->assertEquals('rid::123', $result[0]);
+        $this->assertEquals('activitytype::1;rid::123', $result[0]);
     }
 }
