@@ -83,6 +83,7 @@ class Router
         $app->get('/{id:[0-9]+}/routes', Controllers\LocationController::class . ':routesByLocation');
         $app->get('/{id:[0-9]+}/trails', Controllers\LocationController::class . ':trailsByLocation');
         /** TODO: Search location trails and routes */
+        $app->get('/trails', Controllers\LocationController::class . ':trails');
     }
 
     public static function initUserRoutes(App $app)

@@ -63,6 +63,31 @@ class LocationController extends BaseController
     }
 
     /**
+     * TODO: remoteFilter
+     *  - w/ activitytype (persist activitytype in trail/route) filter
+     *  - move to new route `api/trails?filter[rid]=1&filter[activitytype]=1`
+     *    - supported on front end: https://github.com/ljharb/qs#parsing-objects
+     *    - if used, EventFilter should use the same format
+     */
+    public function trails(Request $request, Response $response, array $args): Response
+    {
+        $filters = $request->getQueryParam('filter');
+        if (!$filters) {
+            throw new UserException('Filters are required for listing trails');
+        }
+        $filter = $filters ? (new TrailforksFilter($filters))->getTrailforksFilter() : '';
+
+        $result = $this->getTrailRepository()
+            ->remoteFilter($filter);
+
+        $this->getEntityManager()->flush();
+
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($result)
+        ]);
+    }
+
+    /**
      * @param Request $request
      * @param Response $response
      * @param array $args
