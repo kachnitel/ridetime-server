@@ -37,35 +37,15 @@ class TrailRepository extends BaseTrailforksRepository implements RemoteSourceRe
     }
 
     /**
-     * Prepare scalar values for Trail::applyProperties
-     *
-     * @param object $trailData
-     * @return object
-     */
-    protected function transform(object $trailData): object
-    {
-        return (object) [
-            'id' => $trailData->trailid,
-            'title' => $trailData->title,
-            'description' => $trailData->description,
-            'difficulty' => $trailData->difficulty - 3, // TF uses different diff. ratings
-            'alias' => $trailData->alias
-        ];
-    }
-
-    /**
      * @param Trail $trail
      * @param object $data
      * @return PrimaryEntity
      */
     protected function populateEntity(PrimaryEntity $trail, object $data): PrimaryEntity
     {
-        // REVIEW: This looks stupid.
-        // Use setters here and skip transform & applyProperties?
-        $scalarData = $this->transform($data);
-
+        $data->id = $data->trailid;
         /** @var Trail $trail */
-        $trail->applyProperties($scalarData);
+        $trail->applyProperties($data);
 
         $trail->setProfile($data->stats);
 

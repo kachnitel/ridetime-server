@@ -107,10 +107,10 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
         $location->setGpsLat($data->latitude);
         $location->setGpsLon($data->longitude);
         $location->setDifficulties((object) [
-            0 => (int) $data->tc_3,
-            1 => (int) $data->tc_4,
-            2 => (int) $data->tc_5,
-            3 => (int) $data->tc_6
+            3 => (int) $data->tc_3,
+            4 => (int) $data->tc_4,
+            5 => (int) $data->tc_5,
+            6 => (int) $data->tc_6
         ]);
         $location->setAlias($data->alias);
 

@@ -44,17 +44,6 @@ class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRe
         return array_map([$this, 'upsert'], $data);
     }
 
-    protected function transform(object $data): object
-    {
-        return (object) [
-            'id' => $data->id,
-            'title' => $data->title,
-            'description' => $data->description,
-            'difficulty' => $data->difficulty - 3, // TF uses different diff. ratings
-            'alias' => $data->alias
-        ];
-    }
-
     /**
      * @param Route $route
      * @param object $data
@@ -62,10 +51,8 @@ class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRe
      */
     protected function populateEntity(PrimaryEntity $route, object $data): PrimaryEntity
     {
-        $scalarData = $this->transform($data);
-
         /** @var Route $route */
-        $route->applyProperties($scalarData);
+        $route->applyProperties($data);
 
         $location = $this->getEntityManager()
             ->getRepository(Location::class)
