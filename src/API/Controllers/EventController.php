@@ -118,10 +118,11 @@ class EventController extends BaseController
     public function invite(Request $request, Response $response, array $args): Response
     {
         $currentUser = $request->getAttribute('currentUser');
+        /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
 
-        $user = $this->getEntityManager()
-            ->getRepository(User::class)
+        /** @var User $user */
+        $user = $this->getUserRepository()
             ->get($args['userId']);
 
         $membership = $this->getMembershipManager()->invite($event, $user);
@@ -228,7 +229,7 @@ class EventController extends BaseController
 
         $membership = $this->getMembershipManager()->removeMember(
             $this->getEventRepository()->get($args['id']),
-            $this->getEntityManager()->getRepository(User::class)->get($args['userId'])
+            $this->getUserRepository()->get($args['userId'])
         );
         $this->getEntityManager()->remove($membership);
         $this->getEntityManager()->flush();
@@ -242,17 +243,11 @@ class EventController extends BaseController
 
         $membership = $this->getMembershipManager()->acceptRequest(
             $this->getEventRepository()->get($args['id']),
-            $this->getEntityManager()->getRepository(User::class)->get($args['userId'])
+            $this->getUserRepository()->get($args['userId'])
         );
         $this->getEventRepository()->saveEntity($membership);
 
         return $response->withStatus(200)->withJson(['status' => $membership->getDetail()]);
-    }
-
-    protected function getEventRepository(): EventRepository
-    {
-        return $this->getEntityManager()
-            ->getRepository(Event::class);
     }
 
     protected function getMembershipManager(): MembershipManager

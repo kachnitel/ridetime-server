@@ -2,11 +2,11 @@
 namespace RideTimeServer\API\Controllers;
 
 use RideTimeServer\API\Connectors\TrailforksConnector;
+use RideTimeServer\API\Filters\TrailforksFilter;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Route;
-use RideTimeServer\Entities\Trail;
+use RideTimeServer\Exception\UserException;
 
 class LocationController extends BaseController
 {
@@ -18,8 +18,7 @@ class LocationController extends BaseController
         ];
         $range = $request->getQueryParam('range');
 
-        $result = $this->getEntityManager()
-            ->getRepository(Location::class)
+        $result = $this->getLocationRepository()
             ->nearby($latLon, $range);
 
         return $response->withJson((object) [
@@ -30,8 +29,7 @@ class LocationController extends BaseController
     public function bbox(Request $request, Response $response, array $args): Response
     {
         $bbox = $request->getQueryParam('coords');
-        $result = $this->getEntityManager()
-            ->getRepository(Location::class)
+        $result = $this->getLocationRepository()
             ->bbox($bbox);
 
         return $response->withJson((object) [
@@ -42,8 +40,7 @@ class LocationController extends BaseController
     public function search(Request $request, Response $response, array $args): Response
     {
         $name = $request->getQueryParam('name');
-        $result = $this->getEntityManager()
-            ->getRepository(Location::class)
+        $result = $this->getLocationRepository()
             ->search($name);
 
         return $response->withJson((object) [
@@ -55,9 +52,9 @@ class LocationController extends BaseController
     {
         $locationId = $args['id'];
 
-        $result = $this->getEntityManager()
-            ->getRepository(Trail::class)
+        $result = $this->getTrailRepository()
             ->listByLocation($locationId);
+
         $this->getEntityManager()->flush();
 
         return $response->withJson((object) [
@@ -76,8 +73,7 @@ class LocationController extends BaseController
         $locationId = $args['id'];
 
         /** @var Route[] $routes */
-        $routes = $this->getEntityManager()
-            ->getRepository(Route::class)
+        $routes = $this->getRouteRepository()
             ->listByLocation($locationId);
         $trails = [];
         $locations = [];
