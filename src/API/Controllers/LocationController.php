@@ -48,6 +48,13 @@ class LocationController extends BaseController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     * @deprecated
+     */
     public function trailsByLocation(Request $request, Response $response, array $args): Response
     {
         $locationId = $args['id'];
@@ -98,10 +105,25 @@ class LocationController extends BaseController
         $result = $this->getRouteRepository()
             ->remoteFilter($filter);
 
+        $trails = [];
+        $locations = [];
+        foreach ($result as $route) {
+            $routeTrails = $route->getRelated()->trail;
+            $trails = array_unique(array_merge($trails, $routeTrails), SORT_REGULAR);
+
+            if (!in_array($route->getLocation(), $locations)) {
+                $locations[] = $route->getLocation();
+            }
+        }
+
         $this->getEntityManager()->flush();
 
         return $response->withJson((object) [
-            'results' => $this->extractDetails($result)
+            'results' => $this->extractDetails($result),
+            'relatedEntities' => (object) [
+                'trail' => $this->extractDetails(array_values($trails)),
+                'location' => $this->extractDetails($locations)
+            ]
         ]);
     }
 
@@ -110,6 +132,7 @@ class LocationController extends BaseController
      * @param Response $response
      * @param array $args
      * @return Response
+     * @deprecated
      */
     public function routesByLocation(Request $request, Response $response, array $args): Response
     {
