@@ -87,6 +87,24 @@ class LocationController extends BaseController
         ]);
     }
 
+    public function routes(Request $request, Response $response, array $args): Response
+    {
+        $filters = $request->getQueryParam('filter');
+        if (!$filters) {
+            throw new UserException('Filters are required for listing trails');
+        }
+        $filter = $filters ? (new TrailforksFilter($filters))->getTrailforksFilter() : '';
+
+        $result = $this->getRouteRepository()
+            ->remoteFilter($filter);
+
+        $this->getEntityManager()->flush();
+
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($result)
+        ]);
+    }
+
     /**
      * @param Request $request
      * @param Response $response
