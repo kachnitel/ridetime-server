@@ -27,8 +27,6 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
         'alias'
     ];
 
-    const DIFFICULTIES = [0,1,2,3,4];
-
     /**
      * Applies self::SCALAR_FIELDS listed properties
      * REVIEW: See User::applyProperties(array)
