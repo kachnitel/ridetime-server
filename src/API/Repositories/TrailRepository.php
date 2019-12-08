@@ -19,11 +19,6 @@ class TrailRepository extends BaseTrailforksRepository implements RemoteSourceRe
 
     const API_ID_FIELD = 'trailid';
 
-    public function listByLocation(int $locationId): array
-    {
-        return $this->remoteFilter('activitytype::1;rid::' . $locationId);
-    }
-
     /**
      * Call API with $filter
      *

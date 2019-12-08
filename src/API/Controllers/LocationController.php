@@ -57,25 +57,18 @@ class LocationController extends BaseController
      */
     public function trailsByLocation(Request $request, Response $response, array $args): Response
     {
-        $locationId = $args['id'];
-
-        $result = $this->getTrailRepository()
-            ->listByLocation($locationId);
-
-        $this->getEntityManager()->flush();
-
-        return $response->withJson((object) [
-            'results' => $this->extractDetails($result)
-        ]);
+        return $this->trails(
+            $request->withQueryParams([
+                'filter' => [
+                    'rid' => $args['id'],
+                    'activitytype' => 1
+                ]
+            ]),
+            $response,
+            $args
+        );
     }
 
-    /**
-     * TODO: remoteFilter
-     *  - w/ activitytype (persist activitytype in trail/route) filter
-     *  - move to new route `api/trails?filter[rid]=1&filter[activitytype]=1`
-     *    - supported on front end: https://github.com/ljharb/qs#parsing-objects
-     *    - if used, EventFilter should use the same format
-     */
     public function trails(Request $request, Response $response, array $args): Response
     {
         $filters = $request->getQueryParam('filter');
@@ -136,31 +129,16 @@ class LocationController extends BaseController
      */
     public function routesByLocation(Request $request, Response $response, array $args): Response
     {
-        $locationId = $args['id'];
-
-        /** @var Route[] $routes */
-        $routes = $this->getRouteRepository()
-            ->listByLocation($locationId);
-        $trails = [];
-        $locations = [];
-
-        foreach ($routes as $route) {
-            $routeTrails = $route->getRelated()->trail;
-            $trails = array_unique(array_merge($trails, $routeTrails), SORT_REGULAR);
-
-            if (!in_array($route->getLocation(), $locations)) {
-                $locations[] = $route->getLocation();
-            }
-        }
-        $this->getEntityManager()->flush();
-
-        return $response->withJson((object) [
-            'results' => $this->extractDetails($routes),
-            'relatedEntities' => (object) [
-                'trail' => $this->extractDetails(array_values($trails)),
-                'location' => $this->extractDetails($locations)
-            ]
-        ]);
+        return $this->routes(
+            $request->withQueryParams([
+                'filter' => [
+                    'rid' => $args['id'],
+                    'activitytype' => 1
+                ]
+            ]),
+            $response,
+            $args
+        );
     }
 
     protected function getTrailforksConnector(): TrailforksConnector
