@@ -30,24 +30,6 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
     const DIFFICULTIES = [0,1,2,3,4];
 
     /**
-     * @deprecated ? May not be used outside tests
-     *
-     * @param object $data
-     * @param Location $location
-     * @return Trail
-     */
-    public static function create(object $data, Location $location): Trail
-    {
-        $trail = new static;
-
-        $trail->applyProperties($data);
-        $trail->setLocation($location);
-        // FIXME: missing profile - remove method
-
-        return $trail;
-    }
-
-    /**
      * Applies self::SCALAR_FIELDS listed properties
      * REVIEW: See User::applyProperties(array)
      *

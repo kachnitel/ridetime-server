@@ -3,28 +3,12 @@ namespace RideTimeServer\Tests\Entities;
 
 use PHPUnit\Framework\TestCase;
 use RideTimeServer\Entities\Trail;
-use RideTimeServer\Entities\Location;
 
 class TrailTest extends TestCase
 {
-    public function testCreate()
-    {
-        $location = new Location();
-
-        $trailData = $this->getRandomTrailData();
-
-        $trail = Trail::create($trailData, $location);
-
-        $this->assertInstanceOf(Trail::class, $trail);
-        $this->assertSame($location, $trail->getLocation());
-
-        $this->assertEquals($trailData->id, $trail->getId());
-        $this->assertEquals($trailData->title, $trail->getTitle());
-    }
-
     public function testSetProfile()
     {
-        $trail = Trail::create($this->getRandomTrailData(), new Location());
+        $trail = new Trail();
 
         $trail->setProfile((object) [
             "distance" => 25.947,
