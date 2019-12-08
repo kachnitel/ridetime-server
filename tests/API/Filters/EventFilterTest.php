@@ -14,9 +14,6 @@ class EventFilterTest extends APITestCase
 {
     public function testApply()
     {
-        $locations = [
-            $this->generateLocation(1)
-        ];
         $filter = new EventFilter($this->entityManager);
 
         $timestamp = time();
