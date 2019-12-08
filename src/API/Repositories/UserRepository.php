@@ -38,6 +38,7 @@ class UserRepository extends BaseRepository
 
     protected function setLocations(User $user, array $locations)
     {
+        $user->getLocations()->clear();
         /** @var \RideTimeServer\API\Repositories\LocationRepository $locationRepo */
         $locationRepo = $this->getEntityManager()
             ->getRepository(Location::class);
