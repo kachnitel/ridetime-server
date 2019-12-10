@@ -198,7 +198,7 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
      * Get events.
      *
      * @param string $status
-     * @return ArrayCollection
+     * @return ArrayCollection|Event[]
      */
     public function getEvents(string $status)
     {
@@ -310,17 +310,25 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
     /**
      * @return ArrayCollection|Friendship[]
      */
-    public function getFriendships()
+    public function getFriendships(int $status = null)
     {
-        return $this->friends;
+        return $status === null
+            ? $this->friends
+            : $this->friends->filter(function (Friendship $fs) use ($status) {
+                return $fs->getStatus() === $status;
+            });
     }
 
     /**
      * @return ArrayCollection|Friendship[]
      */
-    public function getFriendshipsWithMe()
+    public function getFriendshipsWithMe(int $status = null)
     {
-        return $this->friendsWithMe;
+        return $status === null
+            ? $this->friendsWithMe
+            : $this->friendsWithMe->filter(function (Friendship $fs) use ($status) {
+                return $fs->getStatus() === $status;
+            });
     }
 
     /**
@@ -645,17 +653,14 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
     public function getConfirmedFriends(): array
     {
         $friends = [];
-        $filter = function(Friendship $friendship) {
-            return $friendship->getStatus() === Friendship::STATUS_ACCEPTED;
-        };
 
         /** @var Friendship $friendship */
-        foreach ($this->getFriendships()->filter($filter) as $friendship) {
+        foreach ($this->getFriendships(Friendship::STATUS_ACCEPTED) as $friendship) {
             $friends[] = $friendship->getFriend();
         }
 
         /** @var Friendship $friendship */
-        foreach ($this->getFriendshipsWithMe()->filter($filter) as $friendship) {
+        foreach ($this->getFriendshipsWithMe(Friendship::STATUS_ACCEPTED) as $friendship) {
             $friends[] = $friendship->getUser();
         }
 

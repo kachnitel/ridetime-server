@@ -146,4 +146,54 @@ class UserTest extends APITestCase
 
         $this->assertEquals([1, 3], $user->getDetail()->events);
     }
+
+    public function testGetFriendships()
+    {
+        $user = $this->generateUser();
+        $friend = $this->generateUser();
+        $requested = $this->generateUser();
+
+        $user->addFriend($friend);
+        $user->addFriend($requested);
+        $friend->acceptFriend($user);
+
+        $this->assertEquals(1, $user->getFriendships(Friendship::STATUS_ACCEPTED)->count());
+        $this->assertSame($friend, $user->getFriendships(Friendship::STATUS_ACCEPTED)->first()->getFriend());
+    }
+
+    public function testGetFriendshipsWithMe()
+    {
+        $user = $this->generateUser();
+        $friend = $this->generateUser();
+        $requested = $this->generateUser();
+
+        $friend->addFriend($user);
+        $user->acceptFriend($friend);
+        $requested->addFriend($user);
+
+        $this->assertEquals(1, $user->getFriendshipsWithMe(Friendship::STATUS_ACCEPTED)->count());
+        $this->assertSame($friend, $user->getFriendshipsWithMe(Friendship::STATUS_ACCEPTED)->first()->getUser());
+    }
+
+    public function testGetConfirmedFriends()
+    {
+        $friend = $this->generateUser();
+        $requested = $this->generateUser();
+        $user = $this->generateUser();
+        $friendWithMe = $this->generateUser();
+        $requestedWithMe = $this->generateUser();
+
+        // Requests sent by user
+        $user->addFriend($friend);
+        $friend->acceptFriend($user);
+        $user->addFriend($requested);
+
+        // Requests received
+        $friendWithMe->addFriend($user);
+        $user->acceptFriend($friendWithMe);
+        $requestedWithMe->addFriend($user);
+
+        $friends = $user->getConfirmedFriends();
+        $this->assertEqualsCanonicalizing([$friend, $friendWithMe], $friends);
+    }
 }

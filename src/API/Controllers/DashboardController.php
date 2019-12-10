@@ -27,6 +27,7 @@ class DashboardController
      * @param Response $response
      * @param array $args
      * @return Response
+     * @deprecated 0.5.7 In favor of UserController::listFriends
      */
     public function all(Request $request, Response $response, array $args): Response
     {

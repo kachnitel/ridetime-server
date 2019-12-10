@@ -6,6 +6,7 @@ use Slim\Http\Response;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
 use RideTimeServer\API\Repositories\UserRepository;
+use RideTimeServer\Entities\Friendship;
 use RideTimeServer\Entities\User;
 use Slim\Http\UploadedFile;
 use RideTimeServer\Notifications;
@@ -220,6 +221,53 @@ class UserController extends BaseController
         $this->getEntityManager()->flush();
 
         return $response->withStatus(204);
+    }
+
+    /**
+     * $args /friends[/{status}[/{type}]]
+     * /friends { returns all }
+     *   /confirmed { returns confirmed }
+     *   /requests { returns all requests }
+     *     /sent { sent requests }
+     *     /received { received requests }
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function listFriends(Request $request, Response $response, array $args): Response
+    {
+        /** @var User $user */
+        $user = $request->getAttribute('currentUser');
+
+        $result = [];
+
+        if (empty($args) || $args['status'] !== 'requests') {
+            $result['confirmed'] = $this->extractDetails($user->getConfirmedFriends());
+        }
+
+        if (empty($args) || $args['status'] !== 'confirmed') {
+            $result['requests'] = [];
+
+            if (empty($args['type']) || $args['type'] !== 'received') {
+                $result['requests']['sent'] = $this->extractDetails($user
+                    ->getFriendships(Friendship::STATUS_PENDING)
+                    ->map(function (Friendship $fs) { return $fs->getFriend(); })
+                    ->getValues()
+                );
+            }
+
+            if (empty($args['type']) || $args['type'] !== 'sent') {
+                $result['requests']['received'] = $this->extractDetails($user
+                    ->getFriendshipsWithMe(Friendship::STATUS_PENDING)
+                    ->map(function (Friendship $fs) { return $fs->getUser(); })
+                    ->getValues()
+                );
+            }
+        }
+
+        return $response->withJson($result);
     }
 
     protected function validateSameId(int $currentUserId, int $id)

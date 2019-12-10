@@ -106,8 +106,15 @@ class Router
         $app->put('/friends/{id:[0-9]+}/accept', Controllers\UserController::class . ':acceptFriend');
         /** Decline/Delete friendship */
         $app->delete('/friends/{id:[0-9]+}', Controllers\UserController::class . ':removeFriend');
+        /** List friends / requests */
+        $app->get('/friends[/{status}[/{type}]]', Controllers\UserController::class . ':listFriends');
     }
 
+    /**
+     * @param App $app
+     * @return void
+     * @deprecated 0.5.7
+     */
     public static function initDashboardRoutes(App $app)
     {
         /** Get dashboard */
