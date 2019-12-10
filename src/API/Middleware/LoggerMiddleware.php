@@ -31,7 +31,13 @@ class LoggerMiddleware
         return function (Request $request, Response $response, callable $next) use ($container) {
             $startTime = microtime(true);
             $ruStart = getrusage();
-            $container->get('logger')->addDebug($request->getMethod() . ' ' . $request->getUri()->getPath());
+            $requestUid = uniqid();
+            $container->get('logger')->addDebug(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                [
+                    'requestId' => $requestUid
+                ]
+            );
 
             $response = $next($request, $response);
 
@@ -48,12 +54,14 @@ class LoggerMiddleware
                     function ($key) {
                         return in_array($key, [
                             'REQUEST_URI',
-                            'REMOTE_ADDR'
+                            'REMOTE_ADDR',
+                            'HTTP_USER_AGENT'
                         ]);
                     },
                     ARRAY_FILTER_USE_KEY
                 ),
                 'executionTime' => microtime(true) - $startTime,
+                'requestId' => $requestUid,
                 'resources' => [
                     'stime' => $rutime($ruEnd, $ruStart, 'stime') . 'ms',
                     'utime' => $rutime($ruEnd, $ruStart, 'utime') . 'ms'
