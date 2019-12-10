@@ -617,46 +617,32 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
             'id' => $this->getId(),
             'name' => $this->getName(),
             'hometown' => $this->getHometown(),
-            'events' => $this->extractIds($this->getUserEvents()),
-            'friends' => $this->extractIds($this->getUserFriends()),
+            'events' => $this->extractIds($this->getEvents(Event::STATUS_CONFIRMED)->getValues()),
+            'friends' => $this->extractIds($this->getConfirmedFriends()),
             'level' => $this->getLevel(),
             'bike' => $this->getBike(),
             'favourites' => $this->getFavourites(),
             'picture' => $this->getPicture(),
             'email' => $this->getEmail(),
-            'locations' => $this->extractIds($this->getUserLocations())
+            'locations' => $this->extractIds($this->getLocations()->getValues())
         ];
     }
 
     public function getRelated(): object
     {
         return (object) [
-            'event' => $this->extractDetails($this->getUserEvents()),
-            'user' => $this->extractDetails($this->getUserFriends()),
-            'location' => $this->extractDetails($this->getUserLocations())
+            'event' => $this->extractDetails($this->getEvents(Event::STATUS_CONFIRMED)->getValues()),
+            'user' => $this->extractDetails($this->getConfirmedFriends()),
+            'location' => $this->extractDetails($this->getLocations()->getValues())
         ];
     }
 
     /**
-     * Find confirmed events for user
-     *
-     * @return int[]
-     */
-    protected function getUserEvents(): array
-    {
-        return $this->getEvents(Event::STATUS_CONFIRMED)->map(function(Event $event) {
-            return $event;
-        })->getValues();
-    }
-
-    /**
-     * Get friends list for an user
-     * Combines friendships and friendshipsWithMe
-     *
+     * Get list of confirmed friends
      *
      * @return User[]
      */
-    protected function getUserFriends(): array
+    public function getConfirmedFriends(): array
     {
         $friends = [];
         $filter = function(Friendship $friendship) {
@@ -674,13 +660,5 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
         }
 
         return $friends;
-    }
-
-    /**
-     * @return int[]
-     */
-    protected function getUserLocations(): array
-    {
-        return $this->getLocations()->getValues();
     }
 }
