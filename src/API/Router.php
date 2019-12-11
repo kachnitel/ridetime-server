@@ -48,7 +48,7 @@ class Router
     {
         /** List events */
         $app->get('', Controllers\EventController::class . ':list');
-        /** TODO: Filter events REVIEW: Heavily based off of list - look into merging $ids param into filter */
+        /** Filter events REVIEW: Heavily based off of list - look into merging $ids param into filter */
         $app->get('/filter', Controllers\EventController::class . ':filter');
         /** Get event detail */
         $app->get('/{id:[0-9]+}', Controllers\EventController::class . ':get');
