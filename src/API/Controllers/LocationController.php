@@ -119,7 +119,7 @@ class LocationController extends BaseController
         if (!$filters) {
             throw new UserException('Filters are required for listing trails');
         }
-        $filter = $filters ? (new TrailforksFilter($filters))->getTrailforksFilter() : '';
+        $filter = (new TrailforksFilter($filters))->getTrailforksFilter();
 
         $result = $this->getTrailRepository()
             ->remoteFilter($filter);
@@ -135,9 +135,9 @@ class LocationController extends BaseController
     {
         $filters = $request->getQueryParam('filter');
         if (!$filters) {
-            throw new UserException('Filters are required for listing trails');
+            throw new UserException('Filters are required for listing routes');
         }
-        $filter = $filters ? (new TrailforksFilter($filters))->getTrailforksFilter() : '';
+        $filter = (new TrailforksFilter($filters))->getTrailforksFilter();
 
         $result = $this->getRouteRepository()
             ->remoteFilter($filter);
