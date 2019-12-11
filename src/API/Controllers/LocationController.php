@@ -1,8 +1,11 @@
 <?php
 namespace RideTimeServer\API\Controllers;
 
-use RideTimeServer\API\Connectors\TrailforksConnector;
+use Doctrine\Common\Collections\Criteria;
+use RideTimeServer\API\Filters\EventFilter;
 use RideTimeServer\API\Filters\TrailforksFilter;
+use RideTimeServer\Entities\Event;
+use RideTimeServer\Entities\Location;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\Exception\UserException;
@@ -20,9 +23,11 @@ class LocationController extends BaseController
         $result = $this->getLocationRepository()
             ->nearby($latLon, $range);
 
-        return $response->withJson((object) [
-            'results' => $this->extractDetails($result)
-        ]);
+        return $response->withJson($this->getResultData(
+            $result,
+            $request->getQueryParam('related', ''),
+            $request->getQueryParam('eventFilters', [])
+        ));
     }
 
     public function bbox(Request $request, Response $response, array $args): Response
@@ -31,9 +36,11 @@ class LocationController extends BaseController
         $result = $this->getLocationRepository()
             ->bbox($bbox);
 
-        return $response->withJson((object) [
-            'results' => $this->extractDetails($result)
-        ]);
+        return $response->withJson($this->getResultData(
+            $result,
+            $request->getQueryParam('related', ''),
+            $request->getQueryParam('eventFilters', [])
+        ));
     }
 
     public function search(Request $request, Response $response, array $args): Response
@@ -42,9 +49,47 @@ class LocationController extends BaseController
         $result = $this->getLocationRepository()
             ->search($name);
 
-        return $response->withJson((object) [
-            'results' => $this->extractDetails($result)
-        ]);
+        return $response->withJson($this->getResultData(
+            $result,
+            $request->getQueryParam('related', ''),
+            $request->getQueryParam('eventFilters', [])
+        ));
+    }
+
+    /**
+     * @param Location[] $locations
+     * @param boolean $events
+     * @param array $eventFilters
+     * @return object
+     */
+    protected function getResultData(array $locations, $related = '', $eventFilters = [])
+    {
+        $data = (object) [
+            'results' => $this->extractDetails($locations)
+        ];
+        if ($related === 'event') {
+            $data->relatedEntities = (object) [
+                'event' => $this->extractDetails($this->getEventsInLocations($locations, $eventFilters))
+            ];
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param Location[] $locations
+     * @param array $filters
+     * @return Event[]
+     */
+    protected function getEventsInLocations(array $locations, array $filters = []): array
+    {
+        $filter = new EventFilter($this->getEntityManager());
+        $filter->apply($filters);
+
+        return $this->getEventRepository()->matching(
+            $filter->getCriteria()
+                ->andWhere(Criteria::expr()->in('location', $locations))
+        )->getValues();
     }
 
     /**
