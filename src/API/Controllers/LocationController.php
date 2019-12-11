@@ -5,7 +5,6 @@ use RideTimeServer\API\Connectors\TrailforksConnector;
 use RideTimeServer\API\Filters\TrailforksFilter;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use RideTimeServer\Entities\Route;
 use RideTimeServer\Exception\UserException;
 
 class LocationController extends BaseController
@@ -139,10 +138,5 @@ class LocationController extends BaseController
             $response,
             $args
         );
-    }
-
-    protected function getTrailforksConnector(): TrailforksConnector
-    {
-        return $this->container->get('trailforks');
     }
 }
