@@ -47,6 +47,7 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
      * @param array $latLon [lat, lon]
      * @param integer $range In km
      * @return Location[]
+     * @deprecated 0.5.9
      */
     public function nearby(array $latLon, int $range): array
     {
@@ -66,6 +67,7 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
      *
      * @param float[] $bbox
      * @return Location[]
+     * @deprecated 0.5.9
      */
     public function bbox(array $bbox): array
     {
@@ -80,6 +82,7 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
      *
      * @param string $name
      * @return Location[]
+     * @deprecated 0.5.9
      */
     public function search(string $name): array
     {

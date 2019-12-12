@@ -73,12 +73,14 @@ class Router
 
     public static function initLocationRoutes(App $app)
     {
-        /** Nearby locations */
+        /** @deprecated Nearby locations */
         $app->get('/nearby', Controllers\LocationController::class . ':nearby');
-        /** Bounding box */
+        /** @deprecated Bounding box */
         $app->get('/bbox', Controllers\LocationController::class . ':bbox');
-        /** Search */
+        /** @deprecated Search */
         $app->get('/search', Controllers\LocationController::class . ':search');
+        /** Filter - deprecates above 3 */
+        $app->get('', Controllers\LocationController::class . ':filter');
         /** List location top routes and trails, tunnel through to Trailforks */
         $app->get('/{id:[0-9]+}/routes', Controllers\LocationController::class . ':routesByLocation');
         $app->get('/{id:[0-9]+}/trails', Controllers\LocationController::class . ':trailsByLocation');

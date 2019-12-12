@@ -12,6 +12,14 @@ use RideTimeServer\Exception\UserException;
 
 class LocationController extends BaseController
 {
+    /**
+     * @deprecated 0.5.9
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function nearby(Request $request, Response $response, array $args): Response
     {
         $latLon = [
@@ -30,6 +38,14 @@ class LocationController extends BaseController
         ));
     }
 
+    /**
+     * @deprecated 0.5.9
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function bbox(Request $request, Response $response, array $args): Response
     {
         $bbox = $request->getQueryParam('coords');
@@ -43,6 +59,14 @@ class LocationController extends BaseController
         ));
     }
 
+    /**
+     * @deprecated 0.5.9
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function search(Request $request, Response $response, array $args): Response
     {
         $name = $request->getQueryParam('name');
@@ -53,6 +77,25 @@ class LocationController extends BaseController
             $result,
             $request->getQueryParam('related', ''),
             $request->getQueryParam('eventFilters', [])
+        ));
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function filter(Request $request, Response $response, array $args): Response
+    {
+        $filter = (new TrailforksFilter($request->getQueryParam('filter', [])))->getTrailforksFilter();
+        $result = $this->getLocationRepository()
+            ->remoteFilter($filter);
+
+        return $response->withJson($this->getResultData(
+            $result,
+            $request->getQueryParam('related', ''),
+            $request->getQueryParam('eventFilter', [])
         ));
     }
 
