@@ -17,6 +17,6 @@ class TrailforksFilterTest extends TestCase
         $filter = new TrailforksFilter($filters);
         $result = $filter->getTrailforksFilter();
 
-        $this->assertEquals('difficulty::1,2;activitytype::1;search::txt;', $result);
+        $this->assertEquals('difficulty::1,2;activitytype::1;search::txt', $result);
     }
 }
