@@ -21,7 +21,7 @@ class TrailforksFilter
         foreach ($this->filters as $key => $value) {
             $result .= $this->getFilterItem($key, $value);
         }
-        return $result;
+        return rtrim($result, ';');
     }
 
     /**
