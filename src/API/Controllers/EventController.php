@@ -166,18 +166,19 @@ class EventController extends BaseController
 
         // Extract tokens of event members
         // REVIEW: sendNotification should accept User[] instead of $tokens param
-        // TODO: filter confirmed members
         $tokens = [];
-        $event->getMembers()->map(function(EventMember $membership) use (&$tokens, $currentUser) {
-            // Skip own notification tokens
-            if ($membership->getUser() === $currentUser) {
-                return;
-            }
-            array_push(
-                $tokens,
-                ...$membership->getUser()->getNotificationsTokens()
-            );
-        });
+        $event->getMembers()
+            ->filter(function(EventMember $membership) use ($currentUser) {
+                return ($membership->getStatus() === Event::STATUS_CONFIRMED) &&
+                    ($membership->getUser() !== $currentUser);
+            })
+            ->map(function(EventMember $membership) use (&$tokens) {
+                array_push(
+                    $tokens,
+                    ...$membership->getUser()->getNotificationsTokens()
+                );
+            })
+            ->getValues();
 
         $notifications = new Notifications();
         $notifications->sendNotification(
