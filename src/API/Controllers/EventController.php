@@ -62,7 +62,7 @@ class EventController extends BaseController
                 return !$comment->getSeenBy()->contains($currentUser);
             })->getValues()
         ), SORT_REGULAR);
-        $related->message = $this->extractDetails($comments);
+        $related->comment = $this->extractDetails($comments);
 
         return $response->withJson((object) [
             'result' => $event->getDetail(),
