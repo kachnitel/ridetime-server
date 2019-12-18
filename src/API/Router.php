@@ -70,6 +70,7 @@ class Router
         /** Accept request (moderator only TODO:) */
         $app->put('/{id:[0-9]+}/join/{userId:[0-9]+}', Controllers\EventController::class . ':acceptRequest');
         /** - Comment routes - */
+        $app->get('/{id:[0-9]+}/comments', Controllers\EventController::class . ':getComments');
         $app->post('/{id:[0-9]+}/comments', Controllers\EventController::class . ':addComment');
     }
 

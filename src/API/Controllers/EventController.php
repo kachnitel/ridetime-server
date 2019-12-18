@@ -46,11 +46,27 @@ class EventController extends BaseController
      */
     public function get(Request $request, Response $response, array $args): Response
     {
+        /** @var User $currentUser */
+        $currentUser = $request->getAttribute('currentUser');
+        /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
+
+        $related = $event->getRelated();
+
+        // Combines last 10 + all unread comments
+        $comments = array_unique(array_merge(
+            $event->getComments()->matching(
+                Criteria::create()->orderBy(['timestamp' => Criteria::DESC])->setMaxResults(10)
+            )->getValues(),
+            $event->getComments()->filter(function (Comment $comment) use ($currentUser) {
+                return !$comment->getSeenBy()->contains($currentUser);
+            })->getValues()
+        ), SORT_REGULAR);
+        $related->message = $this->extractDetails($comments);
 
         return $response->withJson((object) [
             'result' => $event->getDetail(),
-            'relatedEntities' => $event->getRelated()
+            'relatedEntities' => $related
         ]);
     }
 
@@ -253,6 +269,14 @@ class EventController extends BaseController
         return $response->withStatus(200)->withJson(['status' => $membership->getDetail()]);
     }
 
+    /**
+     * TODO: notify members
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function addComment(Request $request, Response $response, array $args): Response
     {
         /** @var User $currentUser */
@@ -284,6 +308,16 @@ class EventController extends BaseController
         return $response->withJson((object) [
             'result' => $comment->getDetail(),
             'relatedEntities' => $comment->getRelated()
+        ]);
+    }
+
+    public function getComments(Request $request, Response $response, array $args): Response
+    {
+        /** @var Event $event */
+        $event = $this->getEventRepository()->get($args['id']);
+
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($event->getComments()->getValues())
         ]);
     }
 
