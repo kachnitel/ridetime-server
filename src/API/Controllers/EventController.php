@@ -182,21 +182,7 @@ class EventController extends BaseController
         $membership = $this->getMembershipManager()->join($event, $currentUser);
         $this->getEventRepository()->saveEntity($membership);
 
-        // Extract tokens of event members
-        // REVIEW: sendNotification should accept User[] instead of $tokens param
-        $tokens = [];
-        $event->getMembers()
-            ->filter(function(EventMember $membership) use ($currentUser) {
-                return ($membership->getStatus() === Event::STATUS_CONFIRMED) &&
-                    ($membership->getUser() !== $currentUser);
-            })
-            ->map(function(EventMember $membership) use (&$tokens) {
-                array_push(
-                    $tokens,
-                    ...$membership->getUser()->getNotificationsTokens()
-                );
-            })
-            ->getValues();
+        $tokens = $this->getMemberNotificationTokens($event, $currentUser);
 
         $notifications = new Notifications();
         $notifications->sendNotification(
@@ -305,6 +291,21 @@ class EventController extends BaseController
         $this->getEntityManager()->persist($comment);
         $this->getEntityManager()->flush();
 
+        $tokens = $this->getMemberNotificationTokens($event, $currentUser);
+
+        $notifications = new Notifications();
+        $notifications->sendNotification(
+            $tokens,
+            $currentUser->getName() . ' commented on ' . $event->getTitle(),
+            $comment->getMessage(),
+            (object) [
+                'type' => 'eventCommentAdded',
+                'from' => $currentUser->getId(),
+                'event' => $event->getDetail()
+            ],
+            'eventComment'
+        );
+
         return $response->withJson((object) [
             'result' => $comment->getDetail()
         ]);
@@ -318,6 +319,32 @@ class EventController extends BaseController
         return $response->withJson((object) [
             'results' => $this->extractDetails($event->getComments()->getValues())
         ]);
+    }
+
+    /**
+     * Extract tokens of confirmed members
+     * REVIEW: sendNotification should accept User[] instead of $tokens param
+     *
+     * @param Event $event
+     * @param User $currentUser
+     * @return array
+     */
+    protected function getMemberNotificationTokens(Event $event, User $currentUser = null): array
+    {
+        $tokens = [];
+        $event->getMembers()
+            ->filter(function(EventMember $membership) use ($currentUser) {
+                return ($membership->getStatus() === Event::STATUS_CONFIRMED) &&
+                    ($membership->getUser() !== $currentUser);
+            })
+            ->map(function(EventMember $membership) use (&$tokens) {
+                array_push(
+                    $tokens,
+                    ...$membership->getUser()->getNotificationsTokens()
+                );
+            })
+            ->getValues();
+        return $tokens;
     }
 
     protected function getMembershipManager(): MembershipManager
