@@ -6,10 +6,12 @@ use RideTimeServer\API\Filters\EventFilter;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\API\Repositories\EventRepository;
+use RideTimeServer\Entities\Comment;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Notifications;
 use RideTimeServer\Entities\User;
+use RideTimeServer\Exception\UserException;
 use RideTimeServer\MembershipManager;
 
 use function GuzzleHttp\json_decode;
@@ -249,6 +251,40 @@ class EventController extends BaseController
         $this->getEventRepository()->saveEntity($membership);
 
         return $response->withStatus(200)->withJson(['status' => $membership->getDetail()]);
+    }
+
+    public function addComment(Request $request, Response $response, array $args): Response
+    {
+        /** @var User $currentUser */
+        $currentUser = $request->getAttribute('currentUser');
+        /** @var Event $event */
+        $event = $this->getEventRepository()->get($args['id']);
+
+        if (!$event->getMembers()->exists(function ($key, EventMember $eventMember) use ($currentUser) {
+            return $eventMember->getUser() === $currentUser &&
+                $eventMember->getStatus() === Event::STATUS_CONFIRMED;
+        })) {
+            throw new UserException(
+                'Cannot comment on an event you aren\'t a member of',
+                403
+            );
+        }
+
+        $data = json_decode($request->getBody());
+        $comment = new Comment();
+        $comment->setMessage($data->message);
+        $comment->setAuthor($currentUser);
+        $comment->addSeenBy($currentUser);
+        $comment->setEvent($event);
+        $comment->setTimestamp(new \DateTime());
+
+        $this->getEntityManager()->persist($comment);
+        $this->getEntityManager()->flush();
+
+        return $response->withJson((object) [
+            'result' => $comment->getDetail(),
+            'relatedEntities' => $comment->getRelated()
+        ]);
     }
 
     protected function getMembershipManager(): MembershipManager

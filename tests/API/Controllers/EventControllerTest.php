@@ -148,6 +148,43 @@ class EventControllerTest extends APITestCase
         $this->assertEquals(Event::STATUS_CONFIRMED, $result->status);
     }
 
+    public function testAddComment()
+    {
+        $currentUser = $this->generateUser();
+        $event = $this->generateEvent();
+        $membership = new EventMember();
+        $membership->setUser($currentUser);
+        $membership->setEvent($event);
+        $membership->setStatus(Event::STATUS_CONFIRMED);
+        $event->addMember($membership);
+        $this->entityManager->flush();
+
+        $body = new Stream(fopen('php://memory', 'r+'));
+        $body->write(json_encode(['message' => 'Test comment']));
+
+        $request = $this->getRequest('POST')
+            ->withAttribute('currentUser', $currentUser)
+            ->withBody($body);
+
+        $container = new Container([
+            'entityManager' => $this->entityManager,
+            'logger' => new Logger('EventControllerTest')
+        ]);
+        $controller = new EventController($container);
+
+        $result = json_decode(
+            $controller->addComment(
+                $request,
+                new Response(),
+                ['id' => $event->getId()]
+            )->getBody()
+        )->result;
+
+        $this->assertEquals(json_decode($request->getBody())->message, $result->message);
+        $this->assertEquals($currentUser->getId(), $result->author);
+        $this->assertEquals($event->getId(), $result->event);
+    }
+
     public function getRequest(string $method): Request
     {
         return new Request(

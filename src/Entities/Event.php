@@ -82,11 +82,19 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     private $private = false;
 
     /**
+     * @var PersistentCollection|Comment[]
+     *
+     * @OneToMany(targetEntity="Comment", mappedBy="event", cascade={"persist", "remove"})
+     */
+    private $comments;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->members = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     /**
@@ -310,6 +318,37 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     }
 
     /**
+     * Get the value of comments
+     *
+     * @return PersistentCollection|Comment[]
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    /**
+     * Set the value of comments
+     *
+     * @param PersistentCollection|Comment[] $comments
+     *
+     * @return self
+     */
+    public function setComments($comments)
+    {
+        $this->comments = $comments;
+
+        return $this;
+    }
+
+    public function addComment(Comment $comment)
+    {
+        $this->comments->add($comment);
+
+        return $this;
+    }
+
+    /**
      * Get event detail
      *
      * @return object
@@ -326,7 +365,8 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
             'location' => $this->getLocation()->getId(),
             'terrain' => $this->getTerrain(),
             'route' => $this->getRoute(),
-            'datetime' => $this->getDate()->getTimestamp()
+            'datetime' => $this->getDate()->getTimestamp(),
+            'comments' => $this->extractIds($this->getComments()->getValues())
         ];
     }
 

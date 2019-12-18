@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @Entity
  * @Table(name="comment")
  */
-class Comment
+class Comment extends PrimaryEntity implements PrimaryEntityInterface
 {
     /**
      * @Id
@@ -48,12 +48,14 @@ class Comment
      * @var ArrayCollection|User[]
      *
      * @ManyToMany(targetEntity="User")
-     * @JoinTable(name="comment_seen_by",
-     *   joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id", unique=true)}
-     * )
+     * @JoinTable(name="comment_seen_by")
      */
     private $seenBy;
+
+    public function __construct()
+    {
+        $this->seenBy = new ArrayCollection();
+    }
 
     /**
      * Get the value of id
@@ -195,5 +197,27 @@ class Comment
         $this->seenBy->add($user);
 
         return $this;
+    }
+
+    public function getDetail(): object
+    {
+        return (object) [
+            'id' => $this->getId(),
+            'author' => $this->getAuthor()->getId(),
+            'event' => $this->getEvent()->getId(),
+            'message' => $this->getMessage(),
+            'timestamp' => $this->getTimestamp()->getTimestamp(),
+            'seenBy' => $this->getSeenBy()
+                ->map(function (User $user) { return $user->getId(); })
+                ->getValues()
+        ];
+    }
+
+    public function getRelated(): object
+    {
+        return (object) [
+            'user' => [$this->getAuthor()->getDetail()],
+            'event' => [$this->getEvent()->getDetail()]
+        ];
     }
 }
