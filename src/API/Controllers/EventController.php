@@ -306,8 +306,7 @@ class EventController extends BaseController
         $this->getEntityManager()->flush();
 
         return $response->withJson((object) [
-            'result' => $comment->getDetail(),
-            'relatedEntities' => $comment->getRelated()
+            'result' => $comment->getDetail()
         ]);
     }
 
