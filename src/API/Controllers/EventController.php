@@ -285,7 +285,8 @@ class EventController extends BaseController
             (object) [
                 'type' => 'eventCommentAdded',
                 'from' => $currentUser->getId(),
-                'event' => $event->getDetail()
+                'event' => $event->getDetail(),
+                'comment' => $comment->getDetail()
             ],
             'eventComment'
         );
