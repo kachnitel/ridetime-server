@@ -46,27 +46,11 @@ class EventController extends BaseController
      */
     public function get(Request $request, Response $response, array $args): Response
     {
-        /** @var User $currentUser */
-        $currentUser = $request->getAttribute('currentUser');
-        /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
-
-        $related = $event->getRelated();
-
-        // Combines last 10 + all unread comments
-        $comments = array_unique(array_merge(
-            $event->getComments()->matching(
-                Criteria::create()->orderBy(['timestamp' => Criteria::DESC])->setMaxResults(10)
-            )->getValues(),
-            $event->getComments()->filter(function (Comment $comment) use ($currentUser) {
-                return !$comment->getSeenBy()->contains($currentUser);
-            })->getValues()
-        ), SORT_REGULAR);
-        $related->comment = $this->extractDetails($comments);
 
         return $response->withJson((object) [
             'result' => $event->getDetail(),
-            'relatedEntities' => $related
+            'relatedEntities' => $event->getRelated()
         ]);
     }
 
@@ -333,11 +317,11 @@ class EventController extends BaseController
     {
         $tokens = [];
         $event->getMembers()
-            ->filter(function(EventMember $membership) use ($currentUser) {
+            ->filter(function (EventMember $membership) use ($currentUser) {
                 return ($membership->getStatus() === Event::STATUS_CONFIRMED) &&
                     ($membership->getUser() !== $currentUser);
             })
-            ->map(function(EventMember $membership) use (&$tokens) {
+            ->map(function (EventMember $membership) use (&$tokens) {
                 array_push(
                     $tokens,
                     ...$membership->getUser()->getNotificationsTokens()
