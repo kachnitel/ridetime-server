@@ -323,6 +323,9 @@ class EventController extends BaseController
                     ($membership->getUser() !== $currentUser);
             })
             ->map(function (EventMember $membership) use (&$tokens) {
+                if ($membership->getUser()->getNotificationsTokens()->isEmpty()) {
+                    return;
+                }
                 array_push(
                     $tokens,
                     ...$membership->getUser()->getNotificationsTokens()
