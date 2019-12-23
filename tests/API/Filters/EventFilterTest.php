@@ -69,6 +69,7 @@ class EventFilterTest extends APITestCase
             $this->generateLocation(1),
             $this->generateLocation(3)
         ];
+        $this->entityManager->flush();
         $filter = new EventFilter($this->entityManager);
         $filter->location([1, 3]);
 

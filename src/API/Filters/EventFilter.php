@@ -60,10 +60,8 @@ class EventFilter
      */
     public function location(array $locationIDs)
     {
-        $locations = [];
-        foreach ($locationIDs as $locationId) {
-            $locations[] = $this->entityManager->find(Location::class, $locationId);
-        }
+        $locations = $this->entityManager->getRepository(Location::class)
+            ->findBy(['id' => $locationIDs]);
         $this->criteria->andWhere(Criteria::expr()->in('location', $locations));
     }
 
