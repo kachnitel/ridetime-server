@@ -1,6 +1,8 @@
 <?php
 namespace RideTimeServer\API\Repositories;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityRepository;
@@ -33,12 +35,12 @@ abstract class BaseRepository extends EntityRepository
 
     /**
      * @param array $ids
-     * @return array
+     * @return Collection
      */
-    public function list(array $ids = null): array
+    public function list(array $ids = null): Collection
     {
         if (!$ids) {
-            return $this->findAll();
+            return new ArrayCollection($this->findAll());
         }
 
         $criteria = Criteria::create()->where(Criteria::expr()->in(
@@ -46,7 +48,7 @@ abstract class BaseRepository extends EntityRepository
             array_map('intval', $ids)
         ));
 
-        return $this->matching($criteria)->getValues();
+        return $this->matching($criteria);
     }
 
     /**

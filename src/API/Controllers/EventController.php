@@ -62,7 +62,7 @@ class EventController extends BaseController
      */
     public function list(Request $request, Response $response, array $args): Response
     {
-        $result = $this->getEventRepository()->list($request->getQueryParam('ids'));
+        $result = $this->getEventRepository()->list($request->getQueryParam('ids'))->getValues();
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
