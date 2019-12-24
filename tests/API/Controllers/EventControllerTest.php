@@ -17,7 +17,7 @@ use function GuzzleHttp\json_decode;
 
 class EventControllerTest extends APITestCase
 {
-    public function testFilterFindsMatchingRoute()
+    public function testFilterFindsMatchingEvent()
     {
         $container = new Container([
             'entityManager' => $this->entityManager,
