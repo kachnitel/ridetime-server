@@ -132,6 +132,7 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
         $this->friends = new ArrayCollection();
         $this->friendsWithMe = new ArrayCollection();
         $this->locations = new ArrayCollection();
+        $this->notificationsTokens = new ArrayCollection();
     }
 
     /**
