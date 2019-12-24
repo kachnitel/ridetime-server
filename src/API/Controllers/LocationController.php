@@ -6,6 +6,7 @@ use RideTimeServer\API\Filters\EventFilter;
 use RideTimeServer\API\Filters\TrailforksFilter;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\Location;
+use RideTimeServer\Entities\User;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\Exception\UserException;
@@ -26,25 +27,25 @@ class LocationController extends BaseController
 
         return $response->withJson($this->getResultData(
             $result,
-            $request->getQueryParam('related', ''),
-            $request->getQueryParam('eventFilter', [])
+            $request
         ));
     }
 
-    /**
-     * @param Location[] $locations
-     * @param boolean $events
-     * @param array $eventFilters
-     * @return object
-     */
-    protected function getResultData(array $locations, $related = '', $eventFilters = [])
+    protected function getResultData(array $locations, Request $request)
     {
+        $related = $request->getQueryParam('related', '');
+        $eventFilters = $request->getQueryParam('eventFilter', []);
+
         $data = (object) [
             'results' => $this->extractDetails($locations)
         ];
         if ($related === 'event') {
             $data->relatedEntities = (object) [
-                'event' => $this->extractDetails($this->getEventsInLocations($locations, $eventFilters))
+                'event' => $this->extractDetails($this->getEventsInLocations(
+                    $locations,
+                    $request->getAttribute('currentUser'),
+                    $eventFilters
+                ))
             ];
         }
 
@@ -53,18 +54,26 @@ class LocationController extends BaseController
 
     /**
      * @param Location[] $locations
+     * @param User $currentUser
      * @param array $filters
      * @return Event[]
      */
-    protected function getEventsInLocations(array $locations, array $filters = []): array
+    protected function getEventsInLocations(array $locations, ?User $currentUser, array $filters = []): array
     {
+        // REVIEW: see Router location routes $cuMiddleware setup
+        if ($currentUser === null) {
+            return [];
+        }
         $filter = new EventFilter($this->getEntityManager());
         $filter->apply($filters);
 
-        return $this->getEventRepository()->matching(
-            $filter->getCriteria()
-                ->andWhere(Criteria::expr()->in('location', $locations))
-        )->getValues();
+        return $this->getEventRepository()
+            ->matching(
+                $filter->getCriteria()
+                    ->andWhere(Criteria::expr()->in('location', $locations))
+            )
+            ->filter(function (Event $event) use ($currentUser) { return $event->isVisible($currentUser); })
+            ->getValues();
     }
 
     /**

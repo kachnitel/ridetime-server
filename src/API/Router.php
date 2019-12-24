@@ -32,7 +32,10 @@ class Router
                 $app->group('/events', function (App $app) { self::initEventRoutes($app); });
                 $app->group('/users', function (App $app) { self::initUserRoutes($app); });
             })->add($cuMiddleware->getMiddleware(true));
-            $app->group('/locations', function (App $app) { self::initLocationRoutes($app); });
+            // REVIEW: dirty. Should remove $requireUser param from CUMiddleware,
+            // use separate route without user for sign up
+            $app->group('/locations', function (App $app) { self::initLocationRoutes($app); })
+                ->add($cuMiddleware->getMiddleware(false));
         });
 
         $this->app->group('/dashboard', function (App $app) {
