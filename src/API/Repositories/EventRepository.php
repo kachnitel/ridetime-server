@@ -31,6 +31,12 @@ class EventRepository extends BaseRepository
         if (isset($data->route)) {
             $event->setRoute($data->route);
         }
+        if (isset($data->visibility)) {
+            $event->setVisibility($data->visibility);
+        }
+        if (isset($data->private)) {
+            $event->setPrivate($data->private);
+        }
 
         $membership = new EventMember();
         $membership->setEvent($event);

@@ -16,9 +16,14 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     use DifficultyTrait;
     use LocationTrait;
 
-    const STATUS_CONFIRMED = "confirmed";
-    const STATUS_INVITED = "invited";
-    const STATUS_REQUESTED = "requested";
+    const STATUS_CONFIRMED = 'confirmed';
+    const STATUS_INVITED = 'invited';
+    const STATUS_REQUESTED = 'requested';
+
+    const VISIBILITY_PUBLIC = 'public';
+    const VISIBILITY_FRIENDS = 'friends';
+    const VISIBILITY_INVITED = 'invited';
+    const VISIBILITY_MEMBERS_FRIENDS = 'memberfriends';
 
     /**
      * @Id
@@ -80,6 +85,13 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
      * @var bool
      */
     private $private = false;
+
+    /**
+     * @Column(type="string", length=16)
+     *
+     * @var string
+     */
+    private $visibility = self::VISIBILITY_PUBLIC;
 
     /**
      * @var PersistentCollection|Comment[]
@@ -366,7 +378,9 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
             'terrain' => $this->getTerrain(),
             'route' => $this->getRoute(),
             'datetime' => $this->getDate()->getTimestamp(),
-            'comments' => $this->extractIds($this->getComments()->getValues())
+            'comments' => $this->extractIds($this->getComments()->getValues()),
+            'private' => $this->getPrivate(),
+            'visibility' => $this->getVisibility()
         ];
     }
 
@@ -395,5 +409,49 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
         }
 
         return $members;
+    }
+
+    /**
+     * Get the value of visibility
+     *
+     * @return string
+     */
+    public function getVisibility(): string
+    {
+        return $this->visibility;
+    }
+
+    /**
+     * Set the value of visibility
+     *
+     * @param string $visibility Event::VISIBILITY_*
+     *
+     * @return self
+     */
+    public function setVisibility(string $visibility)
+    {
+        $this->visibility = $visibility;
+
+        return $this;
+    }
+
+    public function isVisible(User $user): bool
+    {
+        if ( // Members and invited users always see an event
+            $this->visibility === self::VISIBILITY_PUBLIC ||
+            in_array($user, $this->getMembersWithStatus(self::STATUS_CONFIRMED), true) ||
+            in_array($user, $this->getMembersWithStatus(self::STATUS_INVITED), true)
+        ) {
+            return true;
+        }
+        if ($this->visibility === self::VISIBILITY_FRIENDS) {
+            return in_array($user, $this->createdBy->getConfirmedFriends(), true);
+        }
+        if ($this->visibility === self::VISIBILITY_MEMBERS_FRIENDS) {
+            return $this->getMembers()->exists(function (int $key, EventMember $membership) use ($user) {
+                return in_array($user, $membership->getUser()->getConfirmedFriends(), true);
+            });
+        }
+        return false;
     }
 }

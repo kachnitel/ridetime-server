@@ -108,19 +108,18 @@ class APITestCase extends RTTestCase
         if ($createdBy === null) {
             $createdBy = $this->generateUser();
         }
+        $members[] = $createdBy;
         $event->setCreatedBy($createdBy);
         if ($location === null) {
             $location = $this->generateLocation();
         }
         $event->setLocation($location);
-        if ($members !== []) {
-            foreach ($members as $member) {
-                $membership = new EventMember();
-                $membership->setEvent($event);
-                $membership->setUser($member);
-                $membership->setStatus(Event::STATUS_CONFIRMED);
-                $event->addMember($membership);
-            }
+        foreach ($members as $member) {
+            $membership = new EventMember();
+            $membership->setEvent($event);
+            $membership->setUser($member);
+            $membership->setStatus(Event::STATUS_CONFIRMED);
+            $event->addMember($membership);
         }
 
         return $event;

@@ -85,4 +85,71 @@ class EventTest extends EntityTestCase
         $membership->accept();
         $this->assertEquals(Event::STATUS_CONFIRMED, $membership->getStatus());
     }
+
+    /**
+     * @param User $user
+     * @param Event $event
+     * @param string $visibility
+     * @param boolean $expected Whether the event is visible to $user
+     * @param string $userRelation Description of user relation
+     * @return void
+     *
+     * @dataProvider isVisibleProvider
+     */
+    public function testIsVisible(User $user, Event $event, string $visibility, bool $expected, string $userRelation)
+    {
+        $not = $expected ? '' : 'NOT';
+        $event->setVisibility($visibility);
+
+        $this->assertEquals(
+            $expected,
+            $event->isVisible($user),
+            "Failed asserting that '{$userRelation}' CAN{$not} see '{$visibility}' event"
+        );
+    }
+
+    public function isVisibleProvider()
+    {
+        $creator = new User();
+        $friend = new User();
+        $creator->addFriend($friend)->accept();
+        $member = new User();
+        $stranger = new User();
+        $memberfriend = new User();
+        $member->addFriend($memberfriend)->accept();
+        $invited = new User();
+
+        $event = new Event();
+        $event->setCreatedBy($creator);
+        $event->addMember((new EventMember())->setUser($creator)->setEvent($event)->confirm());
+        $event->addMember((new EventMember())->setUser($member)->setEvent($event)->confirm());
+        $event->invite($invited);
+
+        return [
+            [ $creator, $event, Event::VISIBILITY_PUBLIC, true, 'creator' ],
+            [ $creator, $event, Event::VISIBILITY_FRIENDS, true, 'creator' ],
+            [ $creator, $event, Event::VISIBILITY_INVITED, true, 'creator' ],
+            [ $creator, $event, Event::VISIBILITY_MEMBERS_FRIENDS, true, 'creator' ],
+            [ $member, $event, Event::VISIBILITY_PUBLIC, true, 'member' ],
+            [ $member, $event, Event::VISIBILITY_FRIENDS, true, 'member' ],
+            [ $member, $event, Event::VISIBILITY_INVITED, true, 'member' ],
+            [ $member, $event, Event::VISIBILITY_MEMBERS_FRIENDS, true, 'member' ],
+            [ $friend, $event, Event::VISIBILITY_PUBLIC, true, 'friend' ],
+            [ $friend, $event, Event::VISIBILITY_FRIENDS, true, 'friend' ],
+            [ $friend, $event, Event::VISIBILITY_INVITED, false, 'friend' ],
+            [ $friend, $event, Event::VISIBILITY_MEMBERS_FRIENDS, true, 'friend' ],
+            [ $memberfriend, $event, Event::VISIBILITY_PUBLIC, true, 'memberfriend' ],
+            [ $memberfriend, $event, Event::VISIBILITY_FRIENDS, false, 'memberfriend' ],
+            [ $memberfriend, $event, Event::VISIBILITY_INVITED, false, 'memberfriend' ],
+            [ $memberfriend, $event, Event::VISIBILITY_MEMBERS_FRIENDS, true, 'memberfriend' ],
+            [ $stranger, $event, Event::VISIBILITY_PUBLIC, true, 'stranger' ],
+            [ $stranger, $event, Event::VISIBILITY_FRIENDS, false, 'stranger' ],
+            [ $stranger, $event, Event::VISIBILITY_INVITED, false, 'stranger' ],
+            [ $stranger, $event, Event::VISIBILITY_MEMBERS_FRIENDS, false, 'stranger' ],
+            [ $invited, $event, Event::VISIBILITY_PUBLIC, true, 'invited' ],
+            [ $invited, $event, Event::VISIBILITY_FRIENDS, true, 'invited' ],
+            [ $invited, $event, Event::VISIBILITY_INVITED, true, 'invited' ],
+            [ $invited, $event, Event::VISIBILITY_MEMBERS_FRIENDS, true, 'invited' ]
+        ];
+    }
 }

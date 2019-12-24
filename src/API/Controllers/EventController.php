@@ -46,7 +46,12 @@ class EventController extends BaseController
      */
     public function get(Request $request, Response $response, array $args): Response
     {
+        /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
+
+        if (!$event->isVisible($request->getAttribute('currentUser'))) {
+            throw new UserException("Event {$args['id']} is not visible to current user", 403);
+        }
 
         return $response->withJson((object) [
             'result' => $event->getDetail(),
@@ -62,7 +67,12 @@ class EventController extends BaseController
      */
     public function list(Request $request, Response $response, array $args): Response
     {
-        $result = $this->getEventRepository()->list($request->getQueryParam('ids'))->getValues();
+        $result = $this->getEventRepository()
+            ->list($request->getQueryParam('ids'))
+            ->filter(function (Event $event) use ($request) {
+                return $event->isVisible($request->getAttribute('currentUser'));
+            })
+            ->getValues();
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
@@ -92,7 +102,12 @@ class EventController extends BaseController
         $filter = new EventFilter($this->getEntityManager(), $criteria);
         $filter->apply($filters);
 
-        $result = $this->getEventRepository()->matching($criteria)->getValues();
+        $result = $this->getEventRepository()
+            ->matching($criteria)
+            ->filter(function (Event $event) use ($request) {
+                return $event->isVisible($request->getAttribute('currentUser'));
+            })
+            ->getValues();
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
@@ -300,6 +315,10 @@ class EventController extends BaseController
     {
         /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
+
+        if (!$event->isVisible($request->getAttribute('currentUser'))) {
+            throw new UserException("Event {$args['id']} is not visible to current user", 403);
+        }
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($event->getComments()->getValues())

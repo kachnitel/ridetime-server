@@ -26,7 +26,8 @@ class MembershipManagerTest extends APITestCase
         $event->addMember($member2);
 
         $manager->removeMember($event, $user1);
-        $this->assertCount(1, $event->getMembers());
+        $this->assertCount(2, $event->getMembers()); // $user2 & createdBy
         $this->assertContains($member2, $event->getMembers());
+        $this->assertNotContains($member1, $event->getMembers());
     }
 }
