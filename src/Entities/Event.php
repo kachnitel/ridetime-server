@@ -449,7 +449,8 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
         }
         if ($this->visibility === self::VISIBILITY_MEMBERS_FRIENDS) {
             return $this->getMembers()->exists(function (int $key, EventMember $membership) use ($user) {
-                return in_array($user, $membership->getUser()->getConfirmedFriends(), true);
+                return $membership->getStatus() === self::STATUS_CONFIRMED &&
+                    in_array($user, $membership->getUser()->getConfirmedFriends(), true);
             });
         }
         return false;

@@ -118,6 +118,8 @@ class EventTest extends EntityTestCase
         $memberfriend = new User();
         $member->addFriend($memberfriend)->accept();
         $invited = new User();
+        $invitedfriend = new User();
+        $invited->addFriend($invitedfriend)->accept();
 
         $event = new Event();
         $event->setCreatedBy($creator);
@@ -149,7 +151,11 @@ class EventTest extends EntityTestCase
             [ $invited, $event, Event::VISIBILITY_PUBLIC, true, 'invited' ],
             [ $invited, $event, Event::VISIBILITY_FRIENDS, true, 'invited' ],
             [ $invited, $event, Event::VISIBILITY_INVITED, true, 'invited' ],
-            [ $invited, $event, Event::VISIBILITY_MEMBERS_FRIENDS, true, 'invited' ]
+            [ $invited, $event, Event::VISIBILITY_MEMBERS_FRIENDS, true, 'invited' ],
+            [ $invitedfriend, $event, Event::VISIBILITY_PUBLIC, true, 'invitedfriend' ],
+            [ $invitedfriend, $event, Event::VISIBILITY_FRIENDS, false, 'invitedfriend' ],
+            [ $invitedfriend, $event, Event::VISIBILITY_INVITED, false, 'invitedfriend' ],
+            [ $invitedfriend, $event, Event::VISIBILITY_MEMBERS_FRIENDS, false, 'invitedfriend' ]
         ];
     }
 }
