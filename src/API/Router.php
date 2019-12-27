@@ -62,6 +62,8 @@ class Router
         $app->get('/invites', Controllers\EventController::class . ':getInvites');
         /** List my sent requests */
         $app->get('/requests', Controllers\EventController::class . ':getRequests');
+        /** List pending requests */
+        $app->get('/{id:[0-9]+}/requests', Controllers\EventController::class . ':getEventRequests');
         /** Add event member */
         $app->post('/{id:[0-9]+}/invite/{userId:[0-9]+}', Controllers\EventController::class . ':invite');
         /** Request join / accept invite */

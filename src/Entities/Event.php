@@ -455,4 +455,22 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
         }
         return false;
     }
+
+    public function isMember(User $user): bool
+    {
+        return $this->getMembers()->exists(function ($key, EventMember $eventMember) use ($user) {
+            return $eventMember->getUser() === $user &&
+                $eventMember->getStatus() === Event::STATUS_CONFIRMED;
+        });
+    }
+
+    /**
+     * Get pending join requests for private event
+     *
+     * @return User[]
+     */
+    public function getRequests(): array
+    {
+        return $this->getMembersWithStatus(self::STATUS_REQUESTED);
+    }
 }

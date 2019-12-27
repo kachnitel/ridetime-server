@@ -158,4 +158,23 @@ class EventTest extends EntityTestCase
             [ $invitedfriend, $event, Event::VISIBILITY_MEMBERS_FRIENDS, false, 'invitedfriend' ]
         ];
     }
+
+    public function testIsMember()
+    {
+        $event = new Event();
+        $member = new User();
+        $invited = new User();
+        $requested = new User();
+        $stranger = new User();
+
+        $event->setPrivate(true);
+        $event->invite($member)->confirm();
+        $event->invite($invited);
+        $event->join($requested);
+
+        $this->assertTrue($event->isMember($member));
+        $this->assertFalse($event->isMember($invited));
+        $this->assertFalse($event->isMember($requested));
+        $this->assertFalse($event->isMember($stranger));
+    }
 }

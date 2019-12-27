@@ -279,10 +279,7 @@ class EventController extends BaseController
         /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
 
-        if (!$event->getMembers()->exists(function ($key, EventMember $eventMember) use ($currentUser) {
-            return $eventMember->getUser() === $currentUser &&
-                $eventMember->getStatus() === Event::STATUS_CONFIRMED;
-        })) {
+        if (!$event->isMember($currentUser)) {
             throw new UserException(
                 'Cannot comment on an event you aren\'t a member of',
                 403
@@ -332,6 +329,20 @@ class EventController extends BaseController
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($event->getComments()->getValues())
+        ]);
+    }
+
+    public function getEventRequests(Request $request, Response $response, array $args): Response
+    {
+        /** @var Event $event */
+        $event = $this->getEventRepository()->get($args['id']);
+
+        if (!$event->isMember($request->getAttribute('currentUser'))) {
+            throw new UserException("Current user is not a member of {$args['id']}", 403);
+        }
+
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($event->getRequests())
         ]);
     }
 
