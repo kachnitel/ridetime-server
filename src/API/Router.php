@@ -59,7 +59,9 @@ class Router
         $app->post('', Controllers\EventController::class . ':add');
         /** - Membership routes - */
         /** List my invites */
-        $app->get('/invites', Controllers\EventController::class . ':listInvites');
+        $app->get('/invites', Controllers\EventController::class . ':getInvites');
+        /** List my sent requests */
+        $app->get('/requests', Controllers\EventController::class . ':getRequests');
         /** Add event member */
         $app->post('/{id:[0-9]+}/invite/{userId:[0-9]+}', Controllers\EventController::class . ':invite');
         /** Request join / accept invite */

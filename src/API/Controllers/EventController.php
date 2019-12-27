@@ -114,10 +114,20 @@ class EventController extends BaseController
         ]);
     }
 
-    public function listInvites(Request $request, Response $response, array $args): Response
+    public function getInvites(Request $request, Response $response, array $args): Response
     {
         $user = $request->getAttribute('currentUser');
         $result = $user->getEvents(Event::STATUS_INVITED)->getValues();
+
+        return $response->withJson((object) [
+            'results' => $this->extractDetails($result)
+        ]);
+    }
+
+    public function getRequests(Request $request, Response $response, array $args): Response
+    {
+        $user = $request->getAttribute('currentUser');
+        $result = $user->getEvents(Event::STATUS_REQUESTED)->getValues();
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
