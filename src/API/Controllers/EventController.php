@@ -194,17 +194,31 @@ class EventController extends BaseController
         $tokens = $this->getMemberNotificationTokens($event, $currentUser);
 
         $notifications = new Notifications();
-        $notifications->sendNotification(
-            $tokens,
-            $currentUser->getName() . ' joined you for a ride!',
-            $currentUser->getName() . ' joined ' . $event->getTitle(),
-            (object) [
-                'type' => 'eventMemberJoined',
-                'from' => $currentUser->getId(),
-                'event' => $event->getDetail()
-            ],
-            'eventMember'
-        );
+        if ($membership->getStatus() === Event::STATUS_CONFIRMED) {
+            $notifications->sendNotification(
+                $tokens,
+                $currentUser->getName() . ' joined you for a ride!',
+                $currentUser->getName() . ' joined ' . $event->getTitle(),
+                (object) [
+                    'type' => 'eventMemberJoined',
+                    'from' => $currentUser->getId(),
+                    'event' => $event->getDetail()
+                ],
+                'eventMember'
+            );
+        } else {
+            $notifications->sendNotification(
+                $tokens,
+                $currentUser->getName() . ' wants to join ' . $event->getTitle(),
+                $currentUser->getName() . ' requested to join ' . $event->getTitle(),
+                (object) [
+                    'type' => 'eventJoinRequested',
+                    'from' => $currentUser->getId(),
+                    'event' => $event->getDetail()
+                ],
+                'eventMember'
+            );
+        }
 
         return $response->withStatus(201)->withJson($membership->getDetail());
     }
@@ -265,8 +279,6 @@ class EventController extends BaseController
     }
 
     /**
-     * TODO: notify members
-     *
      * @param Request $request
      * @param Response $response
      * @param array $args
