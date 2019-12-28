@@ -72,10 +72,10 @@ class Router
         $app->delete('/{id:[0-9]+}/invite', Controllers\EventController::class . ':leave');
         $app->delete('/{id:[0-9]+}/leave', Controllers\EventController::class . ':leave');
         /** Decline request / remove member (moderator only TODO:) */
-        $app->delete('/{id:[0-9]+}/join/{userId:[0-9]+}', Controllers\EventController::class . ':remove');
+        $app->delete('/{id:[0-9]+}/requests/{userId:[0-9]+}', Controllers\EventController::class . ':remove');
         $app->delete('/{id:[0-9]+}/members/{userId:[0-9]+}', Controllers\EventController::class . ':remove');
         /** Accept request (moderator only TODO:) */
-        $app->put('/{id:[0-9]+}/join/{userId:[0-9]+}', Controllers\EventController::class . ':acceptRequest');
+        $app->put('/{id:[0-9]+}/requests/{userId:[0-9]+}', Controllers\EventController::class . ':acceptRequest');
         /** - Comment routes - */
         $app->get('/{id:[0-9]+}/comments', Controllers\EventController::class . ':getComments');
         $app->post('/{id:[0-9]+}/comments', Controllers\EventController::class . ':addComment');
