@@ -11,6 +11,7 @@ use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Notifications;
 use RideTimeServer\Entities\User;
+use RideTimeServer\Entities\NotificationsToken;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\MembershipManager;
 
@@ -191,7 +192,7 @@ class EventController extends BaseController
         $membership = $this->getMembershipManager()->join($event, $currentUser);
         $this->getEventRepository()->saveEntity($membership);
 
-        $tokens = $this->getMemberNotificationTokens($event, $currentUser);
+        $tokens = $this->getMemberNotificationTokens($event, [$currentUser]);
 
         $notifications = new Notifications();
         if ($membership->getStatus() === Event::STATUS_CONFIRMED) {
@@ -275,6 +276,42 @@ class EventController extends BaseController
         );
         $this->getEventRepository()->saveEntity($membership);
 
+        $currentUser = $request->getAttribute('currentUser');
+
+        $notifications = new Notifications();
+        $notifications->sendNotification(
+            $membership->getUser()->getNotificationsTokens()->getValues(),
+            'Join request accepted - ' . $membership->getEvent()->getTitle(),
+            'Your request to join ' . $membership->getEvent()->getTitle()
+                . ' has been accepted by ' . $currentUser->getName(),
+            (object) [
+                'type' => 'eventOwnRequestAccepted',
+                'from' => $currentUser->getId(),
+                'event' => $membership->getEvent()->getDetail()
+            ],
+            'eventComment'
+        );
+
+        $tokens = $this->getMemberNotificationTokens(
+            $membership->getEvent(),
+            [
+                $currentUser,
+                $membership->getUser()
+            ]
+        );
+
+        $notifications->sendNotification(
+            $tokens,
+            $membership->getUser()->getName() . ' joined you for a ride!',
+            $membership->getUser()->getName() . ' joined ' . $membership->getEvent()->getTitle(),
+            (object) [
+                'type' => 'eventMemberJoined',
+                'from' => $currentUser->getId(),
+                'event' => $membership->getEvent()->getDetail()
+            ],
+            'eventMember'
+        );
+
         return $response->withStatus(200)->withJson(['status' => $membership->getDetail()]);
     }
 
@@ -309,7 +346,7 @@ class EventController extends BaseController
         $this->getEntityManager()->persist($comment);
         $this->getEntityManager()->flush();
 
-        $tokens = $this->getMemberNotificationTokens($event, $currentUser);
+        $tokens = $this->getMemberNotificationTokens($event, [$currentUser]);
 
         $notifications = new Notifications();
         $notifications->sendNotification(
@@ -363,16 +400,16 @@ class EventController extends BaseController
      * REVIEW: sendNotification should accept User[] instead of $tokens param
      *
      * @param Event $event
-     * @param User $currentUser
-     * @return array
+     * @param User[] $exclude
+     * @return NotificationsToken[]
      */
-    protected function getMemberNotificationTokens(Event $event, User $currentUser = null): array
+    protected function getMemberNotificationTokens(Event $event, array $exclude = []): array
     {
         $tokens = [];
         $event->getMembers()
-            ->filter(function (EventMember $membership) use ($currentUser) {
+            ->filter(function (EventMember $membership) use ($exclude) {
                 return ($membership->getStatus() === Event::STATUS_CONFIRMED) &&
-                    ($membership->getUser() !== $currentUser);
+                    (!in_array($membership->getUser(), $exclude));
             })
             ->map(function (EventMember $membership) use (&$tokens) {
                 if ($membership->getUser()->getNotificationsTokens()->isEmpty()) {
