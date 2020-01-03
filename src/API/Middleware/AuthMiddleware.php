@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use Tuupola\Middleware\JwtAuthentication;
 use Doctrine\Common\Cache\FilesystemCache;
+use GuzzleRetry\GuzzleRetryMiddleware;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Storage\DoctrineCacheStorage;
 use Kevinrob\GuzzleCache\Strategy\GreedyCacheStrategy;
@@ -79,6 +80,8 @@ class AuthMiddleware
     protected function getAuthPublicKey(array $config): string
     {
         $stack = HandlerStack::create();
+
+        $stack->push(GuzzleRetryMiddleware::factory());
         $stack->push(new CacheMiddleware(
             new GreedyCacheStrategy(
               new DoctrineCacheStorage(
@@ -87,7 +90,9 @@ class AuthMiddleware
               $config['auth']['cacheTtl']
             )
           ), 'cache');
+
         $client = new Client(['handler' => $stack]);
+
         $keys = json_decode($client->get($config['auth']['publicKeyUrl'])->getBody(), true);
         return (new JWKConverter())->toPEM($keys['keys'][0]);
     }

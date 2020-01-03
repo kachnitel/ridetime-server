@@ -12,7 +12,8 @@
         "aws/aws-sdk-php": "^3.87",
         "guzzlehttp/guzzle": "^6.3",
         "emarref/guzzle-param-middleware": "^1.0",
-        "kevinrob/guzzle-cache-middleware": "^3.2"
+        "kevinrob/guzzle-cache-middleware": "^3.2",
+        "caseyamcl/guzzle_retry_middleware": "^2.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0",
