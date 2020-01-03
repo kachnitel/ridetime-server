@@ -5,9 +5,15 @@ use PSR\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 
 use CoderCat\JWKToPEM\JWKConverter;
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
 use Tuupola\Middleware\JwtAuthentication;
+use Doctrine\Common\Cache\FilesystemCache;
+use Kevinrob\GuzzleCache\CacheMiddleware;
+use Kevinrob\GuzzleCache\Storage\DoctrineCacheStorage;
+use Kevinrob\GuzzleCache\Strategy\GreedyCacheStrategy;
 
-use RideTimeServer\Exception\AuthException;
+use function GuzzleHttp\json_decode;
 
 /**
  * TODO: verify 'iss' and 'aud'
@@ -62,7 +68,6 @@ class AuthMiddleware
     }
 
     /**
-     * FIXME: Assuming a lot here
      * Retrieve a JWK from auth api and convert to PEM
      *
      * Possibly replaceable by
@@ -73,8 +78,17 @@ class AuthMiddleware
      */
     protected function getAuthPublicKey(array $config): string
     {
-        // FIXME: fallback etc..use Guzzle
-        $keys = json_decode(file_get_contents($config['auth']['publicKeyUrl']), true);
+        $stack = HandlerStack::create();
+        $stack->push(new CacheMiddleware(
+            new GreedyCacheStrategy(
+              new DoctrineCacheStorage(
+                new FilesystemCache('/tmp/')
+              ),
+              $config['auth']['cacheTtl']
+            )
+          ), 'cache');
+        $client = new Client(['handler' => $stack]);
+        $keys = json_decode($client->get($config['auth']['publicKeyUrl'])->getBody(), true);
         return (new JWKConverter())->toPEM($keys['keys'][0]);
     }
 }

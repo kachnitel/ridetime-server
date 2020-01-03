@@ -13,7 +13,8 @@
     "devMode": true
   },
   "auth": {
-    "publicKeyUrl": "https://ridetime.auth0.com/.well-known/jwks.json"
+    "publicKeyUrl": "https://ridetime.auth0.com/.well-known/jwks.json",
+    "cacheTtl": 30
   },
   "logRequests": true
 }
