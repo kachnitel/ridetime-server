@@ -1,6 +1,7 @@
 <?php
 namespace RideTimeServer\API\Middleware;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
 use Psr\Container\ContainerInterface;
 use RideTimeServer\Entities\User;
@@ -42,9 +43,15 @@ class CurrentUserMiddleware {
             /** @var EntityManager $entityManager */
             $entityManager = $container->get('entityManager');
 
+            $criteria = Criteria::create()->where(
+                Criteria::expr()->eq('authId', $token['sub'])
+            );
+            /** @var User $user */
             $user = $entityManager
                 ->getRepository(User::class)
-                ->findOneBy(['authId' => $token['sub']]);
+                ->matching($criteria)
+                ->first();
+
             if (!$user) {
                 if ($requireUser) {
                     throw new UserException('Attempting to access resource without valid user', 400);
