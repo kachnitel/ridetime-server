@@ -1,6 +1,7 @@
 <?php
 namespace RideTimeServer\API\Controllers;
 
+use Doctrine\Common\Collections\Criteria;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Http\Response;
 use RideTimeServer\API\PictureHandler;
@@ -35,14 +36,17 @@ class AuthController extends BaseController
     public function signIn(Request $request, Response $response, array $args): Response
     {
         $token = $request->getAttribute('token');
+        $authUserId = $token['sub'];
 
         $data = json_decode($request->getBody());
-        $userEmail = filter_var($data->email, FILTER_SANITIZE_EMAIL);
 
+        $criteria = Criteria::create()->where(isset($data->email)
+            ? Criteria::expr()->eq('email', $data->email)
+            : Criteria::expr()->eq('authId', $authUserId)
+        );
         /** @var User $user */
-        $user = $this->getEntityManager()
-            ->getRepository(User::class)
-            ->findOneBy(['email' => $userEmail]);
+        $user = $this->getUserRepository()->matching($criteria)->first();
+
         if (!$user) {
             return $response->withJson((object) [
                 'success' => false,
@@ -50,7 +54,6 @@ class AuthController extends BaseController
             ]);
         }
 
-        $authUserId = $token['sub'];
         // Verify user from token
         if ($authUserId !== $user->getAuthId()) {
             $e = new UserException('Authentication ID mismatch', 400);
