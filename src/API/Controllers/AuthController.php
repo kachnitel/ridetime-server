@@ -38,11 +38,8 @@ class AuthController extends BaseController
         $token = $request->getAttribute('token');
         $authUserId = $token['sub'];
 
-        $data = json_decode($request->getBody());
-
-        $criteria = Criteria::create()->where(isset($data->email)
-            ? Criteria::expr()->eq('email', $data->email)
-            : Criteria::expr()->eq('authId', $authUserId)
+        $criteria = Criteria::create()->where(
+            Criteria::expr()->eq('authId', $authUserId)
         );
         /** @var User $user */
         $user = $this->getUserRepository()->matching($criteria)->first();
