@@ -1,6 +1,7 @@
 <?php
 namespace RideTimeServer\API\Connectors;
 
+use Doctrine\Common\Cache\FilesystemCache;
 use GuzzleHttp\Client;
 use Emarref\Guzzle\Middleware\ParamMiddleware;
 use GuzzleHttp\HandlerStack;
@@ -9,6 +10,9 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\TransferStats;
+use Kevinrob\GuzzleCache\CacheMiddleware;
+use Kevinrob\GuzzleCache\Storage\DoctrineCacheStorage;
+use Kevinrob\GuzzleCache\Strategy\GreedyCacheStrategy;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 use RideTimeServer\Exception\RTException;
@@ -36,9 +40,19 @@ class TrailforksConnector
             LogLevel::DEBUG
         );
 
+        $cacheMiddleware = new CacheMiddleware(
+            new GreedyCacheStrategy(
+              new DoctrineCacheStorage(
+                new FilesystemCache('/tmp/')
+              ),
+              300
+            )
+        );
+
         $stack = HandlerStack::create();
         $stack->push($paramMiddleware);
         $stack->push($loggerMiddleware);
+        $stack->push($cacheMiddleware);
 
         $this->client = new Client([
             'base_uri' => self::API_URL,
