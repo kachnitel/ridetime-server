@@ -12,7 +12,7 @@ abstract class PrimaryEntity implements PrimaryEntityInterface
     protected function extractIds(array $entities): array
     {
         return array_map(
-            function(PrimaryEntityInterface $item) {return $item->getId();},
+            function (PrimaryEntityInterface $item) {return $item->getId();},
             $entities
         );
     }

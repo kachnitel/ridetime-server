@@ -29,7 +29,7 @@ abstract class BaseController
 
     protected function extractDetails(array $entities): array
     {
-        return array_map(function(PrimaryEntity $entity) {
+        return array_map(function (PrimaryEntity $entity) {
             return $entity->getDetail();
         }, $entities);
     }

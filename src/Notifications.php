@@ -27,7 +27,7 @@ class Notifications
         $data = null,
         string $channelId = null
     ) {
-        $messages = array_map(function(NotificationsToken $token) use ($title, $body, $data, $channelId) {
+        $messages = array_map(function (NotificationsToken $token) use ($title, $body, $data, $channelId) {
             $item = (object) [
                 'to' => $token->getToken(),
                 'title' => $title

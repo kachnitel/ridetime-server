@@ -35,11 +35,11 @@ class DashboardController
         $user = $request->getAttribute('currentUser');
 
         $fRequests = $this->filterPendingRequests($user->getFriendshipsWithMe())
-            ->map(function(Friendship $friendship) {
+            ->map(function (Friendship $friendship) {
                 return $friendship->getUser()->getId();
             });
         $sentRequests = $this->filterPendingRequests($user->getFriendships())
-            ->map(function(Friendship $friendship) {
+            ->map(function (Friendship $friendship) {
                 return $friendship->getFriend()->getId();
             });
 
@@ -52,7 +52,7 @@ class DashboardController
 
     protected function filterPendingRequests(Collection $friendships)
     {
-        $filter = function(Friendship $friendship) {
+        $filter = function (Friendship $friendship) {
             return $friendship->getStatus() === Friendship::STATUS_PENDING;
         };
 

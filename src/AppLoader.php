@@ -45,13 +45,13 @@ class AppLoader implements AppLoaderInterface
     {
         $container = $this->app->getContainer();
 
-        $container['logger'] = function($container) use ($config) {
+        $container['logger'] = function ($container) use ($config) {
             return (new Logger())->getLogger($config);
         };
 
         $this->initErrorHandlers($container);
 
-        $container['trailforks'] = function($container) use ($secrets) {
+        $container['trailforks'] = function ($container) use ($secrets) {
             return new TrailforksConnector(
                 $secrets['trailforks']['app_id'],
                 $secrets['trailforks']['app_secret'],
@@ -59,7 +59,7 @@ class AppLoader implements AppLoaderInterface
             );
         };
 
-        $container['entityManager'] = function($container) use ($config, $secrets) {
+        $container['entityManager'] = function ($container) use ($config, $secrets) {
             return (new Database())->getEntityManager($config['doctrine'], $secrets['db'], $container);
         };
 
@@ -85,11 +85,11 @@ class AppLoader implements AppLoaderInterface
 
     protected function initErrorHandlers(ContainerInterface $container)
     {
-        $container['errorHandler'] = function($container) {
+        $container['errorHandler'] = function ($container) {
             return new ErrorHandler($container['logger']);
         };
 
-        $container['phpErrorHandler'] = function($container) {
+        $container['phpErrorHandler'] = function ($container) {
             return new PHPErrorHandler($container['logger']);
         };
 

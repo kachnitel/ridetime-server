@@ -194,7 +194,7 @@ class APITestCase extends RTTestCase
         $mockRepo->expects($this->exactly(1))
             ->method('remoteFilter')
             ->will(
-                $this->returnCallback(function() {
+                $this->returnCallback(function () {
                     return func_get_args();
                  })
             );

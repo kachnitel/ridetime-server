@@ -42,7 +42,7 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
      */
     public function getDetail(): object
     {
-        $trailIds = array_map(function(Trail $trail) {
+        $trailIds = array_map(function (Trail $trail) {
             return $trail->getId();
         }, $this->getTrails()->getValues());
 

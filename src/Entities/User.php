@@ -203,11 +203,11 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
      */
     public function getEvents(string $status)
     {
-        $filter = function(EventMember $em) use ($status) {
+        $filter = function (EventMember $em) use ($status) {
             return $em->getStatus() === $status;
         };
 
-        $map = function(EventMember $em) {
+        $map = function (EventMember $em) {
             return $em->getEvent();
         };
 

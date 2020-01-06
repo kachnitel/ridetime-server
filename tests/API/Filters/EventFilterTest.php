@@ -31,7 +31,7 @@ class EventFilterTest extends APITestCase
         $visitor = $this->getMockForAbstractClass(ExpressionVisitor::class);
         $visitor->expects($this->exactly(1))
             ->method('walkCompositeExpression')
-            ->will($this->returnCallback(function() use (&$expression) {
+            ->will($this->returnCallback(function () use (&$expression) {
                 $expression = func_get_arg(0);
              }));
 
@@ -127,7 +127,7 @@ class EventFilterTest extends APITestCase
         $visitor = $this->getMockForAbstractClass(ExpressionVisitor::class);
         $visitor->expects($this->exactly(1))
             ->method('walkComparison')
-            ->will($this->returnCallback(function() use (&$comparison) {
+            ->will($this->returnCallback(function () use (&$comparison) {
                 $comparison = func_get_arg(0);
              }));
 
