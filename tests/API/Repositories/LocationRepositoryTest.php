@@ -2,10 +2,8 @@
 namespace RideTimeServer\Tests\API\Repositories;
 
 use GuzzleHttp\Client;
-use PHPUnit\Framework\MockObject\MockObject;
 use RideTimeServer\API\Connectors\TrailforksConnector;
 use RideTimeServer\API\Repositories\LocationRepository;
-use RideTimeServer\API\Repositories\RemoteSourceRepositoryInterface;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Tests\API\APITestCase;
 
@@ -13,27 +11,6 @@ use function GuzzleHttp\json_decode;
 
 class LocationRepositoryTest extends APITestCase
 {
-    public function testNearby()
-    {
-        $result = $this->getRepoMockRemoteFilter(LocationRepository::class)
-            ->nearby([1, 2], 3);
-        $this->assertEquals('nearby_range::3;lat::1;lon::2', $result[0]);
-    }
-
-    public function testBbox()
-    {
-        $result = $this->getRepoMockRemoteFilter(LocationRepository::class)
-            ->bbox([1,2,3,4]);
-        $this->assertEquals('bbox::1,2,3,4', $result[0]);
-    }
-
-    public function testSearch()
-    {
-        $result = $this->getRepoMockRemoteFilter(LocationRepository::class)
-            ->search('Cypress');
-        $this->assertEquals('search::Cypress', $result[0]);
-    }
-
     public function testRemoteFilter()
     {
         $filter = 'bbox::49.7,-123.1,49.8,-123.2;';
@@ -45,7 +22,7 @@ class LocationRepositoryTest extends APITestCase
         $client = new Client();
         $data = json_decode($client->get($sampleUrl)->getBody()->getContents());
 
-        /** @var TrailforksConnector $mockConnector */
+        /** @var TrailforksConnector|\PHPUnit\Framework\MockObject\MockObject $mockConnector */
         $mockConnector = $this->createMock(TrailforksConnector::class);
         $mockConnector->expects($this->any())
             ->method('locations')

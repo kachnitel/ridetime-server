@@ -42,56 +42,6 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
     }
 
     /**
-     * Filter locations within $range from $latLon
-     *
-     * @param array $latLon [lat, lon]
-     * @param integer $range In km
-     * @return Location[]
-     * @deprecated 0.5.9
-     */
-    public function nearby(array $latLon, int $range): array
-    {
-        $filter = "nearby_range::{$range};lat::{$latLon[0]};lon::{$latLon[1]}";
-
-        return $this->remoteFilter($filter);
-    }
-
-    /**
-     * Bounding box filtered locations
-     *
-     * bbox filter is in the format of
-     * top-left lat/lon and bottom-right lat/lon
-     * values seperated by commas.
-     *
-     * Example: bbox::49.33,-122.973,49.322,-122.957
-     *
-     * @param float[] $bbox
-     * @return Location[]
-     * @deprecated 0.5.9
-     */
-    public function bbox(array $bbox): array
-    {
-        $boundary = join(',', $bbox);
-        $filter = "bbox::{$boundary}";
-
-        return $this->remoteFilter($filter);
-    }
-
-    /**
-     * Search by name
-     *
-     * @param string $name
-     * @return Location[]
-     * @deprecated 0.5.9
-     */
-    public function search(string $name): array
-    {
-        $filter = "search::{$name}";
-
-        return $this->remoteFilter($filter);
-    }
-
-    /**
      * Fill existing entity with proper formed data
      *
      * @param Location $location
