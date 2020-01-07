@@ -21,11 +21,13 @@ class Router
      */
     public function initRoutes()
     {
+        $cuMiddleware = new CurrentUserMiddleware($this->app->getContainer());
+
         /** Return user detail */
         $this->app->post('/signin', Controllers\AuthController::class . ':signIn');
         $this->app->post('/signup', Controllers\AuthController::class . ':signUp');
-
-        $cuMiddleware = new CurrentUserMiddleware($this->app->getContainer());
+        $this->app->post('/signout', Controllers\AuthController::class . ':signOut')
+            ->add($cuMiddleware->getMiddleware(true));
 
         $this->app->group('/api', function (App $app) use ($cuMiddleware) {
             $app->group('', function (App $app) {

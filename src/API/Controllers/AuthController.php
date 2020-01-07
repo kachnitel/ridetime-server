@@ -2,12 +2,13 @@
 namespace RideTimeServer\API\Controllers;
 
 use Doctrine\Common\Collections\Criteria;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\API\PictureHandler;
 use RideTimeServer\API\Repositories\NotificationsTokenRepository;
 use RideTimeServer\Entities\NotificationsToken;
 use RideTimeServer\Entities\User;
+use RideTimeServer\Exception\UserException;
 
 use function GuzzleHttp\json_decode;
 
@@ -78,6 +79,26 @@ class AuthController extends BaseController
         }
 
         return $response->withJson($user->getDetail())->withStatus(201);
+    }
+
+    public function signOut(Request $request, Response $response, array $args): Response
+    {
+        /** @var User $user */
+        $user = $request->getAttribute('currentUser');
+        $data = json_decode($request->getBody());
+
+        if (!empty($data->notificationsToken)) {
+            $notificationsToken = $this->getNotificationsTokenRepository()
+                ->find($data->notificationsToken);
+
+            if ($user !== $notificationsToken->getUser()) {
+                throw new UserException('Cannot remove token owned by another user');
+            }
+            $this->getEntityManager()->remove($notificationsToken);
+            $this->getEntityManager()->flush();
+        }
+
+        return $response->withStatus(204);
     }
 
     protected function getNotificationsTokenRepository(): NotificationsTokenRepository
