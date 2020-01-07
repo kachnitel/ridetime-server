@@ -88,8 +88,13 @@ class AuthController extends BaseController
         $data = json_decode($request->getBody());
 
         if (!empty($data->notificationsToken)) {
+            /** @var NotificationsToken $notificationsToken */
             $notificationsToken = $this->getNotificationsTokenRepository()
                 ->find($data->notificationsToken);
+
+            if (!$notificationsToken) {
+                throw new UserException('Notifications token not found');
+            }
 
             if ($user !== $notificationsToken->getUser()) {
                 throw new UserException('Cannot remove token owned by another user');
