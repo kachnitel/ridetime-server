@@ -41,10 +41,11 @@ class AuthController extends BaseController
             );
             $token->setUser($user);
             $user->addNotificationsToken($token);
+
+            $this->getEntityManager()->persist($token);
+            $this->getEntityManager()->flush();
         }
 
-        $this->getEntityManager()->persist($token);
-        $this->getEntityManager()->flush();
 
         return $response->withJson($result);
     }
