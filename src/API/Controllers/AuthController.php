@@ -5,6 +5,7 @@ use Doctrine\Common\Collections\Criteria;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Http\Response;
 use RideTimeServer\API\PictureHandler;
+use RideTimeServer\API\Repositories\NotificationsTokenRepository;
 use RideTimeServer\Entities\NotificationsToken;
 use RideTimeServer\Entities\User;
 
@@ -36,14 +37,9 @@ class AuthController extends BaseController
         if ($user && !empty(
             json_decode($request->getBody())->notificationsToken
         )) {
-            $token = new NotificationsToken(
-                json_decode($request->getBody())->notificationsToken
-            );
-            $token->setUser($user);
-            $user->addNotificationsToken($token);
-
-            $this->getEntityManager()->persist($token);
-            $this->getEntityManager()->flush();
+            $notificationsToken = $this->getNotificationsTokenRepository()
+                ->setToken($user, json_decode($request->getBody())->notificationsToken);
+            $user->addNotificationsToken($notificationsToken);
         }
 
 
@@ -71,18 +67,22 @@ class AuthController extends BaseController
 
         $user = $this->getUserRepository()->create($userData);
 
-        if (!empty($data->notificationsToken)) {
-            $notificationsToken = new NotificationsToken(
-                $data->notificationsToken
-            );
-            $notificationsToken->setUser($user);
-            $user->addNotificationsToken($notificationsToken);
-        }
-
         $user->setAuthId($token['sub']);
 
         $this->getUserRepository()->saveEntity($user);
 
+        if (!empty($data->notificationsToken)) {
+            $notificationsToken = $this->getNotificationsTokenRepository()
+                ->setToken($user, $data->notificationsToken);
+            $user->addNotificationsToken($notificationsToken);
+        }
+
         return $response->withJson($user->getDetail())->withStatus(201);
+    }
+
+    protected function getNotificationsTokenRepository(): NotificationsTokenRepository
+    {
+        return $this->getEntityManager()
+            ->getRepository(NotificationsToken::class);
     }
 }

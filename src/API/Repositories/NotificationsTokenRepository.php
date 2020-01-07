@@ -6,11 +6,13 @@ use RideTimeServer\Entities\User;
 
 class NotificationsTokenRepository extends BaseRepository
 {
-    public function setToken(User $user, string $tokenString)
+    public function setToken(User $user, string $tokenString): NotificationsToken
     {
         $token = $this->find($tokenString) ?? new NotificationsToken($tokenString);
         $token->setUser($user);
 
         $this->saveEntity($token);
+
+        return $token;
     }
 }
