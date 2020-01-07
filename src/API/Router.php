@@ -41,10 +41,6 @@ class Router
         $this->app->group('/dashboard', function (App $app) {
             self::initDashboardRoutes($app);
         })->add($cuMiddleware->getMiddleware(true));
-
-        $this->app->group('/notifications', function (App $app) {
-            self::initNotificationsRoutes($app);
-        })->add($cuMiddleware->getMiddleware(true));
     }
 
     public static function initEventRoutes(App $app)
@@ -125,13 +121,5 @@ class Router
     {
         /** Get dashboard */
         $app->get('', Controllers\DashboardController::class . ':all');
-    }
-
-    public static function initNotificationsRoutes(App $app)
-    {
-        /** Set notifications token */
-        $app->put('/token', Controllers\NotificationsController::class . ':setToken');
-        /** Send notification */
-        // $app->post('', Controllers');::class . '
     }
 }
