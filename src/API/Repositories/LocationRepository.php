@@ -10,14 +10,15 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
         'rid',
         'title',
         'alias',
-        'hidden',
-        'changed',
+        // 'hidden',
+        // 'changed',
         'latitude',
         'longitude',
-        'search',
-        'imagemap', // https://ep1.pinkbike.org/files/regionmaps/{imagemap}
-        'shuttle',
-        'bikepark',
+        // 'search',
+        // 'imagemap', // https://ep1.pinkbike.org/files/regionmaps/{imagemap}
+        // 'shuttle',
+        // 'bikepark',
+        'cover_photo',
         // Difficulties
         'tc_3', // green
         'tc_4', // blue
@@ -59,6 +60,7 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
         $location->setName($data->title);
         $location->setGpsLat($data->latitude);
         $location->setGpsLon($data->longitude);
+        $location->setCoverPhoto($data->cover_photo);
         $location->setDifficulties((object) [
             3 => (int) $data->tc_3,
             4 => (int) $data->tc_4,

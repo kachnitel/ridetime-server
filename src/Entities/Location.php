@@ -32,7 +32,8 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
                 $this->getGpsLon()
             ],
             'difficulties' => $this->getDifficulties(),
-            'alias' => $this->getAlias()
+            'alias' => $this->getAlias(),
+            'coverPhoto' => $this->getCoverPhoto()
         ];
     }
 
@@ -87,6 +88,13 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
      * @var ArrayCollection|Trail[]
      */
     private $trails;
+
+    /**
+     * @Column(type="integer",nullable=true)
+     *
+     * @var string
+     */
+    private $coverPhoto;
 
     public function __construct() {
         $this->events = new ArrayCollection();
@@ -219,5 +227,29 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
     public function removeEvent(Event $event)
     {
         return $this->events->removeElement($event);
+    }
+
+    /**
+     * Get the value of coverPhoto
+     *
+     * @return int
+     */
+    public function getCoverPhoto(): ?int
+    {
+        return $this->coverPhoto;
+    }
+
+    /**
+     * Set the value of coverPhoto
+     *
+     * @param int $coverPhoto
+     *
+     * @return self
+     */
+    public function setCoverPhoto(int $coverPhoto)
+    {
+        $this->coverPhoto = $coverPhoto;
+
+        return $this;
     }
 }
