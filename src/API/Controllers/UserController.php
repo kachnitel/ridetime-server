@@ -6,6 +6,7 @@ use Slim\Http\Response;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
 use RideTimeServer\API\Repositories\UserRepository;
+use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\Friendship;
 use RideTimeServer\Entities\User;
 use Slim\Http\UploadedFile;
@@ -26,9 +27,15 @@ class UserController extends BaseController
         /** @var User $user */
         $user = $this->getUserRepository()->get($args['id']);
 
+        // HACK:
+        $related = $user->getRelated();
+        $related->event = $this->extractDetails($user->getEvents(Event::STATUS_CONFIRMED)
+            ->filter(function (Event $event) use ($request) {
+                return $event->isVisible($request->getAttribute('currentUser'));
+            })->getValues());
         return $response->withJson((object) [
             'result' => $user->getDetail(),
-            'relatedEntities' => $user->getRelated()
+            'relatedEntities' => $related
         ]);
     }
 
