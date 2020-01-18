@@ -46,7 +46,7 @@ class AuthMiddleware
     public function getMiddleware(): JwtAuthentication
     {
         return new JwtAuthentication([
-            'secret' => $this->getAuthPublicKey($this->config),
+            'secret' => $this->getAuthPublicKey(),
             // 'path' => '/api',
             'algorithm' => ['RS256'],
             'logger' => $this->container['logger'],
@@ -74,10 +74,9 @@ class AuthMiddleware
      * Possibly replaceable by
      * http://php.net/manual/en/function.openssl-pkey-get-public.php ?
      *
-     * @param array $config
      * @return string
      */
-    protected function getAuthPublicKey(array $config): string
+    protected function getAuthPublicKey(): string
     {
         $stack = HandlerStack::create();
 
@@ -87,13 +86,13 @@ class AuthMiddleware
               new DoctrineCacheStorage(
                 new FilesystemCache('/tmp/')
               ),
-              $config['auth']['cacheTtl']
+              $this->config['auth']['cacheTtl']
             )
           ), 'cache');
 
         $client = new Client(['handler' => $stack]);
 
-        $keys = json_decode($client->get($config['auth']['publicKeyUrl'])->getBody(), true);
+        $keys = json_decode($client->get($this->config['auth']['publicKeyUrl'])->getBody(), true);
         return (new JWKConverter())->toPEM($keys['keys'][0]);
     }
 }
