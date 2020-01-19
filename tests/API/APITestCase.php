@@ -5,6 +5,8 @@ use RideTimeServer\Tests\RTTestCase;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 use Monolog\Logger;
+use RideTimeServer\API\Connectors\TrailforksConnector;
+use RideTimeServer\CustomEntityManager;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\EntityInterface;
@@ -12,6 +14,11 @@ use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Trail;
 use RideTimeServer\Exception\RTException;
+use Slim\Container;
+use Slim\Http\Request;
+use Slim\Http\Uri;
+use Slim\Http\Headers;
+use Slim\Http\Stream;
 
 /**
  * Sets up an EntityManager instance using a test database.
@@ -25,6 +32,11 @@ class APITestCase extends RTTestCase
      */
     protected $entityManager;
 
+    /**
+     * @var User
+     */
+    protected $currentUser;
+
     protected function setUp(): void
     {
         // Setup Doctrine
@@ -36,14 +48,28 @@ class APITestCase extends RTTestCase
         $secrets = $this->loadTestSecrets();
         // Setup connection parameters
         $connectionParameters = [
-            'dbname' => $secrets->db->database,
-            'user' => $secrets->db->user,
-            'password' => $secrets->db->password,
-            'host' => $secrets->db->host,
+            'dbname' => $secrets['db']['database'],
+            'user' => $secrets['db']['user'],
+            'password' => $secrets['db']['password'],
+            'host' => $secrets['db']['host'],
             'driver' => 'pdo_mysql'
         ];
 
-        $this->entityManager = EntityManager::create($connectionParameters, $configuration);
+        $logger = $this->getLogger();
+        $this->currentUser = $this->generateUser(null, false);
+        $this->entityManager = new CustomEntityManager(
+            EntityManager::create($connectionParameters, $configuration),
+            new Container([
+                'logger' => $logger,
+                'trailforks' => new TrailforksConnector(
+                    $secrets['trailforks'],
+                    $logger
+                ),
+                'request' => $this->getRequest('GET')
+                    ->withAttribute('currentUser', $this->currentUser)
+            ])
+        );
+        $this->entityManager->persist($this->currentUser);
 
         try {
             $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
@@ -59,11 +85,11 @@ class APITestCase extends RTTestCase
         }
     }
 
-    private function loadTestSecrets(): object
+    private function loadTestSecrets(): array
     {
         $file = __DIR__ . '/../../.secrets.test.json';
         $contents = file_get_contents($file);
-        $decoded = json_decode($contents);
+        $decoded = json_decode($contents, true);
 
         return $decoded;
     }
@@ -72,10 +98,10 @@ class APITestCase extends RTTestCase
      * @param int $id
      * @return User
      */
-    protected function generateUser(int $id = null): User
+    protected function generateUser(int $id = null, bool $persist = true): User
     {
         /** @var User $user */
-        $user = $this->generateEntity(User::class, $id);
+        $user = $this->generateEntity(User::class, $id, $persist);
         $name = $user->getName();
         $user->applyProperties((object) [
             // TODO:
@@ -200,6 +226,18 @@ class APITestCase extends RTTestCase
             );
 
         return $mockRepo;
+    }
+
+    public function getRequest(string $method): Request
+    {
+        return new Request(
+            $method,
+            new Uri('http', 'www.test.ca'),
+            new Headers([]),
+            [],
+            [],
+            new Stream(fopen('php://memory', 'r+'))
+        );
     }
 
     protected function getLogger(): Logger

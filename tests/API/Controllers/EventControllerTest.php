@@ -3,9 +3,6 @@ namespace RideTimeServer\Tests\API\Controllers;
 
 use Monolog\Logger;
 use Slim\Container;
-use Slim\Http\Request;
-use Slim\Http\Uri;
-use Slim\Http\Headers;
 use Slim\Http\Stream;
 use Slim\Http\Response;
 use RideTimeServer\API\Controllers\EventController;
@@ -312,18 +309,6 @@ class EventControllerTest extends APITestCase
             $request,
             new Response(),
             ['id' => $event->getId()]
-        );
-    }
-
-    public function getRequest(string $method): Request
-    {
-        return new Request(
-            $method,
-            new Uri('http', 'www.test.ca'),
-            new Headers([]),
-            [],
-            [],
-            new Stream(fopen('php://memory', 'r+'))
         );
     }
 
