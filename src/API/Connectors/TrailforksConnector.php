@@ -27,12 +27,9 @@ class TrailforksConnector
 
     protected $requestTime = 0.0;
 
-    public function __construct(string $clientId, string $clientSecret, Logger $logger)
+    public function __construct(array $secrets, Logger $logger)
     {
-        $paramMiddleware = ParamMiddleware::create([
-            'app_id' => $clientId,
-            'app_secret' => $clientSecret
-        ]);
+        $paramMiddleware = ParamMiddleware::create($secrets);
 
         $loggerMiddleware = Middleware::log(
             $logger,
