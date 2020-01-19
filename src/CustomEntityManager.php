@@ -8,10 +8,7 @@ use RideTimeServer\API\Repositories\BaseRepository;
 use RideTimeServer\API\Repositories\BaseTrailforksRepository;
 use Slim\Container;
 
-/**
- * REVIEW: Name may not be too fitting with tweaking BaseRepository
- */
-class RemoteSourceEntityManager extends EntityManagerDecorator
+class CustomEntityManager extends EntityManagerDecorator
 {
     /**
      * @var Container

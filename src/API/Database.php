@@ -4,7 +4,7 @@ namespace RideTimeServer\API;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use RideTimeServer\RemoteSourceEntityManager;
+use RideTimeServer\CustomEntityManager;
 use Slim\Container;
 
 class Database {
@@ -43,7 +43,7 @@ class Database {
          */
         $entityManager = EntityManager::create($connectionParameters, $configuration);
 
-        $customEntityManager = new RemoteSourceEntityManager($entityManager, $container);
+        $customEntityManager = new CustomEntityManager($entityManager, $container);
         return $customEntityManager;
     }
 }
