@@ -6,7 +6,7 @@ use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\User;
 
-class EventRepository extends BaseRepository
+class EventRepository extends SecureRepository
 {
     /**
      * TODO: validate
