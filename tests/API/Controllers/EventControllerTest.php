@@ -167,7 +167,7 @@ class EventControllerTest extends APITestCase
 
     public function testGet()
     {
-        $event = $this->generateEvent();
+        $event = $this->generateEvent(null, $this->currentUser);
         $event->setVisibility(Event::VISIBILITY_FRIENDS);
         $this->entityManager->flush();
 
@@ -211,15 +211,17 @@ class EventControllerTest extends APITestCase
     public function testListByVisibility()
     {
         $event = $this->generateEvent(1);
-        $privateEventByCurrentUser = $this->generateEvent(2)->setVisibility(Event::VISIBILITY_INVITED);
-        $currentUser = $privateEventByCurrentUser->getCreatedBy();
-        $privateEventByOther = $this->generateEvent(3)->setVisibility(Event::VISIBILITY_INVITED);
+        $privateEventByCurrentUser = $this->generateEvent(2, $this->currentUser)
+            ->setVisibility(Event::VISIBILITY_INVITED);
+
+        $privateEventByOther = $this->generateEvent(3)
+            ->setVisibility(Event::VISIBILITY_INVITED);
         $this->entityManager->flush();
 
         $controller = $this->getEventController();
 
         $request = $this->getRequest('GET')
-            ->withAttribute('currentUser', $currentUser);
+            ->withAttribute('currentUser', $this->currentUser);
 
         $results = json_decode(
             $controller->list(
@@ -237,15 +239,17 @@ class EventControllerTest extends APITestCase
     public function testFilterByVisibility()
     {
         $event = $this->generateEvent(1);
-        $privateEventByCurrentUser = $this->generateEvent(2)->setVisibility(Event::VISIBILITY_INVITED);
-        $currentUser = $privateEventByCurrentUser->getCreatedBy();
-        $privateEventByOther = $this->generateEvent(3)->setVisibility(Event::VISIBILITY_INVITED);
+        $privateEventByCurrentUser = $this->generateEvent(2, $this->currentUser)
+            ->setVisibility(Event::VISIBILITY_INVITED);
+
+        $privateEventByOther = $this->generateEvent(3)
+            ->setVisibility(Event::VISIBILITY_INVITED);
         $this->entityManager->flush();
 
         $controller = $this->getEventController();
 
         $request = $this->getRequest('GET')
-            ->withAttribute('currentUser', $currentUser);
+            ->withAttribute('currentUser', $this->currentUser);
 
         $results = json_decode(
             $controller->filter(
@@ -262,7 +266,7 @@ class EventControllerTest extends APITestCase
 
     public function testGetComments()
     {
-        $event = $this->generateEvent();
+        $event = $this->generateEvent(null, $this->currentUser);
         $event->setVisibility(Event::VISIBILITY_FRIENDS);
         $event->addComment((new Comment())
             ->setMessage('text')

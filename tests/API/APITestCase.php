@@ -55,19 +55,13 @@ class APITestCase extends RTTestCase
             'driver' => 'pdo_mysql'
         ];
 
-        $logger = $this->getLogger();
         $this->currentUser = $this->generateUser(null, false);
+
+        $container = $this->getContainer($this->currentUser, $secrets);
+
         $this->entityManager = new CustomEntityManager(
             EntityManager::create($connectionParameters, $configuration),
-            new Container([
-                'logger' => $logger,
-                'trailforks' => new TrailforksConnector(
-                    $secrets['trailforks'],
-                    $logger
-                ),
-                'request' => $this->getRequest('GET')
-                    ->withAttribute('currentUser', $this->currentUser)
-            ])
+            $container
         );
         $this->entityManager->persist($this->currentUser);
 
@@ -83,6 +77,20 @@ class APITestCase extends RTTestCase
         } catch (\Exception $exception) {
             throw new RTException('Error cleaning up database in setUp: ' . $exception->getMessage(), 0, $exception);
         }
+    }
+
+    protected function getContainer(User $currentUser, $secrets)
+    {
+        $logger = $this->getLogger();
+        return new Container([
+            'logger' => $logger,
+            'trailforks' => new TrailforksConnector(
+                $secrets['trailforks'],
+                $logger
+            ),
+            'request' => $this->getRequest('GET')
+                ->withAttribute('currentUser', $currentUser)
+        ]);
     }
 
     private function loadTestSecrets(): array
