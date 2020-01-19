@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use RideTimeServer\API\Repositories\BaseRepository;
 use RideTimeServer\API\Repositories\BaseTrailforksRepository;
+use RideTimeServer\API\Repositories\SecureRepository;
 use Slim\Container;
 
 class CustomEntityManager extends EntityManagerDecorator
@@ -32,6 +33,9 @@ class CustomEntityManager extends EntityManagerDecorator
         }
         if ($repo instanceof BaseRepository) {
             $repo->setLogger($this->container->get('logger'));
+        }
+        if ($repo instanceof SecureRepository) {
+            $repo->setCurrentUser($this->container->get('request')->getAttribute('currentUser'));
         }
 
         return $repo;
