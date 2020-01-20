@@ -43,7 +43,7 @@ class LocationController extends BaseController
             $data->relatedEntities = (object) [
                 'event' => $this->extractDetails($this->getEventsInLocations(
                     $locations,
-                    $request->getAttribute('currentUser'),
+                    $this->container->get('userProvider')->getCurrentUser(),
                     $eventFilters
                 ))
             ];
@@ -72,7 +72,7 @@ class LocationController extends BaseController
                 $filter->getCriteria()
                     ->andWhere(Criteria::expr()->in('location', $locations))
             )
-            ->filter(function (Event $event) use ($currentUser) { return $event->isVisible($currentUser); })
+            // ->filter(function (Event $event) use ($currentUser) { return $event->isVisible($currentUser); })
             ->getValues();
     }
 

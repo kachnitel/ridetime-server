@@ -49,7 +49,7 @@ class AuthMiddleware
             'secret' => $this->getAuthPublicKey(),
             // 'path' => '/api',
             'algorithm' => ['RS256'],
-            'logger' => $this->container['logger'],
+            // 'logger' => $this->container['logger'],
             'secure' => false,
             'error' => $this->getErrorHandlerCallback()
         ]);

@@ -30,9 +30,10 @@ class UserController extends BaseController
         // HACK:
         $related = $user->getRelated();
         $related->event = $this->extractDetails($user->getEvents(Event::STATUS_CONFIRMED)
-            ->filter(function (Event $event) use ($request) {
-                return $event->isVisible($request->getAttribute('currentUser'));
-            })->getValues());
+            // ->filter(function (Event $event) use ($request) {
+            //     return $event->isVisible($this->container->get('userProvider')->getCurrentUser());
+            // })
+            ->getValues());
         return $response->withJson((object) [
             'result' => $user->getDetail(),
             'relatedEntities' => $related
@@ -88,7 +89,7 @@ class UserController extends BaseController
 
     public function update(Request $request, Response $response, array $args): Response
     {
-        $user = $request->getAttribute('currentUser');
+        $user = $this->container->get('userProvider')->getCurrentUser();
         $this->validateSameId($user->getId(), $args['id']);
 
         $data = json_decode($request->getBody());
@@ -120,7 +121,7 @@ class UserController extends BaseController
     public function uploadPicture(Request $request, Response $response, array $args): Response
     {
         /** @var User $user */
-        $user = $request->getAttribute('currentUser');
+        $user = $this->container->get('userProvider')->getCurrentUser();
         $this->validateSameId($user->getId(), $args['id']);
 
         // First look for an uploaded picture
@@ -159,7 +160,7 @@ class UserController extends BaseController
     public function requestFriend(Request $request, Response $response, array $args): Response
     {
         /** @var User $user */
-        $user = $request->getAttribute('currentUser');
+        $user = $this->container->get('userProvider')->getCurrentUser();
         $friendship = $user->addFriend($this->getUserRepository()->get($args['id']));
         $this->getUserRepository()->saveEntity($user);
 
@@ -191,7 +192,7 @@ class UserController extends BaseController
     public function acceptFriend(Request $request, Response $response, array $args): Response
     {
         /** @var User $user */
-        $user = $request->getAttribute('currentUser');
+        $user = $this->container->get('userProvider')->getCurrentUser();
         $friendship = $user->acceptFriend($this->getUserRepository()->get($args['id']));
         $this->getUserRepository()->saveEntity($friendship);
 
@@ -221,7 +222,7 @@ class UserController extends BaseController
      */
     public function removeFriend(Request $request, Response $response, array $args): Response
     {
-        $fs = $request->getAttribute('currentUser')->removeFriend(
+        $fs = $this->container->get('userProvider')->getCurrentUser()->removeFriend(
             $this->getUserRepository()->get($args['id'])
         );
         $this->getEntityManager()->remove($fs);
@@ -246,7 +247,7 @@ class UserController extends BaseController
     public function listFriends(Request $request, Response $response, array $args): Response
     {
         /** @var User $user */
-        $user = $request->getAttribute('currentUser');
+        $user = $this->container->get('userProvider')->getCurrentUser();
 
         $result = [];
 

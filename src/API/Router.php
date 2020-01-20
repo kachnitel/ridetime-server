@@ -2,7 +2,6 @@
 namespace RideTimeServer\API;
 
 use Slim\App;
-use RideTimeServer\API\Middleware\CurrentUserMiddleware;
 
 class Router
 {
@@ -21,28 +20,24 @@ class Router
      */
     public function initRoutes()
     {
-        $cuMiddleware = new CurrentUserMiddleware($this->app->getContainer());
-
         /** Return user detail */
         $this->app->post('/signin', Controllers\AuthController::class . ':signIn');
         $this->app->post('/signup', Controllers\AuthController::class . ':signUp');
-        $this->app->post('/signout', Controllers\AuthController::class . ':signOut')
-            ->add($cuMiddleware->getMiddleware(true));
+        $this->app->post('/signout', Controllers\AuthController::class . ':signOut');
 
-        $this->app->group('/api', function (App $app) use ($cuMiddleware) {
+        $this->app->group('/api', function (App $app) {
             $app->group('', function (App $app) {
                 $app->group('/events', function (App $app) { self::initEventRoutes($app); });
                 $app->group('/users', function (App $app) { self::initUserRoutes($app); });
-            })->add($cuMiddleware->getMiddleware(true));
+            });
             // REVIEW: dirty. Should remove $requireUser param from CUMiddleware,
             // use separate route without user for sign up
-            $app->group('/locations', function (App $app) { self::initLocationRoutes($app); })
-                ->add($cuMiddleware->getMiddleware(false));
+            $app->group('/locations', function (App $app) { self::initLocationRoutes($app); });
         });
 
         $this->app->group('/dashboard', function (App $app) {
             self::initDashboardRoutes($app);
-        })->add($cuMiddleware->getMiddleware(true));
+        });
     }
 
     public static function initEventRoutes(App $app)

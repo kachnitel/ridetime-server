@@ -1,6 +1,7 @@
 <?php
 namespace RideTimeServer\Tests\Entities;
 
+use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\User;
 use RideTimeServer\Entities\Friendship;
 use RideTimeServer\Entities\Location;
@@ -195,5 +196,24 @@ class UserTest extends APITestCase
 
         $friends = $user->getConfirmedFriends();
         $this->assertEqualsCanonicalizing([$friend, $friendWithMe], $friends);
+    }
+
+    public function testListVisibleFriendEvents()
+    {
+        $friend = $this->generateUser();
+        $this->currentUser->addFriend($friend)->accept();
+
+        $publicEvent = $this->generateEvent(1, $friend);
+        $friendEvent = $this->generateEvent(2, $friend)->setVisibility(Event::VISIBILITY_FRIENDS);
+        $privateEvent = $this->generateEvent(3, $friend)->setVisibility(Event::VISIBILITY_INVITED);
+
+        $this->entityManager->flush();
+
+        $events = $friend->getEvents(Event::STATUS_CONFIRMED)->getValues();
+        $this->assertNotContains($privateEvent, $events);
+        $this->assertEqualsCanonicalizing(
+            [ $publicEvent, $friendEvent ],
+            $events
+        );
     }
 }

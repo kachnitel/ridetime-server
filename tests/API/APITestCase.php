@@ -14,6 +14,7 @@ use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Trail;
 use RideTimeServer\Exception\RTException;
+use RideTimeServer\UserProvider;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Uri;
@@ -55,7 +56,8 @@ class APITestCase extends RTTestCase
             'driver' => 'pdo_mysql'
         ];
 
-        $this->currentUser = $this->generateUser(null, false);
+        $userId = rand();
+        $this->currentUser = $this->generateUser($userId, false);
 
         $container = $this->getContainer($this->currentUser, $secrets);
 
@@ -63,7 +65,10 @@ class APITestCase extends RTTestCase
             EntityManager::create($connectionParameters, $configuration),
             $container
         );
+
+        $this->currentUser->setAuthId('Test['.$userId.']');
         $this->entityManager->persist($this->currentUser);
+        $container['userProvider'] = new UserProvider($this->entityManager, ['sub' => $this->currentUser->getAuthId()]);
 
         try {
             $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
@@ -87,9 +92,7 @@ class APITestCase extends RTTestCase
             'trailforks' => new TrailforksConnector(
                 $secrets['trailforks'],
                 $logger
-            ),
-            'request' => $this->getRequest('GET')
-                ->withAttribute('currentUser', $currentUser)
+            )
         ]);
     }
 
@@ -139,21 +142,24 @@ class APITestCase extends RTTestCase
         $event->setDate(new \DateTime('2 hours'));
         $event->setDifficulty(rand(0, 4));
         $event->setTerrain('trail');
-        if ($createdBy === null) {
-            $createdBy = $this->generateUser();
-        }
-        $members[] = $createdBy;
-        $event->setCreatedBy($createdBy);
+
         if ($location === null) {
             $location = $this->generateLocation();
         }
         $event->setLocation($location);
+
+        if ($createdBy === null) {
+            $createdBy = $this->generateUser();
+        }
+        $event->setCreatedBy($createdBy);
+        $members[] = $createdBy;
         foreach ($members as $member) {
             $membership = new EventMember();
             $membership->setEvent($event);
             $membership->setUser($member);
             $membership->setStatus(Event::STATUS_CONFIRMED);
             $event->addMember($membership);
+            $member->addEvent($membership);
         }
 
         return $event;

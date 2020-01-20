@@ -84,7 +84,7 @@ class AuthController extends BaseController
     public function signOut(Request $request, Response $response, array $args): Response
     {
         /** @var User $user */
-        $user = $request->getAttribute('currentUser');
+        $user = $this->container->get('userProvider')->getCurrentUser();
         $data = json_decode($request->getBody());
 
         if (!empty($data->notificationsToken)) {

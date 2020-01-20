@@ -5,21 +5,21 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use RideTimeServer\Entities\PrimaryEntityInterface;
 use RideTimeServer\Entities\SecureEntityInterface;
-use RideTimeServer\Entities\User;
 use RideTimeServer\Exception\UserException;
+use RideTimeServer\UserProvider;
 
 class SecureRepository extends BaseRepository
 {
     /**
-     * @var User
+     * @var UserProvider
      */
-    protected $currentUser;
+    protected $provider;
 
     public function get(int $id): PrimaryEntityInterface
     {
         $entity = parent::find($id);
 
-        if (!$entity->isVisible($this->currentUser)) {
+        if (!$entity->isVisible($this->provider->getCurrentUser())) {
             throw new UserException("{$this->getClassShortName()} {$id} is not visible to current user", 403);
         }
 
@@ -33,20 +33,20 @@ class SecureRepository extends BaseRepository
     public function list(array $ids = null): Collection
     {
         return parent::list($ids)->filter(function (SecureEntityInterface $entity) {
-            return $entity->isVisible($this->currentUser);
+            return $entity->isVisible($this->provider->getCurrentUser());
         });
     }
 
     public function matching(Criteria $criteria): Collection
     {
         return parent::matching($criteria)->filter(function (SecureEntityInterface $entity) {
-            return $entity->isVisible($this->currentUser);
+            return $entity->isVisible($this->provider->getCurrentUser());
         });
     }
 
-    public function setCurrentUser(User $currentUser)
+    public function setUserProvider(UserProvider $provider)
     {
-        $this->currentUser = $currentUser;
+        $this->provider = $provider;
 
         return $this;
     }

@@ -35,7 +35,7 @@ class CustomEntityManager extends EntityManagerDecorator
             $repo->setLogger($this->container->get('logger'));
         }
         if ($repo instanceof SecureRepository) {
-            $repo->setCurrentUser($this->container->get('request')->getAttribute('currentUser'));
+            $repo->setUserProvider($this->container->get('userProvider'));
         }
 
         return $repo;
