@@ -20,7 +20,7 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Add test config
-      run: echo '{"db":{"host":"127.0.0.1","database":"rt_test","user":"root","password":"root"}}' > .secrets.test.json
+      run: echo '{"db":{"host":"127.0.0.1","database":"rt_test","user":"root","password":"root"},"trailforks":{"api_key":"docs"}}' > .secrets.test.json
 
     - name: Create `rt_test` database
       run: mysql -u root -proot -e "CREATE DATABASE rt_test"
