@@ -11,6 +11,7 @@ use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\Tests\API\APITestCase;
+use RideTimeServer\UserProvider;
 
 use function GuzzleHttp\json_decode;
 
@@ -112,7 +113,7 @@ class EventControllerTest extends APITestCase
 
     public function testJoin()
     {
-        $currentUser = $this->generateUser();
+        $currentUser = $this->currentUser;
         $event = $this->generateEvent();
         $this->entityManager->flush();
 
@@ -134,7 +135,7 @@ class EventControllerTest extends APITestCase
 
     public function testAddComment()
     {
-        $currentUser = $this->generateUser();
+        $currentUser = $this->currentUser;
         $event = $this->generateEvent();
         $membership = new EventMember();
         $membership->setUser($currentUser);
@@ -278,12 +279,9 @@ class EventControllerTest extends APITestCase
 
         $controller = $this->getEventController();
 
-        $request = $this->getRequest('GET')
-            ->withAttribute('currentUser', $event->getCreatedBy());
-
         $results = json_decode(
             $controller->getComments(
-                $request,
+                $this->getRequest('GET'),
                 new Response(),
                 ['id' => $event->getId()]
             )->getBody()
@@ -320,7 +318,8 @@ class EventControllerTest extends APITestCase
     {
         $container = new Container([
             'entityManager' => $this->entityManager,
-            'logger' => new Logger('EventControllerTest')
+            'logger' => new Logger('EventControllerTest'),
+            'userProvider' => new UserProvider($this->entityManager, ['sub' => $this->currentUser->getAuthId()])
         ]);
         return new EventController($container);
     }

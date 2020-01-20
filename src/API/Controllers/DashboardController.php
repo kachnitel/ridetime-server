@@ -32,7 +32,7 @@ class DashboardController
     public function all(Request $request, Response $response, array $args): Response
     {
         /** @var User $user */
-        $user = $request->getAttribute('currentUser');
+        $user = $this->container->get('userProvider')->getCurrentUser();
 
         $fRequests = $this->filterPendingRequests($user->getFriendshipsWithMe())
             ->map(function (Friendship $friendship) {

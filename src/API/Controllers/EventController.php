@@ -29,7 +29,7 @@ class EventController extends BaseController
     {
         // TODO: Validate input!
         $data = json_decode($request->getBody());
-        $currentUser = $request->getAttribute('currentUser');
+        $currentUser = $this->container->get('userProvider')->getCurrentUser();
 
         /** @var EventRepository $repo */
         $repo = $this->getEventRepository();
@@ -50,10 +50,6 @@ class EventController extends BaseController
         /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
 
-        if (!$event->isVisible($request->getAttribute('currentUser'))) {
-            throw new UserException("Event {$args['id']} is not visible to current user", 403);
-        }
-
         return $response->withJson((object) [
             'result' => $event->getDetail(),
             'relatedEntities' => $event->getRelated()
@@ -70,9 +66,6 @@ class EventController extends BaseController
     {
         $result = $this->getEventRepository()
             ->list($request->getQueryParam('ids'))
-            ->filter(function (Event $event) use ($request) {
-                return $event->isVisible($request->getAttribute('currentUser'));
-            })
             ->getValues();
 
         return $response->withJson((object) [
@@ -105,9 +98,6 @@ class EventController extends BaseController
 
         $result = $this->getEventRepository()
             ->matching($criteria)
-            ->filter(function (Event $event) use ($request) {
-                return $event->isVisible($request->getAttribute('currentUser'));
-            })
             ->getValues();
 
         return $response->withJson((object) [
@@ -117,7 +107,7 @@ class EventController extends BaseController
 
     public function getInvites(Request $request, Response $response, array $args): Response
     {
-        $user = $request->getAttribute('currentUser');
+        $user = $this->container->get('userProvider')->getCurrentUser();
         $result = $user->getEvents(Event::STATUS_INVITED)->getValues();
 
         return $response->withJson((object) [
@@ -127,7 +117,7 @@ class EventController extends BaseController
 
     public function getRequests(Request $request, Response $response, array $args): Response
     {
-        $user = $request->getAttribute('currentUser');
+        $user = $this->container->get('userProvider')->getCurrentUser();
         $result = $user->getEvents(Event::STATUS_REQUESTED)->getValues();
 
         return $response->withJson((object) [
@@ -145,7 +135,7 @@ class EventController extends BaseController
      */
     public function invite(Request $request, Response $response, array $args): Response
     {
-        $currentUser = $request->getAttribute('currentUser');
+        $currentUser = $this->container->get('userProvider')->getCurrentUser();
         /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
 
@@ -185,7 +175,7 @@ class EventController extends BaseController
     public function join(Request $request, Response $response, array $args): Response
     {
         /** @var User $currentUser */
-        $currentUser = $request->getAttribute('currentUser');
+        $currentUser = $this->container->get('userProvider')->getCurrentUser();
         /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
 
@@ -236,7 +226,7 @@ class EventController extends BaseController
     {
         $membership = $this->getMembershipManager()->removeMember(
             $this->getEventRepository()->get($args['id']),
-            $request->getAttribute('currentUser')
+            $this->container->get('userProvider')->getCurrentUser()
         );
         $this->getEntityManager()->remove($membership);
         $this->getEntityManager()->flush();
@@ -276,7 +266,7 @@ class EventController extends BaseController
         );
         $this->getEventRepository()->saveEntity($membership);
 
-        $currentUser = $request->getAttribute('currentUser');
+        $currentUser = $this->container->get('userProvider')->getCurrentUser();
 
         $notifications = new Notifications();
         $notifications->sendNotification(
@@ -324,7 +314,7 @@ class EventController extends BaseController
     public function addComment(Request $request, Response $response, array $args): Response
     {
         /** @var User $currentUser */
-        $currentUser = $request->getAttribute('currentUser');
+        $currentUser = $this->container->get('userProvider')->getCurrentUser();
         /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
 
@@ -372,10 +362,6 @@ class EventController extends BaseController
         /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
 
-        if (!$event->isVisible($request->getAttribute('currentUser'))) {
-            throw new UserException("Event {$args['id']} is not visible to current user", 403);
-        }
-
         return $response->withJson((object) [
             'results' => $this->extractDetails($event->getComments()->getValues())
         ]);
@@ -386,7 +372,7 @@ class EventController extends BaseController
         /** @var Event $event */
         $event = $this->getEventRepository()->get($args['id']);
 
-        if (!$event->isMember($request->getAttribute('currentUser'))) {
+        if (!$event->isMember($this->container->get('userProvider')->getCurrentUser())) {
             throw new UserException("Current user is not a member of {$args['id']}", 403);
         }
 

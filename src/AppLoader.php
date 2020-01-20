@@ -5,6 +5,7 @@ use Slim\App;
 
 use RideTimeServer\API\Middleware\AuthMiddleware;
 use RideTimeServer\API\Middleware\LoggerMiddleware;
+use RideTimeServer\API\Middleware\CurrentUserMiddleware;
 use RideTimeServer\API\Database;
 use RideTimeServer\API\Router;
 use Aws\S3\S3Client;
@@ -29,8 +30,16 @@ class AppLoader implements AppLoaderInterface
 
         $router = new Router($this->app);
         $router->initRoutes();
+
+        $this->initLogger($config);
+
+        $cuMiddleware = new CurrentUserMiddleware($this->app->getContainer());
+        $this->app->add($cuMiddleware->getMiddleware());
+
+        $authMiddleware = new AuthMiddleware($this->app->getContainer(), $config);
+        $this->app->add($authMiddleware->getMiddleware());
+
         $this->initContainer($config, $secrets);
-        $this->initMiddleware($config);
     }
 
     public function runApp()
@@ -114,11 +123,12 @@ class AppLoader implements AppLoaderInterface
         };
     }
 
+    protected function initLogger(array $config)
+
     /**
      * @param array $config
      * @return void
      */
-    protected function initMiddleware(array $config)
     {
         $container = $this->app->getContainer();
 
@@ -126,9 +136,6 @@ class AppLoader implements AppLoaderInterface
             $loggerMiddleware = new LoggerMiddleware($container);
             $this->app->add($loggerMiddleware->getMiddleware());
         }
-
-        $authMiddleware = new AuthMiddleware($container, $config);
-        $this->app->add($authMiddleware->getMiddleware());
     }
 
     /**
