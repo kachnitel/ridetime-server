@@ -92,7 +92,9 @@ class APITestCase extends RTTestCase
             'trailforks' => new TrailforksConnector(
                 $secrets['trailforks'],
                 $logger
-            )
+            ),
+            'request' => $this->getRequest('GET')
+                ->withAttribute('currentUser', $currentUser)
         ]);
     }
 
