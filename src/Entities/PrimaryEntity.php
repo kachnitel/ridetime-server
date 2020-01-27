@@ -26,4 +26,9 @@ abstract class PrimaryEntity implements PrimaryEntityInterface
             $entities
         );
     }
+
+    public function __toString()
+    {
+        return (string) $this->getId();
+    }
 }

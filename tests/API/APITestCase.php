@@ -57,7 +57,7 @@ class APITestCase extends RTTestCase
 
         $this->currentUser = $this->generateUser(null, false);
 
-        $container = $this->getContainer($this->currentUser, $secrets);
+        $container = $this->getContainer($secrets);
 
         $this->entityManager = new CustomEntityManager(
             EntityManager::create($connectionParameters, $configuration),
@@ -73,13 +73,14 @@ class APITestCase extends RTTestCase
                     $this->entityManager->remove($entity);
                 }
             }
+            $this->entityManager->persist($this->currentUser);
             $this->entityManager->flush();
         } catch (\Exception $exception) {
             throw new RTException('Error cleaning up database in setUp: ' . $exception->getMessage(), 0, $exception);
         }
     }
 
-    protected function getContainer(User $currentUser, $secrets)
+    protected function getContainer($secrets)
     {
         $logger = $this->getLogger();
         return new Container([
@@ -89,7 +90,7 @@ class APITestCase extends RTTestCase
                 $logger
             ),
             'request' => $this->getRequest('GET')
-                ->withAttribute('currentUser', $currentUser)
+                ->withAttribute('currentUser', $this->currentUser)
         ]);
     }
 
