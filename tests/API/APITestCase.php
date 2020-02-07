@@ -63,7 +63,6 @@ class APITestCase extends RTTestCase
             EntityManager::create($connectionParameters, $configuration),
             $container
         );
-        $this->entityManager->persist($this->currentUser);
 
         try {
             $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
