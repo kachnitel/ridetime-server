@@ -11,7 +11,8 @@ class EventFilter
         'location',
         'difficulty',
         'dateStart',
-        'dateEnd'
+        'dateEnd',
+        'id'
     ];
 
     /**
@@ -95,5 +96,14 @@ class EventFilter
         $this->criteria->andWhere(
             Criteria::expr()->lte('date', $this->getDateTimeObject($datetime))
         );
+    }
+
+    /**
+     * @param int[] $ids
+     * @return void
+     */
+    public function id(array $ids)
+    {
+        $this->criteria->andWhere(Criteria::expr()->in('id', $ids));
     }
 }

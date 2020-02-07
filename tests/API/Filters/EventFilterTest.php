@@ -118,6 +118,18 @@ class EventFilterTest extends APITestCase
         $this->assertEquals($dt, $comparison->getValue()->getValue());
     }
 
+    public function testId()
+    {
+        $filter = new EventFilter($this->entityManager);
+        $filter->id([1, 2]);
+
+        $comparison = $this->getComparisonFromCriteria($filter->getCriteria());
+
+        $this->assertEquals('id', $comparison->getField());
+        $this->assertEquals('IN', $comparison->getOperator());
+        $this->assertEquals([1, 2], $comparison->getValue()->getValue());
+    }
+
     protected function getComparisonFromCriteria(Criteria $criteria): Comparison
     {
 
