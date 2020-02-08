@@ -8,16 +8,6 @@ use RideTimeServer\Entities\Event;
 use RideTimeServer\Exception\RTException;
 use RideTimeServer\Exception\UserException;
 
-/**
- * TODO:
- * + change list in ctrlr to use filter
- *   - deprecate list route and use new filter in app update
- * + change get and filter in ctrlr to use provider
- * + use id in ALL relationship lists
- *   - use provider in ctrlr to fetch related if needed
- *     + location
- *     - user (getRelated!)
- */
 class EventProvider
 {
     /**
