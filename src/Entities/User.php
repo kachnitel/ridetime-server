@@ -199,7 +199,7 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
      * Get events.
      *
      * @param string $status
-     * @return ArrayCollection|Event[]
+     * @return ArrayCollection|int[]
      */
     public function getEvents(string $status)
     {
@@ -208,7 +208,7 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
         };
 
         $map = function (EventMember $em) {
-            return $em->getEvent();
+            return $em->getEvent()->getId();
         };
 
         return $this->events->filter($filter)->map($map);
@@ -626,7 +626,7 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
             'id' => $this->getId(),
             'name' => $this->getName(),
             'hometown' => $this->getHometown(),
-            'events' => $this->extractIds($this->getEvents(Event::STATUS_CONFIRMED)->getValues()),
+            'events' => $this->getEvents(Event::STATUS_CONFIRMED)->getValues(),
             'friends' => $this->extractIds($this->getConfirmedFriends()),
             'level' => $this->getLevel(),
             'bike' => $this->getBike(),
@@ -640,7 +640,6 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
     public function getRelated(): object
     {
         return (object) [
-            'event' => $this->extractDetails($this->getEvents(Event::STATUS_CONFIRMED)->getValues()),
             'user' => $this->extractDetails($this->getConfirmedFriends()),
             'location' => $this->extractDetails($this->getLocations()->getValues())
         ];

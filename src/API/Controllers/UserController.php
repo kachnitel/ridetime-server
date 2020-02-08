@@ -1,10 +1,12 @@
 <?php
 namespace RideTimeServer\API\Controllers;
 
+use RideTimeServer\API\Filters\EventFilter;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\API\PictureHandler;
+use RideTimeServer\API\Providers\EventProvider;
 use RideTimeServer\API\Repositories\UserRepository;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\Friendship;
@@ -26,13 +28,21 @@ class UserController extends BaseController
     {
         /** @var User $user */
         $user = $this->getUserRepository()->get($args['id']);
+        $currentUser = $request->getAttribute('currentUser');
 
-        // HACK:
+        $eventProvider = new EventProvider($this->getEventRepository());
+        $eventProvider->setUser($currentUser);
+
+        $eventFilter = new EventFilter($this->getEntityManager());
+        $eventFilter->id($user->getEvents(Event::STATUS_CONFIRMED)->getValues());
+
         $related = $user->getRelated();
-        $related->event = $this->extractDetails($user->getEvents(Event::STATUS_CONFIRMED)
-            ->filter(function (Event $event) use ($request) {
-                return $event->isVisible($request->getAttribute('currentUser'));
-            })->getValues());
+        $related->event = $this->extractDetails(
+            $eventProvider->filter(
+                $eventFilter->getCriteria()
+            )->getValues()
+        );
+
         return $response->withJson((object) [
             'result' => $user->getDetail(),
             'relatedEntities' => $related

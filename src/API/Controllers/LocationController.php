@@ -4,6 +4,7 @@ namespace RideTimeServer\API\Controllers;
 use Doctrine\Common\Collections\Criteria;
 use RideTimeServer\API\Filters\EventFilter;
 use RideTimeServer\API\Filters\TrailforksFilter;
+use RideTimeServer\API\Providers\EventProvider;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\User;
@@ -67,13 +68,11 @@ class LocationController extends BaseController
         $filter = new EventFilter($this->getEntityManager());
         $filter->apply($filters);
 
-        return $this->getEventRepository()
-            ->matching(
-                $filter->getCriteria()
-                    ->andWhere(Criteria::expr()->in('location', $locations))
-            )
-            ->filter(function (Event $event) use ($currentUser) { return $event->isVisible($currentUser); })
-            ->getValues();
+        $provider = new EventProvider($this->getEventRepository());
+        $provider->setUser($currentUser);
+        return $provider->filter(
+            $filter->getCriteria()->andWhere(Criteria::expr()->in('location', $locations))
+        )->getValues();
     }
 
     /**

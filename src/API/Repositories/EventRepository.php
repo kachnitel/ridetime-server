@@ -6,6 +6,9 @@ use RideTimeServer\Entities\EventMember;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\User;
 
+/**
+ * MUST NOT be used directly but using EventProvider to ensure security
+ */
 class EventRepository extends BaseRepository
 {
     /**

@@ -194,13 +194,15 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
     }
 
     /**
-     * Get one location has many events. This is the inverse side.
+     * Get events in location.
      *
-     * @return Collection|Event[]
+     * @return Collection|int[]
      */
     public function getEvents(): Collection
     {
-        return $this->events;
+        return $this->events->map(function (Event $event) {
+            return $event->getId();
+        });
     }
 
     /**

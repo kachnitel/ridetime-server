@@ -3,6 +3,7 @@ namespace RideTimeServer\API\Controllers;
 
 use Doctrine\Common\Collections\Criteria;
 use RideTimeServer\API\Filters\EventFilter;
+use RideTimeServer\API\Providers\EventProvider;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use RideTimeServer\API\Repositories\EventRepository;
@@ -47,12 +48,9 @@ class EventController extends BaseController
      */
     public function get(Request $request, Response $response, array $args): Response
     {
-        /** @var Event $event */
-        $event = $this->getEventRepository()->get($args['id']);
-
-        if (!$event->isVisible($request->getAttribute('currentUser'))) {
-            throw new UserException("Event {$args['id']} is not visible to current user", 403);
-        }
+        $provider = new EventProvider($this->getEventRepository());
+        $provider->setUser($request->getAttribute('currentUser'));
+        $event = $provider->get($args['id']);
 
         return $response->withJson((object) [
             'result' => $event->getDetail(),
@@ -65,15 +63,20 @@ class EventController extends BaseController
      * @param Response $response
      * @param array $args
      * @return Response
+     * @deprecated
      */
     public function list(Request $request, Response $response, array $args): Response
     {
-        $result = $this->getEventRepository()
-            ->list($request->getQueryParam('ids'))
-            ->filter(function (Event $event) use ($request) {
-                return $event->isVisible($request->getAttribute('currentUser'));
-            })
-            ->getValues();
+        $filter = new EventFilter($this->getEntityManager());
+        if (!empty($request->getQueryParam('ids'))) {
+            $filter->id($request->getQueryParam('ids'));
+        } else {
+            $filter->dateStart('1 hour ago');
+        }
+
+        $provider = new EventProvider($this->getEventRepository());
+        $provider->setUser($request->getAttribute('currentUser'));
+        $result = $provider->filter($filter->getCriteria())->getValues();
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
@@ -103,12 +106,9 @@ class EventController extends BaseController
         $filter = new EventFilter($this->getEntityManager(), $criteria);
         $filter->apply($filters);
 
-        $result = $this->getEventRepository()
-            ->matching($criteria)
-            ->filter(function (Event $event) use ($request) {
-                return $event->isVisible($request->getAttribute('currentUser'));
-            })
-            ->getValues();
+        $provider = new EventProvider($this->getEventRepository());
+        $provider->setUser($request->getAttribute('currentUser'));
+        $result = $provider->filter($criteria)->getValues();
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
@@ -117,8 +117,10 @@ class EventController extends BaseController
 
     public function getInvites(Request $request, Response $response, array $args): Response
     {
-        $user = $request->getAttribute('currentUser');
-        $result = $user->getEvents(Event::STATUS_INVITED)->getValues();
+        $result = $this->listOwnEvents(
+            Event::STATUS_INVITED,
+            $request->getAttribute('currentUser')
+        );
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
@@ -127,12 +129,26 @@ class EventController extends BaseController
 
     public function getRequests(Request $request, Response $response, array $args): Response
     {
-        $user = $request->getAttribute('currentUser');
-        $result = $user->getEvents(Event::STATUS_REQUESTED)->getValues();
+        $result = $this->listOwnEvents(
+            Event::STATUS_REQUESTED,
+            $request->getAttribute('currentUser')
+        );
 
         return $response->withJson((object) [
             'results' => $this->extractDetails($result)
         ]);
+    }
+
+    protected function listOwnEvents(string $status, User $user): array
+    {
+        $ids = $user->getEvents($status)->getValues();
+
+        $filter = new EventFilter($this->getEntityManager());
+        $filter->id($ids);
+
+        $provider = new EventProvider($this->getEventRepository());
+        $provider->setUser($user);
+        return $provider->filter($filter->getCriteria())->getValues();
     }
 
     /**
@@ -369,8 +385,9 @@ class EventController extends BaseController
 
     public function getComments(Request $request, Response $response, array $args): Response
     {
-        /** @var Event $event */
-        $event = $this->getEventRepository()->get($args['id']);
+        $provider = new EventProvider($this->getEventRepository());
+        $provider->setUser($request->getAttribute('currentUser'));
+        $event = $provider->get($args['id']);
 
         if (!$event->isVisible($request->getAttribute('currentUser'))) {
             throw new UserException("Event {$args['id']} is not visible to current user", 403);
