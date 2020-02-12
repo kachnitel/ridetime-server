@@ -2,6 +2,7 @@
 namespace RideTimeServer\Entities;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use RideTimeServer\Entities\Traits\TimestampTrait;
 
 /**
  * @Entity
@@ -9,6 +10,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Comment extends PrimaryEntity implements PrimaryEntityInterface
 {
+    use TimestampTrait;
+
     /**
      * @Id
      * @GeneratedValue
@@ -22,13 +25,6 @@ class Comment extends PrimaryEntity implements PrimaryEntityInterface
      * @ManyToOne(targetEntity="User")
      */
     private $author;
-
-    /**
-     * @var \DateTime
-     *
-     * @Column(type="datetime")
-     */
-    private $timestamp;
 
     /**
      * @var Event
@@ -87,30 +83,6 @@ class Comment extends PrimaryEntity implements PrimaryEntityInterface
     public function setAuthor(User $author)
     {
         $this->author = $author;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of timestamp
-     *
-     * @return \DateTime
-     */
-    public function getTimestamp(): \DateTime
-    {
-        return $this->timestamp;
-    }
-
-    /**
-     * Set the value of timestamp
-     *
-     * @param \DateTime $timestamp
-     *
-     * @return self
-     */
-    public function setTimestamp(\DateTime $timestamp)
-    {
-        $this->timestamp = $timestamp;
 
         return $this;
     }
