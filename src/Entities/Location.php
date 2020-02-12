@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use RideTimeServer\Entities\Traits\AliasTrait;
 use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\TrailsTrait;
+use RideTimeServer\Entities\Traits\GpsTrait;
 
 /**
  * @Entity(repositoryClass="RideTimeServer\API\Repositories\LocationRepository")
@@ -16,6 +17,7 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
     use IdTrait;
     use TrailsTrait;
     use AliasTrait;
+    use GpsTrait;
 
     /**
      * Get location detail
@@ -50,20 +52,6 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
      * @var string
      */
     private $name;
-
-    /**
-     * @Column(type="decimal", precision=9, scale=6)
-     *
-     * @var float
-     */
-    private $gpsLat;
-
-    /**
-     * @Column(type="decimal", precision=9, scale=6)
-     *
-     * @var float
-     */
-    private $gpsLon;
 
     /**
      * Difficulties available at the location
@@ -121,54 +109,6 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
     public function setName(string $name)
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of gpsLat
-     *
-     * @return  float
-     */
-    public function getGpsLat(): float
-    {
-        return $this->gpsLat;
-    }
-
-    /**
-     * Set the value of gpsLat
-     *
-     * @param  float  $gpsLat
-     *
-     * @return  self
-     */
-    public function setGpsLat(float $gpsLat)
-    {
-        $this->gpsLat = $gpsLat;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of gpsLon
-     *
-     * @return  float
-     */
-    public function getGpsLon(): float
-    {
-        return $this->gpsLon;
-    }
-
-    /**
-     * Set the value of gpsLon
-     *
-     * @param  float  $gpsLon
-     *
-     * @return  self
-     */
-    public function setGpsLon(float $gpsLon)
-    {
-        $this->gpsLon = $gpsLon;
 
         return $this;
     }
