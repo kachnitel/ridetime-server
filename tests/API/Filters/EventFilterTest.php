@@ -100,7 +100,7 @@ class EventFilterTest extends APITestCase
 
         $comparison = $this->getComparisonFromCriteria($filter->getCriteria());
 
-        $this->assertEquals('date', $comparison->getField());
+        $this->assertEquals('timestamp', $comparison->getField());
         $this->assertEquals('>=', $comparison->getOperator());
         $this->assertEquals($dt, $comparison->getValue()->getValue());
     }
@@ -113,7 +113,7 @@ class EventFilterTest extends APITestCase
 
         $comparison = $this->getComparisonFromCriteria($filter->getCriteria());
 
-        $this->assertEquals('date', $comparison->getField());
+        $this->assertEquals('timestamp', $comparison->getField());
         $this->assertEquals('<=', $comparison->getOperator());
         $this->assertEquals($dt, $comparison->getValue()->getValue());
     }

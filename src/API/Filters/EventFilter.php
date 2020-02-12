@@ -83,7 +83,7 @@ class EventFilter
     public function dateStart($datetime)
     {
         $this->criteria->andWhere(
-            Criteria::expr()->gte('date', $this->getDateTimeObject($datetime))
+            Criteria::expr()->gte('timestamp', $this->getDateTimeObject($datetime))
         );
     }
 
@@ -94,7 +94,7 @@ class EventFilter
     public function dateEnd($datetime)
     {
         $this->criteria->andWhere(
-            Criteria::expr()->lte('date', $this->getDateTimeObject($datetime))
+            Criteria::expr()->lte('timestamp', $this->getDateTimeObject($datetime))
         );
     }
 

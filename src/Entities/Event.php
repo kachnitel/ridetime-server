@@ -6,6 +6,7 @@ use \Doctrine\Common\Collections\Collection;
 use \Doctrine\ORM\PersistentCollection;
 use RideTimeServer\Entities\Traits\DifficultyTrait;
 use RideTimeServer\Entities\Traits\LocationTrait;
+use RideTimeServer\Entities\Traits\TimestampTrait;
 
 /**
  * @Entity(repositoryClass="RideTimeServer\API\Repositories\EventRepository")
@@ -15,6 +16,7 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
 {
     use DifficultyTrait;
     use LocationTrait;
+    use TimestampTrait;
 
     const STATUS_CONFIRMED = 'confirmed';
     const STATUS_INVITED = 'invited';
@@ -41,11 +43,6 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
      * @Column(type="string", nullable=true, length=2048)
      */
     private $description;
-
-    /**
-     * @Column(type="datetime")
-     */
-    private $date;
 
     /**
      * @var User
@@ -173,22 +170,22 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
      * @param \DateTime $date
      *
      * @return Event
+     * @deprecated
      */
     public function setDate($date)
     {
-        $this->date = $date;
-
-        return $this;
+        return $this->setTimestamp($date);
     }
 
     /**
      * Get date.
      *
      * @return \DateTime
+     * @deprecated
      */
     public function getDate()
     {
-        return $this->date;
+        return $this->getTimestamp();
     }
 
     /**

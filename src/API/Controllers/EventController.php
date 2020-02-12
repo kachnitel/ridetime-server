@@ -97,7 +97,7 @@ class EventController extends BaseController
     {
         $filters = $request->getQueryParams();
         $criteria = Criteria::create()
-            ->orderBy(array('date' => Criteria::ASC))
+            ->orderBy(array('timestamp' => Criteria::ASC))
             ->setFirstResult(0)
             ->setMaxResults(20);
 
