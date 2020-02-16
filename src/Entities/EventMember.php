@@ -10,6 +10,7 @@ class EventMember implements EntityInterface
     /**
      * @var User
      * @ManyToOne(targetEntity="User", inversedBy="events")
+     * @JoinColumn(onDelete="CASCADE")
      * @Id
      */
     private $user;
@@ -17,6 +18,7 @@ class EventMember implements EntityInterface
     /**
      * @var Event
      * @ManyToOne(targetEntity="Event", inversedBy="members")
+     * @JoinColumn(onDelete="CASCADE")
      * @Id
      */
     private $event;

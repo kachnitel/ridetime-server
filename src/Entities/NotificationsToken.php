@@ -12,6 +12,7 @@ class NotificationsToken implements EntityInterface
      *
      * @var User
      * @ManyToOne(targetEntity="User", inversedBy="notificationsTokens")
+     * @JoinColumn(onDelete="CASCADE")
      */
     private $user;
 

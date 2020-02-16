@@ -15,6 +15,7 @@ class Friendship implements EntityInterface
      *
      * @var User
      * @ManyToOne(targetEntity="User", inversedBy="friends")
+     * @JoinColumn(onDelete="CASCADE")
      * @Id
      */
     private $user;
@@ -24,6 +25,7 @@ class Friendship implements EntityInterface
      *
      * @var User
      * @ManyToOne(targetEntity="User", inversedBy="friendsWithMe")
+     * @JoinColumn(onDelete="CASCADE")
      * @Id
      */
     private $friend;
