@@ -6,7 +6,7 @@ use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\TimestampTrait;
 
 /**
- * //@Entity
+ * @Entity
  */
 class UserLocation implements EntityInterface
 {
@@ -59,7 +59,10 @@ class UserLocation implements EntityInterface
                 $this->getGpsLat(),
                 $this->getGpsLon()
             ],
-            'timestamp' => $this->getTimestamp()
+            'timestamp' => $this->getTimestamp(),
+            'user' => $this->getUser()->getId(),
+            'visibility' => $this->getVisibility(),
+            'event' => $this->getEvent() ? $this->getEvent()->getId() : null
         ];
     }
 
