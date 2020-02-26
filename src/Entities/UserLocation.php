@@ -19,6 +19,13 @@ class UserLocation implements EntityInterface
     const VISIBILITY_EMERGENCY = 'emergency';
 
     /**
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
+    private $id;
+
+    /**
      * @var User
      *
      * @ManyToOne(targetEntity="User")
@@ -48,7 +55,7 @@ class UserLocation implements EntityInterface
      * @var Event
      *
      * @ManyToOne(targetEntity="Event")
-     * @JoinColumn(nullable=true)
+     * @JoinColumn(nullable=true, onDelete="CASCADE")
      */
     private $event;
 
