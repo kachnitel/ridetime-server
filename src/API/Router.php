@@ -33,6 +33,7 @@ class Router
             $app->group('', function (App $app) {
                 $app->group('/events', function (App $app) { self::initEventRoutes($app); });
                 $app->group('/users', function (App $app) { self::initUserRoutes($app); });
+                $app->group('/tracking', function (App $app) { self::initTrackingRoutes($app); });
             })->add($cuMiddleware->getMiddleware(true));
             // REVIEW: dirty. Should remove $requireUser param from CUMiddleware,
             // use separate route without user for sign up
@@ -112,6 +113,13 @@ class Router
         $app->delete('/friends/{id:[0-9]+}', Controllers\UserController::class . ':removeFriend');
         /** List friends / requests */
         $app->get('/friends[/{status}[/{type}]]', Controllers\UserController::class . ':listFriends');
+    }
+
+    public static function initTrackingRoutes(App $app)
+    {
+        $app->get('', Controllers\TrackingController::class . ':list');
+        $app->post('', Controllers\TrackingController::class . ':add');
+        $app->delete('', Controllers\TrackingController::class . ':clear');
     }
 
     /**

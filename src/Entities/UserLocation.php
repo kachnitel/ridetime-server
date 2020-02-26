@@ -7,6 +7,7 @@ use RideTimeServer\Entities\Traits\TimestampTrait;
 
 /**
  * @Entity
+ * @Table(name="user_location_tracking")
  */
 class UserLocation implements EntityInterface
 {
