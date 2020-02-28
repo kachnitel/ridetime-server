@@ -3,7 +3,7 @@ namespace RideTimeServer\API\Controllers;
 
 use Psr\Container\ContainerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use RideTimeServer\Entities\PrimaryEntity;
+use RideTimeServer\Entities\PrimaryEntityInterface;
 use RideTimeServer\Entities\Event;
 use RideTimeServer\Entities\Location;
 use RideTimeServer\Entities\Route;
@@ -29,7 +29,7 @@ abstract class BaseController
 
     protected function extractDetails(array $entities): array
     {
-        return array_map(function (PrimaryEntity $entity) {
+        return array_map(function (PrimaryEntityInterface $entity) {
             return $entity->getDetail();
         }, $entities);
     }

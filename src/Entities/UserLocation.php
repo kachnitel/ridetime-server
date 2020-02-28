@@ -9,7 +9,7 @@ use RideTimeServer\Entities\Traits\TimestampTrait;
  * @Entity
  * @Table(name="user_location_tracking")
  */
-class UserLocation implements EntityInterface
+class UserLocation implements PrimaryEntityInterface
 {
     use IdTrait;
     use GpsTrait;
@@ -74,6 +74,14 @@ class UserLocation implements EntityInterface
         ];
     }
 
+    public function getRelated(): object
+    {
+        return (object) [
+            'user' => [$this->getUser()->getDetail()],
+            'event' => [$this->getEvent()->getDetail()]
+        ];
+    }
+
     public function getVisibility(): string
     {
         return $this->visibility;
@@ -86,12 +94,12 @@ class UserLocation implements EntityInterface
         return $this;
     }
 
-    public function getEvent(): Event
+    public function getEvent(): ?Event
     {
         return $this->event;
     }
 
-    public function setEvent(Event $event)
+    public function setEvent(?Event $event)
     {
         $this->event = $event;
 

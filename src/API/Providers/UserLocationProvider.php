@@ -34,7 +34,7 @@ class UserLocationProvider
      *
      * 1) user's friends' locations
      * 2) events where user is confirmed member
-     * 3) emergency (filter nearby?) longer TTL or until disabled
+     * 3) emergency (filter nearby?) TODO: longer TTL or until disabled
      *
      * @param integer $ttl
      * @return void
