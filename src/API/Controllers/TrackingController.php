@@ -1,12 +1,22 @@
 <?php
 namespace RideTimeServer\API\Controllers;
 
+use RideTimeServer\API\Providers\UserLocationProvider;
 use RideTimeServer\Entities\UserLocation;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class TrackingController extends BaseController
 {
+    public function list(Request $request, Response $response, array $args): Response
+    {
+        $repo = $this->getEntityManager()->getRepository(UserLocation::class);
+        $provider = new UserLocationProvider($repo);
+        $provider->setUser($request->getAttribute('currentUser'));
+
+        $results = $provider->list();
+        return $response->withJson($this->extractDetails($results));
+    }
 
     public function add(Request $request, Response $response, array $args): Response
     {

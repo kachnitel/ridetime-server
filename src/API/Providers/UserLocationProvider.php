@@ -37,9 +37,9 @@ class UserLocationProvider
      * 3) emergency (filter nearby?) TODO: longer TTL or until disabled
      *
      * @param integer $ttl
-     * @return void
+     * @return UserLocation[]
      */
-    public function list(int $ttl = self::DEFAULT_TTL)
+    public function list(int $ttl = self::DEFAULT_TTL): array
     {
         /**
          */
