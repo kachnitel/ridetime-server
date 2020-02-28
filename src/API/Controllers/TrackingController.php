@@ -43,4 +43,17 @@ class TrackingController extends BaseController
 
         return $response->withStatus(201);
     }
+
+    public function clear(Request $request, Response $response, array $args): Response
+    {
+        $repo = $this->getEntityManager()->getRepository(UserLocation::class);
+
+        $hits = $repo->findBy(['user' => $request->getAttribute('currentUser')]);
+        foreach ($hits as $record) {
+            $this->getEntityManager()->remove($record);
+        }
+        $this->getEntityManager()->flush();
+
+        return $response->withStatus(204);
+    }
 }
