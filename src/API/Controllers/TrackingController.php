@@ -15,7 +15,7 @@ class TrackingController extends BaseController
         $provider->setUser($request->getAttribute('currentUser'));
 
         $results = $provider->list();
-        return $response->withJson($this->extractDetails($results));
+        return $response->withJson((object) ['results' => $this->extractDetails($results)]);
     }
 
     public function add(Request $request, Response $response, array $args): Response
