@@ -21,6 +21,7 @@ class TrackingController extends BaseController
     public function add(Request $request, Response $response, array $args): Response
     {
         $data = json_decode($request->getBody());
+        $results = [];
 
         foreach ($data as $record) {
             $ul = new UserLocation();
@@ -37,11 +38,12 @@ class TrackingController extends BaseController
             }
 
             $this->getEntityManager()->persist($ul);
+            $results[] = $ul;
         }
 
         $this->getEntityManager()->flush();
 
-        return $response->withStatus(201);
+        return $response->withStatus(201)->withJson((object) ['results' => $this->extractDetails($results)]);
     }
 
     public function clear(Request $request, Response $response, array $args): Response
