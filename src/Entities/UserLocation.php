@@ -67,7 +67,7 @@ class UserLocation implements PrimaryEntityInterface
                 $this->getGpsLat(),
                 $this->getGpsLon()
             ],
-            'timestamp' => $this->getTimestamp(),
+            'timestamp' => $this->getTimestamp()->getTimestamp(),
             'user' => $this->getUser()->getId(),
             'visibility' => $this->getVisibility(),
             'event' => $this->getEvent() ? $this->getEvent()->getId() : null
