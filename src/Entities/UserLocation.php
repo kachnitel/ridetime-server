@@ -63,6 +63,7 @@ class UserLocation implements PrimaryEntityInterface
     public function getDetail(): object
     {
         return (object) [
+            'id' => $this->getId(),
             'coords' => [
                 $this->getGpsLat(),
                 $this->getGpsLon()
