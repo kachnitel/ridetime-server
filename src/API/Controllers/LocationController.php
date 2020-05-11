@@ -16,6 +16,37 @@ class LocationController extends BaseController
 {
     /**
      * @param Request $request
+     * @param Response condition$response
+     * @param array $args
+     * @return Response
+     */
+    public function get(Request $request, Response $response, array $args): Response
+    {
+        /** @var Location $location */
+        $location = $this->getLocationRepository()->get($args['id']);
+        $currentUser = $request->getAttribute('currentUser');
+
+        $eventProvider = new EventProvider($this->getEventRepository());
+        $eventProvider->setUser($currentUser);
+
+        $eventFilter = new EventFilter($this->getEntityManager());
+        $eventFilter->id($location->getEvents()->getValues());
+
+        $related = $location->getRelated();
+        $related->event = $this->extractDetails(
+            $eventProvider->filter(
+                $eventFilter->getCriteria()
+            )->getValues()
+        );
+
+        return $response->withJson((object) [
+            'result' => $location->getDetail(),
+            'relatedEntities' => $related
+        ]);
+    }
+
+    /**
+     * @param Request $request
      * @param Response $response
      * @param array $args
      * @return Response
