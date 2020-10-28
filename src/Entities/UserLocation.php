@@ -21,7 +21,6 @@ class UserLocation implements PrimaryEntityInterface
 
     /**
      * @Id
-     * @GeneratedValue
      * @Column(type="integer")
      */
     private $id;

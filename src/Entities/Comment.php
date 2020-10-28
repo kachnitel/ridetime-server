@@ -14,7 +14,6 @@ class Comment extends PrimaryEntity implements PrimaryEntityInterface
 
     /**
      * @Id
-     * @GeneratedValue
      * @Column(type="integer")
      */
     private $id;
