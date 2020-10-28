@@ -5,6 +5,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
 use \Doctrine\Common\Collections\Collection;
 use \Doctrine\ORM\PersistentCollection;
 use RideTimeServer\Entities\Traits\DifficultyTrait;
+use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\LocationTrait;
 use RideTimeServer\Entities\Traits\TimestampTrait;
 
@@ -17,6 +18,7 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     use DifficultyTrait;
     use LocationTrait;
     use TimestampTrait;
+    use IdTrait;
 
     const STATUS_CONFIRMED = 'confirmed';
     const STATUS_INVITED = 'invited';
@@ -26,12 +28,6 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     const VISIBILITY_FRIENDS = 'friends';
     const VISIBILITY_INVITED = 'invited';
     const VISIBILITY_MEMBERS_FRIENDS = 'memberfriends';
-
-    /**
-     * @Id
-     * @Column(type="integer")
-     */
-    private $id;
 
     /**
      * @Column(type="string")
@@ -103,16 +99,6 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
     {
         $this->members = new ArrayCollection();
         $this->comments = new ArrayCollection();
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId(): int
-    {
-        return (int) $this->id;
     }
 
     /**

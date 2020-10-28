@@ -2,6 +2,7 @@
 namespace RideTimeServer\Entities;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Exception\UserException;
 use RideTimeServer\Exception\RTException;
 
@@ -11,11 +12,7 @@ use RideTimeServer\Exception\RTException;
  */
 class User extends PrimaryEntity implements PrimaryEntityInterface
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     */
-    private $id;
+    use IdTrait;
 
     /**
      * @Column(type="string")
@@ -132,16 +129,6 @@ class User extends PrimaryEntity implements PrimaryEntityInterface
         $this->friendsWithMe = new ArrayCollection();
         $this->locations = new ArrayCollection();
         $this->notificationsTokens = new ArrayCollection();
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**

@@ -2,6 +2,7 @@
 namespace RideTimeServer\Entities;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\TimestampTrait;
 
 /**
@@ -11,12 +12,7 @@ use RideTimeServer\Entities\Traits\TimestampTrait;
 class Comment extends PrimaryEntity implements PrimaryEntityInterface
 {
     use TimestampTrait;
-
-    /**
-     * @Id
-     * @Column(type="integer")
-     */
-    private $id;
+    use IdTrait;
 
     /**
      * @var User
@@ -50,16 +46,6 @@ class Comment extends PrimaryEntity implements PrimaryEntityInterface
     public function __construct()
     {
         $this->seenBy = new ArrayCollection();
-    }
-
-    /**
-     * Get the value of id
-     *
-     * @return  int
-     */
-    public function getId(): int
-    {
-        return (int) $this->id;
     }
 
     /**
