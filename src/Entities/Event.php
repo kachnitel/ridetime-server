@@ -61,6 +61,7 @@ class Event extends PrimaryEntity implements PrimaryEntityInterface
 
     /**
      * @Column(type="string", nullable=true, length=2048)
+     * TODO: @ManyToOne(targetEntity="Route")
      */
     private $route;
 

@@ -56,7 +56,6 @@ class LocationRepository extends BaseTrailforksRepository implements RemoteSourc
         // 'shuttle' => (bool) $location->shuttle,
         // 'bikepark' => (bool) $location->bikepark
 
-        $location->setId($data->rid);
         $location->setName($data->title);
         $location->setGpsLat($data->latitude);
         $location->setGpsLon($data->longitude);

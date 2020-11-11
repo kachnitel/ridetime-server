@@ -4,7 +4,7 @@ namespace RideTimeServer\Entities\Traits;
 trait AliasTrait
 {
     /**
-     * @Column(type="string")
+     * @Column(type="string", nullable=true)
      *
      * @var string
      */

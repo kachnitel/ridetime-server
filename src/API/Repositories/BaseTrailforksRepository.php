@@ -45,23 +45,32 @@ abstract class BaseTrailforksRepository extends BaseRepository
      * Look into the DB for entity, with fallback to Trailforks if not found in DB
      * Adds to DB if found at API
      *
-     * @param integer $id
+     * @param integer $remoteId
      * @return PrimaryEntity
      */
-    public function findWithFallback(int $id): PrimaryEntity
+    public function findRemote(int $remoteId): PrimaryEntity
     {
-        $result = $this->find($id);
+        $result = $this->findOneBy(['remoteId' => $remoteId, 'source' => 'trailforks']);
 
         if ($result !== null) {
             return $result;
         }
 
+        // REVIEW: Check un-flushed entities
+        if ($insertions = $this->getEntityManager()->getUnitOfWork()->getScheduledEntityInsertions()) {
+            foreach ($insertions as $entity) {
+                if (get_class($entity) === $this->getEntityName() && $entity->getRemoteId() === $remoteId) {
+                    return $entity;
+                }
+            }
+        }
+
         $path = explode('\\', $this->getEntityName());
         $entityShortName = array_pop($path);
         $connectorMethod = 'get' . $entityShortName;
-        $data = $this->connector->{$connectorMethod}($id, static::API_FIELDS);
+        $data = $this->connector->{$connectorMethod}($remoteId, static::API_FIELDS);
         if (!$data) {
-            throw new EntityNotFoundException("{$entityShortName} ID: {$id} not found at API!", 404);
+            throw new EntityNotFoundException("{$entityShortName} ID: {$remoteId} not found at API!", 404);
         }
         return $this->upsert($data);
     }
@@ -76,12 +85,15 @@ abstract class BaseTrailforksRepository extends BaseRepository
     public function upsert(object $data): PrimaryEntity
     {
         $entityClass = $this->getClassName();
+        $remoteId = $data->{$this->getIdField()};
         /** @var PrimaryEntity $entity */
-        $entity = $this->getEntityManager()->find(
-            $entityClass,
-            $data->{$this->getIdField()}
-        ) ?? new $entityClass();
+        $entity = $this->findOneBy([
+            'remoteId' => $remoteId,
+            'source' => 'trailforks'
+        ]) ?? new $entityClass();
         $entity = $this->populateEntity($entity, $data);
+        $entity->setRemoteId($remoteId);
+        $entity->setSource('trailforks');
         $this->getEntityManager()->persist($entity);
         $this->updatedCounter++;
 

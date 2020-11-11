@@ -49,7 +49,7 @@ class BaseTrailforksRepositoryTest extends APITestCase
                 /**
                  * REVIEW: Copied LocationRepository::populateEntity
                  */
-                $location->setId($data->rid);
+                $location->setRemoteId($data->rid);
                 $location->setName($data->title);
                 $location->setGpsLat($data->latitude);
                 $location->setGpsLon($data->longitude);
@@ -63,24 +63,27 @@ class BaseTrailforksRepositoryTest extends APITestCase
         $repo->setConnector($mockConnector);
 
         // Location not in DB but found at API
-        $fromApi = $repo->findWithFallback(1);
+        /** @var Location $fromApi REVIEW: Use RemoteEntity */
+        $fromApi = $repo->findRemote(1);
         $this->assertInstanceOf(Location::class, $fromApi);
-        $this->assertEquals(1, $fromApi->getId());
+        $this->assertEquals(1, $fromApi->getRemoteId());
 
         // Location known in DB
         $location = new Location();
-        $location->setId(2);
+        $location->setRemoteId(2);
+        $location->setSource('trailforks');
         $location->setName('Test cached location');
         $location->setGpsLat(1.23);
         $location->setGpsLon(3.45);
         $location->setAlias('cached-location');
         $this->entityManager->persist($location);
+        $this->entityManager->flush();
 
-        $cached = $repo->findWithFallback(2);
+        $cached = $repo->findRemote(2);
         $this->assertSame($location, $cached);
 
         // Non-existent location
         $this->expectException(EntityNotFoundException::class);
-        $repo->findWithFallback(3);
+        $repo->findRemote(3);
     }
 }

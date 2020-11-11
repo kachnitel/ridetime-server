@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use PHPUnit\Framework\MockObject\MockObject;
 use RideTimeServer\API\Filters\EventFilter;
+use RideTimeServer\Entities\Location;
 use RideTimeServer\Tests\API\APITestCase;
 
 class EventFilterTest extends APITestCase
@@ -66,12 +67,12 @@ class EventFilterTest extends APITestCase
     public function testLocation()
     {
         $locations = [
-            $this->generateLocation(1),
-            $this->generateLocation(3)
+            $this->generateLocation(),
+            $this->generateLocation()
         ];
         $this->entityManager->flush();
         $filter = new EventFilter($this->entityManager);
-        $filter->location([1, 3]);
+        $filter->location(array_map(fn(Location $location) => $location->getId(), $locations));
 
         $comparison = $this->getComparisonFromCriteria($filter->getCriteria());
 

@@ -47,11 +47,14 @@ class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRe
     protected function populateEntity(PrimaryEntity $route, object $data): PrimaryEntity
     {
         /** @var Route $route */
-        $route->applyProperties($data);
+        $route->setTitle($data->title);
+        $route->setDescription($data->description);
+        $route->setDifficulty($data->difficulty);
+        $route->setAlias($data->alias);
 
         $location = $this->getEntityManager()
             ->getRepository(Location::class)
-            ->findWithFallback($data->rid);
+            ->findRemote($data->rid);
         $route->setLocation($location);
 
         $route->setProfile($data->stats);
@@ -61,7 +64,7 @@ class RouteRepository extends BaseTrailforksRepository implements RemoteSourceRe
                 try {
                     $trail = $this->getEntityManager()
                         ->getRepository(Trail::class)
-                        ->findWithFallback($trailInfo->trailid);
+                        ->findRemote($trailInfo->trailid);
                 } catch (EntityNotFoundException $e) {
                     /**
                      * TODO: https://github.com/kachnitel/ridetime-server/issues/28
