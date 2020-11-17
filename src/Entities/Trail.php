@@ -35,8 +35,9 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
             'difficulty' => $this->getDifficulty(),
             'location' => $this->getLocation()->getId(),
             'profile' => $this->getProfile(),
-            'alias' => $this->getAlias()
-            // TODO: remoteId, source
+            'alias' => $this->getAlias(),
+            'source' => $this->getSource(),
+            'remoteId' => $this->getRemoteId()
         ];
     }
 

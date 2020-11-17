@@ -47,7 +47,9 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
             'location' => $this->getLocation()->getId(),
             'profile' => $this->getProfile(),
             'trails' => $trailIds,
-            'alias' => $this->getAlias()
+            'alias' => $this->getAlias(),
+            'source' => $this->getSource(),
+            'remoteId' => $this->getRemoteId()
         ];
     }
 

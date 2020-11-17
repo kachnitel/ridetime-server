@@ -56,15 +56,6 @@ abstract class BaseTrailforksRepository extends BaseRepository
             return $result;
         }
 
-        // REVIEW: Check un-flushed entities
-        if ($insertions = $this->getEntityManager()->getUnitOfWork()->getScheduledEntityInsertions()) {
-            foreach ($insertions as $entity) {
-                if (get_class($entity) === $this->getEntityName() && $entity->getRemoteId() === $remoteId) {
-                    return $entity;
-                }
-            }
-        }
-
         $path = explode('\\', $this->getEntityName());
         $entityShortName = array_pop($path);
         $connectorMethod = 'get' . $entityShortName;
@@ -95,6 +86,7 @@ abstract class BaseTrailforksRepository extends BaseRepository
         $entity->setRemoteId($remoteId);
         $entity->setSource('trailforks');
         $this->getEntityManager()->persist($entity);
+        $this->getEntityManager()->flush(); // REVIEW: resource use
         $this->updatedCounter++;
 
         return $entity;

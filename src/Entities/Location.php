@@ -37,7 +37,9 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
             ],
             'difficulties' => $this->getDifficulties(),
             'alias' => $this->getAlias(),
-            'coverPhoto' => $this->getCoverPhoto()
+            'coverPhoto' => $this->getCoverPhoto(),
+            'source' => $this->getSource(),
+            'remoteId' => $this->getRemoteId()
         ];
     }
 
