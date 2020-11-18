@@ -5,7 +5,7 @@ use RideTimeServer\Entities\PrimaryEntity;
 
 interface RemoteSourceRepositoryInterface
 {
-    public function findWithFallback(int $id): PrimaryEntity;
+    public function findRemote(int $id): PrimaryEntity;
 
     /**
      * TODO: Should be possible to use in Base class

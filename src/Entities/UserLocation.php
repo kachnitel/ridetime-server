@@ -20,13 +20,6 @@ class UserLocation implements PrimaryEntityInterface
     const VISIBILITY_EMERGENCY = 'emergency';
 
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
-    private $id;
-
-    /**
      * @var User
      *
      * @ManyToOne(targetEntity="User")

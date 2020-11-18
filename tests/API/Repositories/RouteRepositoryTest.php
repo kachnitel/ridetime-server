@@ -3,6 +3,7 @@ namespace RideTimeServer\Tests\API\Repositories;
 
 use RideTimeServer\API\Repositories\RouteRepository;
 use RideTimeServer\Entities\Route;
+use RideTimeServer\Entities\Trail;
 use RideTimeServer\Tests\API\APITestCase;
 
 class RouteRepositoryTest extends APITestCase
@@ -12,9 +13,18 @@ class RouteRepositoryTest extends APITestCase
      */
     public function testUpsert()
     {
-        $this->entityManager->persist($trail[1] = $this->generateTrail(1));
-        $this->entityManager->persist($trail[2] = $this->generateTrail(2));
-        $this->entityManager->persist($location = $this->generateLocation(1));
+        $trails[1] = $this->generateTrail();
+        $trails[1]->setRemoteId(1);
+        $trails[1]->setSource('trailforks');
+        $this->entityManager->persist($trails[1]);
+        $trails[2] = $this->generateTrail();
+        $trails[2]->setRemoteId(2);
+        $trails[2]->setSource('trailforks');
+        $this->entityManager->persist($trails[2]);
+        $location = $this->generateLocation();
+        $location->setRemoteId(1);
+        $location->setSource('trailforks');
+        $this->entityManager->persist($location);
         $this->entityManager->flush();
 
         $data = json_decode('{
@@ -45,8 +55,7 @@ class RouteRepositoryTest extends APITestCase
         /** @var Route $route */
         $route = $repo->upsert($data);
 
-        $this->assertCount(2, $route->getTrails());
-        $this->assertContains($trail[1], $route->getTrails());
+        $this->assertEqualsCanonicalizing($trails, $route->getTrails()->getValues());
         $this->assertSame($location, $route->getLocation());
         $this->assertEquals($data->title, $route->getTitle());
         $this->assertEquals($data->stats, $route->getProfile());

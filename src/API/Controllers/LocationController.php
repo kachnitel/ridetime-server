@@ -106,27 +106,6 @@ class LocationController extends BaseController
         )->getValues();
     }
 
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     * @return Response
-     * @deprecated
-     */
-    public function trailsByLocation(Request $request, Response $response, array $args): Response
-    {
-        return $this->trails(
-            $request->withQueryParams([
-                'filter' => [
-                    'rid' => $args['id'],
-                    'activitytype' => 1
-                ]
-            ]),
-            $response,
-            $args
-        );
-    }
-
     public function trails(Request $request, Response $response, array $args): Response
     {
         $filters = $request->getQueryParam('filter');
@@ -176,26 +155,5 @@ class LocationController extends BaseController
                 'location' => $this->extractDetails($locations)
             ]
         ]);
-    }
-
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     * @return Response
-     * @deprecated
-     */
-    public function routesByLocation(Request $request, Response $response, array $args): Response
-    {
-        return $this->routes(
-            $request->withQueryParams([
-                'filter' => [
-                    'rid' => $args['id'],
-                    'activitytype' => 1
-                ]
-            ]),
-            $response,
-            $args
-        );
     }
 }

@@ -38,15 +38,17 @@ class TrailRepository extends BaseTrailforksRepository implements RemoteSourceRe
      */
     protected function populateEntity(PrimaryEntity $trail, object $data): PrimaryEntity
     {
-        $data->id = $data->trailid;
         /** @var Trail $trail */
-        $trail->applyProperties($data);
+        $trail->setTitle($data->title);
+        $trail->setDescription($data->description);
+        $trail->setDifficulty($data->difficulty);
+        $trail->setAlias($data->alias);
 
         $trail->setProfile($data->stats);
 
         $location = $this->getEntityManager()
             ->getRepository(Location::class)
-            ->findWithFallback($data->rid);
+            ->findRemote($data->rid);
         $trail->setLocation($location);
 
         return $trail;

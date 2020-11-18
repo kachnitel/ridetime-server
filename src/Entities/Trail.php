@@ -5,6 +5,7 @@ use RideTimeServer\Entities\Traits\AliasTrait;
 use RideTimeServer\Entities\Traits\DifficultyTrait;
 use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\LocationTrait;
+use RideTimeServer\Entities\Traits\RemoteIdTrait;
 use RideTimeServer\Entities\Traits\TerrainProfileTrait;
 
 /**
@@ -14,33 +15,11 @@ use RideTimeServer\Entities\Traits\TerrainProfileTrait;
 class Trail extends PrimaryEntity implements PrimaryEntityInterface
 {
     use IdTrait;
+    use RemoteIdTrait;
     use LocationTrait;
     use TerrainProfileTrait;
     use DifficultyTrait;
     use AliasTrait;
-
-    const SCALAR_FIELDS = [
-        'id',
-        'title',
-        'description',
-        'difficulty',
-        'alias'
-    ];
-
-    /**
-     * Applies self::SCALAR_FIELDS listed properties
-     * REVIEW: See User::applyProperties(array)
-     *
-     * @param object $data
-     * @return object
-     */
-    public function applyProperties(object $data)
-    {
-        foreach (self::SCALAR_FIELDS as $property) {
-            $method = $method = 'set' . ucfirst($property);
-            $this->{$method}($data->{$property});
-        }
-    }
 
     /**
      * Get trail detail
@@ -56,7 +35,9 @@ class Trail extends PrimaryEntity implements PrimaryEntityInterface
             'difficulty' => $this->getDifficulty(),
             'location' => $this->getLocation()->getId(),
             'profile' => $this->getProfile(),
-            'alias' => $this->getAlias()
+            'alias' => $this->getAlias(),
+            'source' => $this->getSource(),
+            'remoteId' => $this->getRemoteId()
         ];
     }
 

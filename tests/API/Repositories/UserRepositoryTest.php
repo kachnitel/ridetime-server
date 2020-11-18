@@ -31,23 +31,20 @@ class UserRepositoryTest extends APITestCase
     {
         $user = $this->generateUser();
         $locations = [];
-        $locations[] = $this->generateLocation(1);
-        $locations[] = $this->generateLocation(2);
+        $locations[] = $this->generateLocation();
+        $locations[] = $this->generateLocation();
         foreach ($locations as $location) {
             $this->entityManager->persist($location);
         }
         $this->entityManager->flush();
-
         $data = (object) [
-            'locations' => [1, 2],
+            'locations' => array_map(fn(Location $location) => $location->getId(), $locations),
             'name' => 'Alois'
         ];
 
         $this->getUserRepository()->update($user, $data);
 
-        $this->assertEquals($data->locations, array_map(function (Location $location) {
-            return $location->getId();
-        }, $locations));
+        $this->assertEquals($locations, $user->getLocations()->getValues());
     }
 
     public function testSearch()

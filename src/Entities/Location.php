@@ -7,6 +7,7 @@ use RideTimeServer\Entities\Traits\AliasTrait;
 use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\TrailsTrait;
 use RideTimeServer\Entities\Traits\GpsTrait;
+use RideTimeServer\Entities\Traits\RemoteIdTrait;
 
 /**
  * @Entity(repositoryClass="RideTimeServer\API\Repositories\LocationRepository")
@@ -15,6 +16,7 @@ use RideTimeServer\Entities\Traits\GpsTrait;
 class Location extends PrimaryEntity implements PrimaryEntityInterface
 {
     use IdTrait;
+    use RemoteIdTrait;
     use TrailsTrait;
     use AliasTrait;
     use GpsTrait;
@@ -35,7 +37,9 @@ class Location extends PrimaryEntity implements PrimaryEntityInterface
             ],
             'difficulties' => $this->getDifficulties(),
             'alias' => $this->getAlias(),
-            'coverPhoto' => $this->getCoverPhoto()
+            'coverPhoto' => $this->getCoverPhoto(),
+            'source' => $this->getSource(),
+            'remoteId' => $this->getRemoteId()
         ];
     }
 

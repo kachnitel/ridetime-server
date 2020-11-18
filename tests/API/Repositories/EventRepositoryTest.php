@@ -14,6 +14,7 @@ class EventRepositoryTest extends APITestCase
 
         $location = $this->generateLocation();
         $this->entityManager->persist($location);
+        $this->entityManager->flush();
 
         $eventData = (object) [
             'title' => 'Test Event',

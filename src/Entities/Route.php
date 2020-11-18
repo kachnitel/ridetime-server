@@ -8,6 +8,7 @@ use RideTimeServer\Entities\Traits\IdTrait;
 use RideTimeServer\Entities\Traits\DifficultyTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use RideTimeServer\Entities\Traits\AliasTrait;
+use RideTimeServer\Entities\Traits\RemoteIdTrait;
 
 /**
  * @Entity(repositoryClass="RideTimeServer\API\Repositories\RouteRepository")
@@ -16,20 +17,12 @@ use RideTimeServer\Entities\Traits\AliasTrait;
 class Route extends PrimaryEntity implements PrimaryEntityInterface
 {
     use IdTrait;
+    use RemoteIdTrait;
     use LocationTrait;
     use TrailsTrait;
     use TerrainProfileTrait;
     use DifficultyTrait;
     use AliasTrait;
-
-    const SCALAR_FIELDS = [
-        'id',
-        'title',
-        'description',
-        'difficulty',
-        'alias'
-        // 'cover_photo'
-    ];
 
     public function __construct() {
         $this->trails = new ArrayCollection();
@@ -54,7 +47,9 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
             'location' => $this->getLocation()->getId(),
             'profile' => $this->getProfile(),
             'trails' => $trailIds,
-            'alias' => $this->getAlias()
+            'alias' => $this->getAlias(),
+            'source' => $this->getSource(),
+            'remoteId' => $this->getRemoteId()
         ];
     }
 
@@ -67,20 +62,6 @@ class Route extends PrimaryEntity implements PrimaryEntityInterface
             'location' => [$this->getLocation()],
             'trail' => $this->getTrails()->getValues()
         ];
-    }
-
-    /**
-     * Applies self::SCALAR_FIELDS listed properties
-     *
-     * @param object $data
-     * @return object
-     */
-    public function applyProperties(object $data)
-    {
-        foreach (self::SCALAR_FIELDS as $property) {
-            $method = $method = 'set' . ucfirst($property);
-            $this->{$method}($data->{$property});
-        }
     }
 
     /**

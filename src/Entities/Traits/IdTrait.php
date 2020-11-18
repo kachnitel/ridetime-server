@@ -8,6 +8,7 @@ trait IdTrait
 {
     /**
      * @Id
+     * @GeneratedValue
      * @Column(type="integer", unique=true)
      *
      * @var int
