@@ -34,16 +34,15 @@ class Router
                 $app->group('/events', function (App $app) { self::initEventRoutes($app); });
                 $app->group('/users', function (App $app) { self::initUserRoutes($app); });
                 $app->group('/tracking', function (App $app) { self::initTrackingRoutes($app); });
+                /** Search trails and routes */
+                $app->get('/trails', Controllers\LocationController::class . ':trails');
+                $app->get('/routes', Controllers\LocationController::class . ':routes');
             })->add($cuMiddleware->getMiddleware(true));
             // REVIEW: dirty. Should remove $requireUser param from CUMiddleware,
             // use separate route without user for sign up
             $app->group('/locations', function (App $app) { self::initLocationRoutes($app); })
                 ->add($cuMiddleware->getMiddleware(false));
         });
-
-        $this->app->group('/dashboard', function (App $app) {
-            self::initDashboardRoutes($app);
-        })->add($cuMiddleware->getMiddleware(true));
     }
 
     public static function initEventRoutes(App $app)
@@ -84,9 +83,6 @@ class Router
     {
         /** Filter */
         $app->get('', Controllers\LocationController::class . ':filter');
-        /** Search location trails and routes */
-        $app->get('/trails', Controllers\LocationController::class . ':trails');
-        $app->get('/routes', Controllers\LocationController::class . ':routes');
         /** Get location detail */
         $app->get('/{id:[0-9]+}', Controllers\LocationController::class . ':get');
     }
@@ -119,16 +115,5 @@ class Router
         $app->get('', Controllers\TrackingController::class . ':list');
         $app->post('', Controllers\TrackingController::class . ':add');
         $app->delete('', Controllers\TrackingController::class . ':clear');
-    }
-
-    /**
-     * @param App $app
-     * @return void
-     * @deprecated 0.5.7
-     */
-    public static function initDashboardRoutes(App $app)
-    {
-        /** Get dashboard */
-        $app->get('', Controllers\DashboardController::class . ':all');
     }
 }
